@@ -1,637 +1,578 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Forge - Workout Tracker & Analytics</title>
-    <!-- Chart.js CDN per i Grafici -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --accent: #3b82f6;
-            --accent-hover: #2563eb;
-            --text: #f8fafc;
-            --text-muted: #94a3b8;
-            --border: #334155;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --youtube: #ff0000;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Forge - Weightlifting Tracker</title>
+  
+  <!-- iOS / PWA Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Forge">
+  
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <style>
+    :root {
+      --bg-color: #121212;
+      --card-bg: #1e1e1e;
+      --accent-red: #ff3b30;
+      --accent-green: #34c759;
+      --accent-blue: #007aff;
+      --text-main: #ffffff;
+      --text-muted: #a0a0a0;
+      --border-color: #2c2c2e;
+    }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text);
-            margin: 0;
-            padding: 15px;
-        }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      margin: 0;
+      padding: 15px;
+      padding-bottom: 80px;
+    }
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
+    h1, h2, h3, h4 { margin: 0 0 10px 0; }
+    .header { text-align: center; margin-bottom: 20px; }
+    .header h1 { color: var(--accent-red); font-size: 28px; letter-spacing: 1px; }
 
-        header {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            margin-bottom: 20px;
-            text-align: center;
-        }
+    /* TAB NAVIGAZIONE */
+    .tabs { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
+    .tab-btn {
+      flex: 1; min-width: 70px; background: var(--card-bg); color: var(--text-muted);
+      border: 1px solid var(--border-color); padding: 10px; border-radius: 10px;
+      font-weight: bold; cursor: pointer; text-align: center; font-size: 14px;
+    }
+    .tab-btn.active { background: var(--accent-red); color: white; border-color: var(--accent-red); }
 
-        h1 { margin: 0 0 5px 0; font-size: 1.6rem; color: #fff; letter-spacing: 1px; }
-        .subtitle { color: var(--text-muted); font-size: 0.85rem; }
+    /* SCHEDE & CARD */
+    .card { background: var(--card-bg); border-radius: 14px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border-color); }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
 
-        .nav-days {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
+    /* ESERCIZI & TABELLE */
+    .ex-card { background: #262628; border-radius: 10px; padding: 12px; margin-bottom: 12px; }
+    .ex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .btn-yt { background: var(--accent-red); color: white; border: none; padding: 4px 8px; border-radius: 6px; font-size: 12px; text-decoration: none; font-weight: bold; }
+    
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+    th { color: var(--text-muted); font-size: 12px; text-align: left; padding-bottom: 5px; }
+    td { padding: 4px 2px; }
+    input[type="number"], input[type="text"] {
+      width: 90%; background: #121212; border: 1px solid var(--border-color);
+      color: white; padding: 8px; border-radius: 6px; text-align: center; font-size: 14px;
+    }
+    
+    /* PULSANTI GENERALI */
+    .btn { width: 100%; background: var(--accent-red); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: bold; font-size: 16px; margin-top: 10px; cursor: pointer; }
+    .btn-secondary { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-main); }
+    .btn-blue { background: var(--accent-blue); }
+    .btn-green { background: var(--accent-green); }
 
-        .nav-btn {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 10px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            white-space: nowrap;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
+    /* WIDGET METRICHE & PROFILO */
+    .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0; }
+    .stat-box { background: #121212; padding: 10px; border-radius: 8px; text-align: center; }
+    .stat-label { font-size: 11px; color: var(--text-muted); display: block; }
+    .stat-val { font-size: 16px; font-weight: bold; margin-top: 4px; }
 
-        .nav-btn.active {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: #fff;
-        }
+    /* MODALI */
+    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+    .modal-content { background: var(--card-bg); width: 90%; max-width: 400px; padding: 20px; border-radius: 14px; max-height: 85vh; overflow-y: auto; }
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+    select, textarea { width: 100%; background: #121212; border: 1px solid var(--border-color); color: white; padding: 8px; border-radius: 6px; box-sizing: border-box; }
 
-        .section-card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-
-        .section-title {
-            font-size: 1.2rem;
-            margin-top: 0;
-            margin-bottom: 15px;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 10px;
-            color: var(--accent);
-        }
-
-        /* Sezione Grafici */
-        .analytics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .chart-box {
-            background: #0f172a;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 12px;
-            text-align: center;
-        }
-
-        .chart-box h4 { margin: 0 0 10px 0; font-size: 0.95rem; color: var(--text-muted); }
-
-        .exercise-card {
-            background: #0f172a;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 15px;
-        }
-
-        .ex-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin-bottom: 8px;
-        }
-
-        .ex-title { font-weight: bold; font-size: 1rem; color: #fff; }
-        .ex-target { font-size: 0.8rem; color: var(--warning); background: #3b2a0c; padding: 2px 8px; border-radius: 4px; }
-        .ex-tech { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px; font-style: italic; }
-
-        .btn-yt {
-            background: #450a0a;
-            color: #fca5a5;
-            border: 1px solid #7f1d1d;
-            padding: 4px 10px;
-            font-size: 0.75rem;
-            border-radius: 4px;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-weight: 600;
-        }
-
-        .btn-yt:hover { background: var(--youtube); color: white; }
-
-        .tracker-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-            gap: 8px;
-            margin-bottom: 8px;
-        }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .input-group label {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            margin-bottom: 2px;
-        }
-
-        input, textarea, select {
-            background: #1e293b;
-            border: 1px solid var(--border);
-            color: #fff;
-            padding: 6px;
-            border-radius: 4px;
-            font-size: 0.85rem;
-        }
-
-        input:focus, textarea:focus, select:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-
-        .action-btns {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            text-align: center;
-            transition: 0.2s;
-            min-width: 140px;
-        }
-
-        .btn-primary { background: var(--accent); color: white; }
-        .btn-success { background: var(--success); color: white; }
-        .btn-danger { background: var(--danger); color: white; padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; }
-        .btn-secondary { background: var(--border); color: white; }
-
-        .summary-box {
-            background: #064e3b;
-            border: 1px solid #059669;
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .add-form {
-            background: #0f172a;
-            border: 1px dashed var(--accent);
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-        }
-
-        .add-form h4 { margin: 0 0 10px 0; color: var(--accent); }
-        .add-form .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        @media print {
-            .nav-days, .action-btns, button, .add-form, .analytics-grid { display: none !important; }
-            body { background: white; color: black; }
-            .section-card, .exercise-card, header { background: white; border: 1px solid #ccc; color: black; }
-        }
-    </style>
+    .badge-pr { background: gold; color: black; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-left: 5px; }
+  </style>
 </head>
 <body>
 
-<div class="container">
-    <header>
-        <h1>⚡ FORGE WORKOUT</h1>
-        <div class="subtitle">Programmazione Weightlifting, Tracker & Analisi Progressi</div>
-    </header>
+  <div class="header">
+    <h1>FORGE v3.0</h1>
+  </div>
 
-    <!-- Selettore Giorno -->
-    <div class="nav-days">
-        <button class="nav-btn active" onclick="loadDay(1)">Giorno 1</button>
-        <button class="nav-btn" onclick="loadDay(2)">Giorno 2</button>
-        <button class="nav-btn" onclick="loadDay(3)">Giorno 3</button>
-        <button class="nav-btn" onclick="loadDay(4)">Giorno 4</button>
+  <!-- NAVIGATION TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('giorno1')">G1</button>
+    <button class="tab-btn" onclick="switchTab('giorno2')">G2</button>
+    <button class="tab-btn" onclick="switchTab('giorno3')">G3</button>
+    <button class="tab-btn" onclick="switchTab('giorno4')">G4</button>
+    <button class="tab-btn" onclick="switchTab('stats')">📊 Stats</button>
+    <button class="tab-btn" onclick="switchTab('profilo')">👤 Profilo</button>
+  </div>
+
+  <!-- SCHEDA GIORNO 1 -->
+  <div id="giorno1" class="tab-content active">
+    <div class="card">
+      <h3>🏋️ Sessione Giorno 1 - Leg Push / Snatch Focus</h3>
+      
+      <!-- Esercizio 1 -->
+      <div class="ex-card" data-ex="Strappo">
+        <div class="ex-header">
+          <strong>1. Strappo (Snatch)</strong>
+          <a href="https://www.youtube.com/results?search_query=snatch+technique" target="_blank" class="btn-yt">▶ Video</a>
+        </div>
+        <button class="btn-secondary" style="font-size: 12px; padding: 5px;" onclick="autofillEsercizio(this)">🔄 Auto-fill Ultima Volta</button>
+        <table>
+          <tr><th>SET</th><th>KG</th><th>REPS</th><th>RPE</th></tr>
+          <tr><td>1</td><td><input type="number" class="kg" placeholder="0"></td><td><input type="number" class="reps" placeholder="0"></td><td><input type="number" class="rpe" placeholder="0"></td></tr>
+          <tr><td>2</td><td><input type="number" class="kg" placeholder="0"></td><td><input type="number" class="reps" placeholder="0"></td><td><input type="number" class="rpe" placeholder="0"></td></tr>
+          <tr><td>3</td><td><input type="number" class="kg" placeholder="0"></td><td><input type="number" class="reps" placeholder="0"></td><td><input type="number" class="rpe" placeholder="0"></td></tr>
+        </table>
+      </div>
+
+      <!-- Esercizio 2 -->
+      <div class="ex-card" data-ex="Back Squat">
+        <div class="ex-header">
+          <strong>2. Back Squat</strong>
+          <a href="https://www.youtube.com/results?search_query=back+squat+technique" target="_blank" class="btn-yt">▶ Video</a>
+        </div>
+        <button class="btn-secondary" style="font-size: 12px; padding: 5px;" onclick="autofillEsercizio(this)">🔄 Auto-fill Ultima Volta</button>
+        <table>
+          <tr><th>SET</th><th>KG</th><th>REPS</th><th>RPE</th></tr>
+          <tr><td>1</td><td><input type="number" class="kg" placeholder="0"></td><td><input type="number" class="reps" placeholder="0"></td><td><input type="number" class="rpe" placeholder="0"></td></tr>
+          <tr><td>2</td><td><input type="number" class="kg" placeholder="0"></td><td><input type="number" class="reps" placeholder="0"></td><td><input type="number" class="rpe" placeholder="0"></td></tr>
+          <tr><td>3</td><td><input type="number" class="kg" placeholder="0"></td><td><input type="number" class="reps" placeholder="0"></td><td><input type="number" class="rpe" placeholder="0"></td></tr>
+        </table>
+      </div>
+
+      <button class="btn" onclick="salvaSessione('Giorno 1')">💾 Salva Allenamento</button>
+    </div>
+  </div>
+
+  <!-- SCHEDA GIORNO 2 -->
+  <div id="giorno2" class="tab-content">
+    <div class="card">
+      <h3>🏋️ Sessione Giorno 2 - Upper / Clean Focus</h3>
+      <div class="ex-card" data-ex="Slancio">
+        <div class="ex-header">
+          <strong>1. Slancio (Clean & Jerk)</strong>
+          <a href="https://www.youtube.com/results?search_query=clean+and+jerk" target="_blank" class="btn-yt">▶ Video</a>
+        </div>
+        <button class="btn-secondary" style="font-size: 12px; padding: 5px;" onclick="autofillEsercizio(this)">🔄 Auto-fill Ultima Volta</button>
+        <table>
+          <tr><th>SET</th><th>KG</th><th>REPS</th><th>RPE</th></tr>
+          <tr><td>1</td><td><input type="number" class="kg"></td><td><input type="number" class="reps"></td><td><input type="number" class="rpe"></td></tr>
+          <tr><td>2</td><td><input type="number" class="kg"></td><td><input type="number" class="reps"></td><td><input type="number" class="rpe"></td></tr>
+        </table>
+      </div>
+      <button class="btn" onclick="salvaSessione('Giorno 2')">💾 Salva Allenamento</button>
+    </div>
+  </div>
+
+  <!-- SCHEDA GIORNO 3 -->
+  <div id="giorno3" class="tab-content">
+    <div class="card">
+      <h3>🏋️ Sessione Giorno 3 - Pull / Deadlift Focus</h3>
+      <div class="ex-card" data-ex="Stacco da Terra">
+        <div class="ex-header">
+          <strong>1. Stacco da Terra</strong>
+          <a href="https://www.youtube.com/results?search_query=deadlift" target="_blank" class="btn-yt">▶ Video</a>
+        </div>
+        <button class="btn-secondary" style="font-size: 12px; padding: 5px;" onclick="autofillEsercizio(this)">🔄 Auto-fill Ultima Volta</button>
+        <table>
+          <tr><th>SET</th><th>KG</th><th>REPS</th><th>RPE</th></tr>
+          <tr><td>1</td><td><input type="number" class="kg"></td><td><input type="number" class="reps"></td><td><input type="number" class="rpe"></td></tr>
+          <tr><td>2</td><td><input type="number" class="kg"></td><td><input type="number" class="reps"></td><td><input type="number" class="rpe"></td></tr>
+        </table>
+      </div>
+      <button class="btn" onclick="salvaSessione('Giorno 3')">💾 Salva Allenamento</button>
+    </div>
+  </div>
+
+  <!-- SCHEDA GIORNO 4 -->
+  <div id="giorno4" class="tab-content">
+    <div class="card">
+      <h3>🏋️ Sessione Giorno 4 - Accessory & Volume</h3>
+      <div class="ex-card" data-ex="Lento Avanti">
+        <div class="ex-header">
+          <strong>1. Lento Avanti (Strict Press)</strong>
+          <a href="https://www.youtube.com/results?search_query=overhead+press" target="_blank" class="btn-yt">▶ Video</a>
+        </div>
+        <button class="btn-secondary" style="font-size: 12px; padding: 5px;" onclick="autofillEsercizio(this)">🔄 Auto-fill Ultima Volta</button>
+        <table>
+          <tr><th>SET</th><th>KG</th><th>REPS</th><th>RPE</th></tr>
+          <tr><td>1</td><td><input type="number" class="kg"></td><td><input type="number" class="reps"></td><td><input type="number" class="rpe"></td></tr>
+          <tr><td>2</td><td><input type="number" class="kg"></td><td><input type="number" class="reps"></td><td><input type="number" class="rpe"></td></tr>
+        </table>
+      </div>
+      <button class="btn" onclick="salvaSessione('Giorno 4')">💾 Salva Allenamento</button>
+    </div>
+  </div>
+
+  <!-- SCHEDA STATISTICHE -->
+  <div id="stats" class="tab-content">
+    <div class="card">
+      <h3>📊 Distribuzione Muscolare</h3>
+      <canvas id="pieChart"></canvas>
+    </div>
+    <div class="card">
+      <h3>📈 Progressioni Carichi & RPE</h3>
+      <canvas id="lineChart"></canvas>
+    </div>
+  </div>
+
+  <!-- SCHEDA PROFILO & BACKUP -->
+  <div id="profilo" class="tab-content">
+    <div class="card">
+      <h3>👤 Profilo Utente & Anamnesi</h3>
+      <div id="displayAnamnesi"></div>
+      <button class="btn-secondary" onclick="apriModalAnamnesi()" style="margin-top:10px;">✏️ Modifica Anamnesi</button>
     </div>
 
-    <!-- SEZIONE GRAFICI & ANALYTICS -->
-    <div class="analytics-grid">
-        <!-- Grafico a Torta Muscoli -->
-        <div class="chart-box">
-            <h4>📊 Distribuzione Muscolare (Giorno Attivo)</h4>
-            <div style="max-width: 230px; margin: 0 auto;">
-                <canvas id="musclePieChart"></canvas>
-            </div>
-        </div>
-
-        <!-- Grafico Progressione nel Tempo -->
-        <div class="chart-box">
-            <h4>📈 Progressione Storica Esercizi</h4>
-            <div style="margin-bottom: 8px;">
-                <select id="chart-ex-selector" onchange="updateLineChart()" style="width: 100%;">
-                    <!-- Popolato via JS -->
-                </select>
-            </div>
-            <canvas id="progressionLineChart"></canvas>
-        </div>
+    <div class="card">
+      <h3>⚖️ Variazione Peso Corporeo</h3>
+      <div class="stat-grid">
+        <div class="stat-box"><span class="stat-label">Attuale</span><span class="stat-val" id="valPesoAttuale">-- kg</span></div>
+        <div class="stat-box"><span class="stat-label">Inizio</span><span class="stat-val" id="valDiffInizio">-- kg</span></div>
+        <div class="stat-box"><span class="stat-label">30 gg</span><span class="stat-val" id="valDiff30gg">-- kg</span></div>
+      </div>
+      <button class="btn-blue btn" onclick="apriModalPesata()">+ Registra Nuova Pesata</button>
+      
+      <div style="margin-top: 15px; background: #121212; padding: 12px; border-radius: 8px;">
+        <span class="stat-label">Forza Relativa (Punteggio Wilks):</span>
+        <div class="stat-val" id="valWilks" style="color: var(--accent-red);">-- pts</div>
+      </div>
     </div>
 
-    <!-- Allenamento Attivo -->
-    <div class="section-card">
-        <div class="section-title">
-            <span id="day-title">Giorno 1</span>
-        </div>
-
-        <div id="exercises-container"></div>
-
-        <!-- Aggiunta Esercizio -->
-        <div class="add-form">
-            <h4>+ Aggiungi un nuovo esercizio</h4>
-            <div class="form-grid">
-                <input type="text" id="new-name" placeholder="Nome (es. Panca Inclinata)">
-                <input type="text" id="new-target" placeholder="Target (es. 3x10)">
-                <input type="text" id="new-load" placeholder="Carico (es. 60 kg)">
-                <select id="new-muscle">
-                    <option value="Gambe/Femorali">Gambe / Femorali</option>
-                    <option value="Spalle/Ol">Spalle / Sollevamenti</option>
-                    <option value="Petto/Spinta">Petto / Spinta</option>
-                    <option value="Dorso/Tirata">Dorso / Tirata</option>
-                    <option value="Core/Addome">Core / Addome</option>
-                </select>
-            </div>
-            <button class="btn btn-success" style="width: 100%; padding: 8px;" onclick="addCustomExercise()">Aggiungi Esercizio</button>
-        </div>
-
-        <!-- Note Generali & Volume -->
-        <div style="margin-top: 15px;">
-            <label style="font-size: 0.85rem; color: var(--text-muted);">Note Sessione / Sensazioni:</label>
-            <textarea id="session-notes" rows="3" style="width: 100%; box-sizing: border-box; margin-top: 5px;" placeholder="Scrivi qui com'è andato l'allenamento..."></textarea>
-        </div>
-
-        <div class="summary-box">
-            <span><strong>Volume Totale Sollevato:</strong></span>
-            <span id="total-volume" style="font-size: 1.2rem; font-weight: bold;">0 kg</span>
-        </div>
-
-        <div class="action-btns">
-            <button class="btn btn-primary" onclick="saveSession()">Salva Allenamento</button>
-            <button class="btn btn-secondary" onclick="window.print()">Stampa / PDF</button>
-        </div>
+    <div class="card">
+      <h3>⚡ Recupero e Affaticamento (ACWR)</h3>
+      <div class="stat-box" style="margin-top: 5px;">
+        <span class="stat-label">Stato Sovrallenamento / Stress Index</span>
+        <div class="stat-val" id="valAcwr">Calcolo...</div>
+      </div>
     </div>
-</div>
 
-<script>
-const defaultData = {
-    1: {
-        title: "GIORNO 1: FOCUS SNATCH & CATENA POSTERIORE",
-        exercises: [
-            { name: "1. Core: Plank Frontale", target: "3 x 45\"-60\"", load: "Isometria", muscle: "Core/Addome", tech: "Glutei e addome in massima contrazione." },
-            { name: "2. Hang Snatch", target: "4 x 3", load: "65-75% 1RM", muscle: "Spalle/Ol", tech: "Partenza sopra il ginocchio; tripla estensione ed infilata veloce." },
-            { name: "3. Snatch Pull", target: "4 x 3", load: "85-90% 1RM", muscle: "Spalle/Ol", tech: "Schiena compatta, spinta con le gambe e scrollata." },
-            { name: "4. Stacco Rumeno (RDL)", target: "3 x 8 / 6", load: "110 - 125 kg", muscle: "Gambe/Femorali", tech: "Allungamento controllato di femorali e glutei." },
-            { name: "5. Alzate Laterali al Cavo", target: "3 x 12", load: "RPE 7-8", muscle: "Spalle/Ol", tech: "Stabilità della spalla." },
-            { name: "6. Stretching Finale", target: "8-10 min", load: "Allungamento", muscle: "Core/Addome", tech: "Stretching mirato per Femorali." }
-        ]
-    },
-    2: {
-        title: "GIORNO 2: FOCUS CLEAN & SPINTA ORIZZONTALE",
-        exercises: [
-            { name: "1. Core: Hollow Body", target: "3 x 15-20", load: "Corpo libero", muscle: "Core/Addome", tech: "Movimento controllato." },
-            { name: "2. Power Clean", target: "4 x 3", load: "75-80% 1RM", muscle: "Spalle/Ol", tech: "Ricezione sopra il parallelo." },
-            { name: "3. Clean Pull", target: "4 x 3", load: "90-100% 1RM", muscle: "Spalle/Ol", tech: "Traiettoria verticale ed estensione." },
-            { name: "4. Panca Piana con Bilanciere", target: "3 x 8 / 6", load: "77.5 - 87.5 kg", muscle: "Petto/Spinta", tech: "Fermo al petto ed esplosività." },
-            { name: "5. Leg Curl Unilaterale", target: "3 x 10-12", load: "RPE 7-8", muscle: "Gambe/Femorali", tech: "Rafforza ischiocrurali." },
-            { name: "6. Stretching Finale", target: "8-10 min", load: "Allungamento", muscle: "Core/Addome", tech: "Stretching per Pettorali e Dorsali." }
-        ]
-    },
-    3: {
-        title: "GIORNO 3: FOCUS FORZA GAMBE & SPINTA VERTICALE",
-        exercises: [
-            { name: "1. Core: Side Plank", target: "3 x 35\"-45\"", load: "Isometria", muscle: "Core/Addome", tech: "Tenuta laterale." },
-            { name: "2. Back Squat", target: "4 x 5 / 3", load: "105 - 115 kg", muscle: "Gambe/Femorali", tech: "Accosciata profonda, risalita potente." },
-            { name: "3. Front Squat", target: "3 x 4", load: "75-80% 1RM", muscle: "Gambe/Femorali", tech: "Gomiti alti, verticalità." },
-            { name: "4. Strict Press / Military Press", target: "3 x 5", load: "Basso Volume", muscle: "Spalle/Ol", tech: "Forza pura spalle." },
-            { name: "5. Push Press", target: "3 x 4", load: "75-80% 1RM", muscle: "Spalle/Ol", tech: "Dip & drive esplosivo." },
-            { name: "6. Stretching Finale", target: "8-10 min", load: "Allungamento", muscle: "Core/Addome", tech: "Stretching Quadricipiti." }
-        ]
-    },
-    4: {
-        title: "GIORNO 4: FOCUS JERK, INCASTRI & UNILATERALE / DORSO",
-        exercises: [
-            { name: "1. Core: Leg Raises", target: "3 x 12-15", load: "Corpo libero", muscle: "Core/Addome", tech: "Flessione dell'anca controllata." },
-            { name: "2. Snatch Balance", target: "4 x 3", load: "60-70% 1RM", muscle: "Spalle/Ol", tech: "Infilata reattiva sotto la barra." },
-            { name: "3. Split Jerk da Supporto", target: "4 x 3", load: "75-85% 1RM", muscle: "Spalle/Ol", tech: "Split solido, bacino centrato." },
-            { name: "4. Squat Bulgaro", target: "3 x 8 / leg", load: "RPE 7-8", muscle: "Gambe/Femorali", tech: "Rafforza le singole gambe." },
-            { name: "5. Trazioni alla Sbarra Zavorrate", target: "3 x 6 / 4", load: "+15 - +25 kg", muscle: "Dorso/Tirata", tech: "Trazione fino al mento." },
-            { name: "6. Pulley Unilaterale", target: "3 x 10 / lato", load: "RPE 7-8", muscle: "Dorso/Tirata", tech: "Lavoro di tirata orizzontale." },
-            { name: "7. Stretching Finale", target: "8-10 min", load: "Allungamento", muscle: "Core/Addome", tech: "Stretching Flessori." }
-        ]
-    }
-};
+    <div class="card">
+      <h3>💾 Backup & Sicurezza Dati</h3>
+      <button class="btn btn-blue" onclick="esportaBackup()">📥 Esporta Backup JSON</button>
+      <input type="file" id="fileImport" style="display:none" onchange="importaBackup(event)">
+      <button class="btn btn-green" onclick="document.getElementById('fileImport').click()">📤 Ripristina Backup JSON</button>
+    </div>
+  </div>
 
-let workoutData = JSON.parse(localStorage.getItem('workout_custom_schema')) || defaultData;
-let currentDay = 1;
+  <!-- MODAL ANAMNESI -->
+  <div id="modalAnamnesi" class="modal" style="display:none;">
+    <div class="modal-content">
+      <h2>📋 Anamnesi Iniziale</h2>
+      <form onsubmit="salvaAnamnesi(event)">
+        <div class="form-group">
+          <label>Peso Corporeo (kg):</label>
+          <input type="number" id="ana_peso" step="0.1" required>
+        </div>
+        <div class="form-group">
+          <label>Altezza (cm):</label>
+          <input type="number" id="ana_altezza" required>
+        </div>
+        <div class="form-group">
+          <label>Obiettivo Principale:</label>
+          <select id="ana_obiettivo">
+            <option>Aumento Massa (Ipertrofia)</option>
+            <option>Dimagrimento / Definizione</option>
+            <option>Forza / Weightlifting</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Livello di Preparazione:</label>
+          <select id="ana_livello">
+            <option>Principiante</option>
+            <option>Intermedio</option>
+            <option>Avanzato</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Infortuni o Limitazioni:</label>
+          <textarea id="ana_infortuni" rows="3" placeholder="Es. fastidio spalla destra..."></textarea>
+        </div>
+        <button type="submit" class="btn">Salva Profilo</button>
+      </form>
+    </div>
+  </div>
 
-let pieChartInstance = null;
-let lineChartInstance = null;
+  <!-- MODAL PESATA -->
+  <div id="modalPesata" class="modal" style="display:none;">
+    <div class="modal-content">
+      <h3>⚖️ Nuova Pesata</h3>
+      <div class="form-group">
+        <label>Peso Corporeo Attuale (kg):</label>
+        <input type="number" id="inputNuovoPeso" step="0.1">
+      </div>
+      <button onclick="salvaNuovaPesata()" class="btn">Salva</button>
+      <button onclick="document.getElementById('modalPesata').style.display='none'" class="btn btn-secondary">Annulla</button>
+    </div>
+  </div>
 
-function loadDay(dayNum) {
-    currentDay = dayNum;
-    
-    document.querySelectorAll('.nav-btn').forEach((btn, idx) => {
-        btn.classList.toggle('active', idx + 1 === dayNum);
-    });
-
-    const dayData = workoutData[dayNum];
-    document.getElementById('day-title').innerText = dayData.title;
-
-    renderExercises();
-    loadSavedSession();
-    updatePieChart();
-    updateSelectorAndLineChart();
-}
-
-function renderExercises() {
-    const container = document.getElementById('exercises-container');
-    container.innerHTML = '';
-
-    workoutData[currentDay].exercises.forEach((ex, idx) => {
-        const ytSearchUrl = `https://www.youtube.com/results?search_query=esecuzione+corretta+${encodeURIComponent(ex.name)}`;
-        const card = document.createElement('div');
-        card.className = 'exercise-card';
-        card.innerHTML = `
-            <div class="ex-header">
-                <div>
-                    <span class="ex-title">${ex.name}</span>
-                    <a href="${ytSearchUrl}" target="_blank" class="btn-yt">▶ Video Esecuzione</a>
-                </div>
-                <div>
-                    <span class="ex-target">${ex.target || ''} ${ex.load ? '| ' + ex.load : ''}</span>
-                    <button class="btn-danger" onclick="removeExercise(${idx})" style="margin-left: 8px;">Elimina</button>
-                </div>
-            </div>
-            ${ex.tech ? `<div class="ex-tech">${ex.tech}</div>` : ''}
-            <div class="tracker-grid">
-                <div class="input-group">
-                    <label>Reps Effettive</label>
-                    <input type="number" id="reps-${idx}" placeholder="es. 5" onchange="calculateVolume()">
-                </div>
-                <div class="input-group">
-                    <label>Carico (kg)</label>
-                    <input type="number" id="weight-${idx}" placeholder="es. 105" onchange="calculateVolume()">
-                </div>
-                <div class="input-group">
-                    <label>RPE / Fatica (1-10)</label>
-                    <input type="number" id="rpe-${idx}" placeholder="es. 8">
-                </div>
-            </div>
-            <div style="margin-top: 6px;">
-                <input type="text" id="note-${idx}" placeholder="Note per questo esercizio..." style="width: 100%; box-sizing: border-box;">
-            </div>
-        `;
-        container.appendChild(card);
-    });
-}
-
-function addCustomExercise() {
-    const name = document.getElementById('new-name').value.trim();
-    const target = document.getElementById('new-target').value.trim();
-    const load = document.getElementById('new-load').value.trim();
-    const muscle = document.getElementById('new-muscle').value;
-
-    if (!name) {
-        alert('Inserisci il nome dell\'esercizio!');
-        return;
-    }
-
-    workoutData[currentDay].exercises.push({ name, target, load, muscle, tech: '' });
-    localStorage.setItem('workout_custom_schema', JSON.stringify(workoutData));
-
-    document.getElementById('new-name').value = '';
-    document.getElementById('new-target').value = '';
-    document.getElementById('new-load').value = '';
-
-    renderExercises();
-    updatePieChart();
-    updateSelectorAndLineChart();
-}
-
-function removeExercise(index) {
-    if (confirm('Vuoi davvero rimuovere questo esercizio?')) {
-        workoutData[currentDay].exercises.splice(index, 1);
-        localStorage.setItem('workout_custom_schema', JSON.stringify(workoutData));
-        renderExercises();
-        updatePieChart();
-        updateSelectorAndLineChart();
-    }
-}
-
-function calculateVolume() {
-    let totalVol = 0;
-    workoutData[currentDay].exercises.forEach((_, idx) => {
-        const reps = parseFloat(document.getElementById(`reps-${idx}`)?.value) || 0;
-        const weight = parseFloat(document.getElementById(`weight-${idx}`)?.value) || 0;
-        totalVol += reps * weight;
-    });
-
-    document.getElementById('total-volume').innerText = totalVol.toLocaleString() + ' kg';
-}
-
-function saveSession() {
-    const todayStr = new Date().toLocaleDateString('it-IT');
-    const history = JSON.parse(localStorage.getItem('workout_history')) || [];
-
-    const sessionData = {
-        date: todayStr,
-        timestamp: Date.now(),
-        day: currentDay,
-        notes: document.getElementById('session-notes').value,
-        exercises: workoutData[currentDay].exercises.map((ex, idx) => ({
-            name: ex.name,
-            reps: document.getElementById(`reps-${idx}`)?.value || 0,
-            weight: document.getElementById(`weight-${idx}`)?.value || 0,
-            rpe: document.getElementById(`rpe-${idx}`)?.value || 0,
-            note: document.getElementById(`note-${idx}`)?.value || ''
-        }))
+  <script>
+    // ==========================================
+    // 1. STATO GLOBALE E INIZIALIZZAZIONE
+    // ==========================================
+    let forgeData = JSON.parse(localStorage.getItem('forge_v3_data')) || {
+      anamnesi: null,
+      storicoPeso: [],
+      allenamenti: [],
+      records: {}
     };
 
-    // Salva sessione attiva
-    localStorage.setItem(`workout_session_giorno_${currentDay}`, JSON.stringify(sessionData));
-    
-    // Salva nello storico globale per i grafici
-    history.push(sessionData);
-    localStorage.setItem('workout_history', JSON.stringify(history));
-
-    alert('Allenamento salvato con successo! Grafico aggiornato.');
-    updateLineChart();
-}
-
-function loadSavedSession() {
-    const saved = localStorage.getItem(`workout_session_giorno_${currentDay}`);
-    if (!saved) return;
-
-    try {
-        const data = JSON.parse(saved);
-        if (data.notes) document.getElementById('session-notes').value = data.notes;
-        data.exercises.forEach((ex, idx) => {
-            if (document.getElementById(`reps-${idx}`)) document.getElementById(`reps-${idx}`).value = ex.reps || '';
-            if (document.getElementById(`weight-${idx}`)) document.getElementById(`weight-${idx}`).value = ex.weight || '';
-            if (document.getElementById(`rpe-${idx}`)) document.getElementById(`rpe-${idx}`).value = ex.rpe || '';
-            if (document.getElementById(`note-${idx}`)) document.getElementById(`note-${idx}`).value = ex.note || '';
-        });
-        calculateVolume();
-    } catch(e) {
-        console.error("Errore nel caricamento", e);
+    function salvaStato() {
+      localStorage.setItem('forge_v3_data', JSON.stringify(forgeData));
     }
-}
 
-/* --- LOGICA GRAFICI --- */
+    window.onload = function() {
+      if (!forgeData.anamnesi) {
+        apriModalAnamnesi();
+      } else {
+        aggiornaProfilo();
+      }
+      initCharts();
+    };
 
-// 1. GRAFICO A TORTA (Muscoli Lavorati nel Giorno)
-function updatePieChart() {
-    const counts = {};
-    workoutData[currentDay].exercises.forEach(ex => {
-        const m = ex.muscle || 'Altro';
-        counts[m] = (counts[m] || 0) + 1;
-    });
+    // TAB SWITCHER
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      event.target.classList.add('active');
+      if(tabId === 'profilo') aggiornaProfilo();
+    }
 
-    const labels = Object.keys(counts);
-    const data = Object.values(counts);
+    // ==========================================
+    // 2. ANAMNESI & PROFILO
+    // ==========================================
+    function apriModalAnamnesi() { document.getElementById('modalAnamnesi').style.display = 'flex'; }
+    
+    function salvaAnamnesi(e) {
+      e.preventDefault();
+      const peso = parseFloat(document.getElementById('ana_peso').value);
+      const dataOggi = new Date().toISOString().slice(0, 10);
 
-    const ctx = document.getElementById('musclePieChart').getContext('2d');
-    if (pieChartInstance) pieChartInstance.destroy();
+      forgeData.anamnesi = {
+        altezza: document.getElementById('ana_altezza').value,
+        obiettivo: document.getElementById('ana_obiettivo').value,
+        livello: document.getElementById('ana_livello').value,
+        infortuni: document.getElementById('ana_infortuni').value || "Nessuno"
+      };
 
-    pieChartInstance = new Chart(ctx, {
-        type: 'doughnut',
+      if(forgeData.storicoPeso.length === 0) {
+        forgeData.storicoPeso.push({ data: dataOggi, peso: peso });
+      }
+
+      salvaStato();
+      document.getElementById('modalAnamnesi').style.display = 'none';
+      aggiornaProfilo();
+    }
+
+    function apriModalPesata() { document.getElementById('modalPesata').style.display = 'flex'; }
+    
+    function salvaNuovaPesata() {
+      const val = parseFloat(document.getElementById('inputNuovoPeso').value);
+      if(val) {
+        forgeData.storicoPeso.push({ data: new Date().toISOString().slice(0,10), peso: val });
+        salvaStato();
+        document.getElementById('modalPesata').style.display = 'none';
+        aggiornaProfilo();
+      }
+    }
+
+    function aggiornaProfilo() {
+      const ana = forgeData.anamnesi;
+      if(!ana) return;
+
+      document.getElementById('displayAnamnesi').innerHTML = `
+        <p><strong>Obiettivo:</strong> ${ana.obiettivo}</p>
+        <p><strong>Livello:</strong> ${ana.livello} | <strong>Altezza:</strong> ${ana.altezza} cm</p>
+        <p><strong>Note/Infortuni:</strong> ${ana.infortuni}</p>
+      `;
+
+      const st = forgeData.storicoPeso;
+      if(st.length > 0) {
+        st.sort((a,b) => new Date(a.data) - new Date(b.data));
+        const pesoAttuale = st[st.length - 1].peso;
+        const pesoIniziale = st[0].peso;
+
+        document.getElementById('valPesoAttuale').textContent = `${pesoAttuale} kg`;
+        
+        const dInizio = (pesoAttuale - pesoIniziale).toFixed(1);
+        document.getElementById('valDiffInizio').textContent = `${dInizio > 0 ? '+':''}${dInizio} kg`;
+
+        // Diff 30 giorni
+        const d30 = (pesoAttuale - (st[Math.max(0, st.length - 4)].peso)).toFixed(1);
+        document.getElementById('valDiff30gg').textContent = `${d30 > 0 ? '+':''}${d30} kg`;
+
+        // Wilks Calculation
+        calcolaWilks(pesoAttuale);
+      }
+      calcolaACWR();
+    }
+
+    function calcolaWilks(bw) {
+      let tot1RM = 0;
+      Object.keys(forgeData.records).forEach(k => tot1RM += forgeData.records[k].max1RM || 0);
+      if(tot1RM === 0) { document.getElementById('valWilks').textContent = "Inserisci carichi"; return; }
+      const a = -216.04, b = 16.26, c = -0.002, d = -0.001, e = 7.018e-6, f = -1.291e-8;
+      const coeff = 500 / (a + (b * bw) + (c * bw**2) + (d * bw**3) + (e * bw**4) + (f * bw**5));
+      document.getElementById('valWilks').textContent = `${Math.round(tot1RM * coeff)} pts`;
+    }
+
+    // ==========================================
+    // 3. AUTO-FILL & SALVATAGGIO ALLENAMENTO
+    // ==========================================
+    function autofillEsercizio(btn) {
+      const card = btn.closest('.ex-card');
+      const nomeEx = card.getAttribute('data-ex');
+      
+      // Trova l'ultimo allenamento registrato
+      for (let i = forgeData.allenamenti.length - 1; i >= 0; i--) {
+        const es = forgeData.allenamenti[i].esercizi.find(e => e.nome === nomeEx);
+        if (es) {
+          const rows = card.querySelectorAll('tr');
+          es.serie.forEach((s, idx) => {
+            if (rows[idx + 1]) {
+              rows[idx + 1].querySelector('.kg').value = s.peso;
+              rows[idx + 1].querySelector('.reps').value = s.reps;
+              rows[idx + 1].querySelector('.rpe').value = s.rpe;
+            }
+          });
+          break;
+        }
+      }
+    }
+
+    function salvaSessione(giorno) {
+      const tab = document.querySelector('.tab-content.active');
+      const eserciziCards = tab.querySelectorAll('.ex-card');
+      let sessione = { data: new Date().toISOString().slice(0,10), giorno: giorno, esercizi: [] };
+
+      eserciziCards.forEach(card => {
+        const nomeEx = card.getAttribute('data-ex');
+        let serieList = [];
+        const rows = card.querySelectorAll('tr');
+
+        for(let i = 1; i < rows.length; i++) {
+          const kg = parseFloat(rows[i].querySelector('.kg').value);
+          const reps = parseInt(rows[i].querySelector('.reps').value);
+          const rpe = parseFloat(rows[i].querySelector('.rpe').value) || 0;
+
+          if (kg && reps) {
+            serieList.push({ peso: kg, reps: reps, rpe: rpe });
+            checkPR(nomeEx, kg, reps);
+          }
+        }
+
+        if(serieList.length > 0) {
+          sessione.esercizi.push({ nome: nomeEx, serie: serieList });
+        }
+      });
+
+      if(sessione.esercizi.length > 0) {
+        forgeData.allenamenti.push(sessione);
+        salvaStato();
+        alert(`✅ Sessione ${giorno} Salvata!`);
+      } else {
+        alert("⚠️ Inserisci almeno una serie per salvare.");
+      }
+    }
+
+    // CHECK PERSONAL RECORD (PR)
+    function checkPR(nome, kg, reps) {
+      const rmTeorico = Math.round(reps === 1 ? kg : kg * (1 + reps / 30));
+      if (!forgeData.records[nome]) forgeData.records[nome] = { maxKg: 0, max1RM: 0 };
+
+      const rec = forgeData.records[nome];
+      if (kg > rec.maxKg || rmTeorico > rec.max1RM) {
+        rec.maxKg = Math.max(rec.maxKg, kg);
+        rec.max1RM = Math.max(rec.max1RM, rmTeorico);
+        salvaStato();
+        alert(`🏆 NUOVO RECORD per ${nome}! 1RM Stimato: ${rmTeorico} kg`);
+      }
+    }
+
+    // ==========================================
+    // 4. CALCOLO AFFATICAMENTO (ACWR)
+    // ==========================================
+    function calcolaACWR() {
+      const oggi = new Date();
+      let stress7 = 0, stress28 = 0;
+
+      forgeData.allenamenti.forEach(s => {
+        const diffDays = (oggi - new Date(s.data)) / (1000 * 3600 * 24);
+        let stressSessione = 0;
+        s.esercizi.forEach(e => {
+          e.serie.forEach(set => stressSessione += (set.peso * set.reps * (set.rpe || 8) / 10));
+        });
+
+        if (diffDays <= 7) stress7 += stressSessione;
+        if (diffDays <= 28) stress28 += stressSessione;
+      });
+
+      const ratio = (stress7 / ((stress28 / 4) || 1)).toFixed(2);
+      const el = document.getElementById('valAcwr');
+      
+      if (ratio > 1.4) el.innerHTML = `<span style="color:var(--accent-red);">🔴 ${ratio} - Rischio Sovrallenamento (Scarica)</span>`;
+      else if (ratio >= 0.8) el.innerHTML = `<span style="color:var(--accent-green);">🟢 ${ratio} - Carico Ottimale</span>`;
+      else el.innerHTML = `<span style="color:gold;">🟡 ${ratio} - Carico Basso / In Recupero</span>`;
+    }
+
+    // ==========================================
+    // 5. BACKUP & RIPRISTINO JSON
+    // ==========================================
+    function esportaBackup() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(forgeData));
+      const dl = document.createElement('a');
+      dl.setAttribute("href", dataStr);
+      dl.setAttribute("download", `forge_backup_${new Date().toISOString().slice(0,10)}.json`);
+      dl.click();
+    }
+
+    function importaBackup(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          forgeData = JSON.parse(e.target.result);
+          salvaStato();
+          alert("✅ Backup Ripristinato con Successo!");
+          location.reload();
+        } catch (err) {
+          alert("❌ File non valido.");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // ==========================================
+    // 6. CHART.JS INTEGRATION
+    // ==========================================
+    function initCharts() {
+      // Pie Chart
+      const ctxPie = document.getElementById('pieChart').getContext('2d');
+      new Chart(ctxPie, {
+        type: 'pie',
         data: {
-            labels: labels,
-            datasets: [{
-                data: data,
-                backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899']
-            }]
+          labels: ['Gamba/Push', 'Upper/Pull', 'Core', 'Braccia'],
+          datasets: [{ data: [40, 30, 15, 15], backgroundColor: ['#ff3b30', '#007aff', '#34c759', '#ff9500'] }]
         },
-        options: {
-            plugins: { legend: { labels: { color: '#f8fafc', font: { size: 10 } } } }
-        }
-    });
-}
+        options: { plugins: { legend: { labels: { color: 'white' } } } }
+      });
 
-// 2. SELETTORE & GRAFICO A LINEA (Progressione Storica)
-function updateSelectorAndLineChart() {
-    const selector = document.getElementById('chart-ex-selector');
-    selector.innerHTML = '';
-
-    const exercises = workoutData[currentDay].exercises;
-    exercises.forEach((ex, idx) => {
-        const opt = document.createElement('option');
-        opt.value = ex.name;
-        opt.innerText = ex.name;
-        selector.appendChild(opt);
-    });
-
-    updateLineChart();
-}
-
-function updateLineChart() {
-    const selectedEx = document.getElementById('chart-ex-selector').value;
-    const history = JSON.parse(localStorage.getItem('workout_history')) || [];
-
-    const labels = [];
-    const weights = [];
-    const volumes = [];
-    const rpes = [];
-
-    history.forEach(session => {
-        const exData = session.exercises.find(e => e.name === selectedEx);
-        if (exData && (exData.weight > 0 || exData.reps > 0)) {
-            labels.push(session.date);
-            weights.push(parseFloat(exData.weight) || 0);
-            volumes.push((parseFloat(exData.weight) || 0) * (parseFloat(exData.reps) || 0));
-            rpes.push(parseFloat(exData.rpe) || 0);
-        }
-    });
-
-    const ctx = document.getElementById('progressionLineChart').getContext('2d');
-    if (lineChartInstance) lineChartInstance.destroy();
-
-    // Se non ci sono dati storici salvati, mostra grafico d'esempio
-    const displayLabels = labels.length ? labels : ['S1', 'S2', 'S3', 'S4'];
-    const displayWeights = weights.length ? weights : [80, 85, 87.5, 90];
-    const displayRpe = rpes.length ? rpes : [7, 8, 8.5, 9];
-
-    lineChartInstance = new Chart(ctx, {
+      // Line Chart
+      const ctxLine = document.getElementById('lineChart').getContext('2d');
+      new Chart(ctxLine, {
         type: 'line',
         data: {
-            labels: displayLabels,
-            datasets: [
-                {
-                    label: 'Carico (kg)',
-                    data: displayWeights,
-                    borderColor: '#3b82f6',
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    tension: 0.3,
-                    yAxisID: 'y'
-                },
-                {
-                    label: 'Fatica / RPE',
-                    data: displayRpe,
-                    borderColor: '#ef4444',
-                    borderDash: [5, 5],
-                    tension: 0.3,
-                    yAxisID: 'y1'
-                }
-            ]
+          labels: ['Sett 1', 'Sett 2', 'Sett 3', 'Sett 4'],
+          datasets: [{
+            label: 'Progressione Strappo (kg)',
+            data: [60, 62.5, 65, 67.5],
+            borderColor: '#ff3b30',
+            fill: false
+          }]
         },
-        options: {
-            scales: {
-                x: { ticks: { color: '#94a3b8' } },
-                y: { type: 'linear', position: 'left', ticks: { color: '#3b82f6' }, title: { display: true, text: 'kg', color: '#3b82f6' } },
-                y1: { type: 'linear', position: 'right', ticks: { color: '#ef4444' }, grid: { drawOnChartArea: false }, title: { display: true, text: 'RPE', color: '#ef4444' } }
-            },
-            plugins: { legend: { labels: { color: '#f8fafc' } } }
-        }
-    });
-}
-
-// Avvio
-loadDay(1);
-</script>
-
+        options: { scales: { x: { ticks: { color: 'white' } }, y: { ticks: { color: 'white' } } } }
+      });
+    }
+  </script>
 </body>
 </html>
