@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forge - Workout Tracker</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text);
+            margin: 0;
+            padding: 15px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        h1 { margin: 0 0 10px 0; font-size: 1.5rem; color: #fff; }
+        .subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px; }
+
+        .nav-days {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .nav-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            white-space: nowrap;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .nav-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+
+        .section-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            margin-top: 0;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+            color: var(--accent);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .exercise-card {
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .ex-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .ex-title { font-weight: bold; font-size: 1rem; color: #fff; }
+        .ex-target { font-size: 0.8rem; color: var(--warning); background: #3b2a0c; padding: 2px 8px; border-radius: 4px; }
+        .ex-tech { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px; font-style: italic; }
+
+        .tracker-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-bottom: 2px;
+        }
+
+        input, textarea {
+            background: #1e293b;
+            border: 1px solid var(--border);
+            color: #fff;
+            padding: 6px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            transition: 0.2s;
+            min-width: 140px;
+        }
+
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-primary:hover { background: var(--accent-hover); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-danger { background: var(--danger); color: white; padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; }
+        .btn-secondary { background: var(--border); color: white; }
+
+        .summary-box {
+            background: #064e3b;
+            border: 1px solid #059669;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .add-form {
+            background: #0f172a;
+            border: 1px dashed var(--accent);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .add-form h4 { margin: 0 0 10px 0; color: var(--accent); }
+        .add-form .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        @media print {
+            .nav-days, .action-btns, button, .add-form { display: none !important; }
+            body { background: white; color: black; }
+            .section-card, .exercise-card, header { background: white; border: 1px solid #ccc; color: black; }
+            .ex-title, .section-title, h1 { color: black; }
+            input, textarea { border: 1px solid #ccc; background: #fff; color: black; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>FORGE - SCHEDA ALLENAMENTO</h1>
+        <div class="subtitle">Traccia le tue sessioni, aggiungi esercizi e monitora i carichi</div>
+    </header>
+
+    <div class="nav-days">
+        <button class="nav-btn active" onclick="loadDay(1)">Giorno 1</button>
+        <button class="nav-btn" onclick="loadDay(2)">Giorno 2</button>
+        <button class="nav-btn" onclick="loadDay(3)">Giorno 3</button>
+        <button class="nav-btn" onclick="loadDay(4)">Giorno 4</button>
+    </div>
+
+    <div class="section-card">
+        <div class="section-title">
+            <span id="day-title">Giorno 1</span>
+        </div>
+
+        <div id="exercises-container"></div>
+
+        <div class="add-form">
+            <h4>+ Aggiungi un nuovo esercizio a questa scheda</h4>
+            <div class="form-grid">
+                <input type="text" id="new-name" placeholder="Nome esercizio (es. Panca Inclinata)">
+                <input type="text" id="new-target" placeholder="Serie e Reps (es. 3x10)">
+                <input type="text" id="new-load" placeholder="Carico target (es. 60 kg / RPE 7)">
+                <input type="text" id="new-tech" placeholder="Note tecniche o esecuzione">
+            </div>
+            <button class="btn btn-success" style="width: 100%; padding: 8px;" onclick="addCustomExercise()">Aggiungi Esercizio</button>
+        </div>
+
+        <div style="margin-top: 15px;">
+            <label style="font-size: 0.85rem; color: var(--text-muted);">Note Sessione / Sensazioni:</label>
+            <textarea id="session-notes" rows="3" style="width: 100%; box-sizing: border-box; margin-top: 5px;" placeholder="Scrivi qui com'è andato l'allenamento..."></textarea>
+        </div>
+
+        <div class="summary-box">
+            <span><strong>Volume Totale Sollevato:</strong></span>
+            <span id="total-volume" style="font-size: 1.2rem; font-weight: bold;">0 kg</span>
+        </div>
+
+        <div class="action-btns">
+            <button class="btn btn-primary" onclick="saveSession()">Salva Allenamento</button>
+            <button class="btn btn-secondary" onclick="window.print()">Stampa / Esporta PDF</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const defaultData = {
+    1: {
+        title: "GIORNO 1: FOCUS SNATCH & CATENA POSTERIORE",
+        exercises: [
+            { name: "1. Core: Plank Frontale", target: "3 x 45\"-60\"", load: "Isometria", tech: "Glutei e addome in massima contrazione." },
+            { name: "2. Hang Snatch", target: "4 x 3", load: "65-75% 1RM", tech: "Partenza sopra il ginocchio; tripla estensione ed infilata veloce." },
+            { name: "3. Snatch Pull", target: "4 x 3", load: "85-90% 1RM", tech: "Schiena compatta, spinta con le gambe e scrollata esplosiva." },
+            { name: "4. Stacco Rumeno (RDL)", target: "3 x 8 / 6", load: "110 - 125 kg", tech: "Allungamento controllato di femorali e glutei." },
+            { name: "5. Alzate Laterali al Cavo", target: "3 x 12", load: "RPE 7-8", tech: "Stabilità della spalla negli incastri overhead." },
+            { name: "6. Stretching Finale", target: "8-10 min", load: "Allungamento", tech: "Stretching mirato per Femorali e Glutei." }
+        ]
+    },
+    2: {
+        title: "GIORNO 2: FOCUS CLEAN & SPINTA ORIZZONTALE",
+        exercises: [
+            { name: "1. Core: Hollow Body / Crunch", target: "3 x 15-20", load: "A corpo libero", tech: "Movimento controllato." },
+            { name: "2. Power Clean", target: "4 x 3", load: "75-80% 1RM", tech: "Ricezione sopra il parallelo." },
+            { name: "3. Clean Pull", target: "4 x 3", load: "90-100% 1RM", tech: "Mantenere la traiettoria verticale ed estensione potente." },
+            { name: "4. Panca Piana con Bilanciere", target: "3 x 8 / 6", load: "77.5 - 87.5 kg", tech: "Fermo al petto preciso ed esplosività." },
+            { name: "5. Leg Curl Unilaterale", target: "3 x 10-12", load: "RPE 7-8", tech: "Rafforza gli ischiocrurali." },
+            { name: "6. Stretching Finale", target: "8-10 min", load: "Allungamento", tech: "Stretching per Pettorali e Dorsali." }
+        ]
+    },
+    3: {
+        title: "GIORNO 3: FOCUS FORZA GAMBE & SPINTA VERTICALE",
+        exercises: [
+            { name: "1. Core: Side Plank", target: "3 x 35\"-45\" /lato", load: "Isometria", tech: "Tenuta laterale per stabilità bacino." },
+            { name: "2. Back Squat", target: "4 x 5 / 3", load: "105 - 115 kg", tech: "Accosciata profonda, risalita potente." },
+            { name: "3. Front Squat", target: "3 x 4", load: "75-80% 1RM", tech: "Gomiti alti, verticalità tronco." },
+            { name: "4. Strict Press / Military Press", target: "3 x 5", load: "Basso Volume", tech: "Forza pura spalle." },
+            { name: "5. Push Press", target: "3 x 4", load: "75-80% 1RM", tech: "Dip & drive esplosivo." },
+            { name: "6. Stretching Finale", target: "8-10 min", load: "Allungamento", tech: "Stretching per Quadricipiti e Spalle." }
+        ]
+    },
+    4: {
+        title: "GIORNO 4: FOCUS JERK, INCASTRI & UNILATERALE / DORSO",
+        exercises: [
+            { name: "1. Core: Leg Raises", target: "3 x 12-15", load: "A corpo libero", tech: "Flessione dell'anca controllata." },
+            { name: "2. Snatch Balance", target: "4 x 3", load: "60-70% 1RM", tech: "Infilata reattiva sotto la barra." },
+            { name: "3. Split Jerk da Supporto", target: "4 x 3", load: "75-85% 1RM", tech: "Split solido, bacino centrato." },
+            { name: "4. Squat Bulgaro", target: "3 x 8 per gamba", load: "RPE 7-8", tech: "Rafforza le singole gambe." },
+            { name: "5. Trazioni alla Sbarra Zavorrate", target: "3 x 6 / 4", load: "+15 -- +25 kg", tech: "Trazione completa fino al mento." },
+            { name: "6. Pulley Unilaterale", target: "3 x 10 per lato", load: "RPE 7-8", tech: "Lavoro di tirata orizzontale." },
+            { name: "7. Stretching Finale", target: "8-10 min", load: "Allungamento", tech: "Stretching per Flessori dell'Anca e Dorsali." }
+        ]
+    }
+};
+
+let workoutData = JSON.parse(localStorage.getItem('workout_custom_schema')) || defaultData;
+let currentDay = 1;
+
+function loadDay(dayNum) {
+    currentDay = dayNum;
+    
+    document.querySelectorAll('.nav-btn').forEach((btn, idx) => {
+        btn.classList.toggle('active', idx + 1 === dayNum);
+    });
+
+    const dayData = workoutData[dayNum];
+    document.getElementById('day-title').innerText = dayData.title;
+
+    renderExercises();
+    loadSavedSession();
+}
+
+function renderExercises() {
+    const container = document.getElementById('exercises-container');
+    container.innerHTML = '';
+
+    workoutData[currentDay].exercises.forEach((ex, idx) => {
+        const card = document.createElement('div');
+        card.className = 'exercise-card';
+        card.innerHTML = `
+            <div class="ex-header">
+                <span class="ex-title">${ex.name}</span>
+                <div>
+                    <span class="ex-target">${ex.target || ''} ${ex.load ? '| ' + ex.load : ''}</span>
+                    <button class="btn-danger" onclick="removeExercise(${idx})" style="margin-left: 8px;">Elimina</button>
+                </div>
+            </div>
+            ${ex.tech ? `<div class="ex-tech">${ex.tech}</div>` : ''}
+            <div class="tracker-grid">
+                <div class="input-group">
+                    <label>Reps Effettive</label>
+                    <input type="number" id="reps-${idx}" placeholder="es. 5" onchange="calculateVolume()">
+                </div>
+                <div class="input-group">
+                    <label>Carico (kg)</label>
+                    <input type="number" id="weight-${idx}" placeholder="es. 105" onchange="calculateVolume()">
+                </div>
+                <div class="input-group">
+                    <label>RPE / Sforzo</label>
+                    <input type="text" id="rpe-${idx}" placeholder="es. 8">
+                </div>
+            </div>
+            <div style="margin-top: 6px;">
+                <input type="text" id="note-${idx}" placeholder="Note per questo esercizio..." style="width: 100%; box-sizing: border-box;">
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+function addCustomExercise() {
+    const name = document.getElementById('new-name').value.trim();
+    const target = document.getElementById('new-target').value.trim();
+    const load = document.getElementById('new-load').value.trim();
+    const tech = document.getElementById('new-tech').value.trim();
+
+    if (!name) {
+        alert('Inserisci almeno il nome dell\'esercizio!');
+        return;
+    }
+
+    workoutData[currentDay].exercises.push({ name, target, load, tech });
+    localStorage.setItem('workout_custom_schema', JSON.stringify(workoutData));
+
+    document.getElementById('new-name').value = '';
+    document.getElementById('new-target').value = '';
+    document.getElementById('new-load').value = '';
+    document.getElementById('new-tech').value = '';
+
+    renderExercises();
+}
+
+function removeExercise(index) {
+    if (confirm('Vuoi davvero rimuovere questo esercizio dalla scheda?')) {
+        workoutData[currentDay].exercises.splice(index, 1);
+        localStorage.setItem('workout_custom_schema', JSON.stringify(workoutData));
+        renderExercises();
+    }
+}
+
+function calculateVolume() {
+    let totalVol = 0;
+    workoutData[currentDay].exercises.forEach((_, idx) => {
+        const reps = parseFloat(document.getElementById(`reps-${idx}`)?.value) || 0;
+        const weight = parseFloat(document.getElementById(`weight-${idx}`)?.value) || 0;
+        totalVol += reps * weight;
+    });
+
+    document.getElementById('total-volume').innerText = totalVol.toLocaleString() + ' kg';
+}
+
+function saveSession() {
+    const sessionData = {
+        date: new Date().toISOString(),
+        day: currentDay,
+        notes: document.getElementById('session-notes').value,
+        exercises: workoutData[currentDay].exercises.map((ex, idx) => ({
+            name: ex.name,
+            reps: document.getElementById(`reps-${idx}`)?.value || '',
+            weight: document.getElementById(`weight-${idx}`)?.value || '',
+            rpe: document.getElementById(`rpe-${idx}`)?.value || '',
+            note: document.getElementById(`note-${idx}`)?.value || ''
+        }))
+    };
+
+    localStorage.setItem(`workout_session_giorno_${currentDay}`, JSON.stringify(sessionData));
+    alert('Allenamento salvato con successo!');
+}
+
+function loadSavedSession() {
+    const saved = localStorage.getItem(`workout_session_giorno_${currentDay}`);
+    if (!saved) return;
+
+    try {
+        const data = JSON.parse(saved);
+        if (data.notes) document.getElementById('session-notes').value = data.notes;
+        data.exercises.forEach((ex, idx) => {
+            if (document.getElementById(`reps-${idx}`)) document.getElementById(`reps-${idx}`).value = ex.reps || '';
+            if (document.getElementById(`weight-${idx}`)) document.getElementById(`weight-${idx}`).value = ex.weight || '';
+            if (document.getElementById(`rpe-${idx}`)) document.getElementById(`rpe-${idx}`).value = ex.rpe || '';
+            if (document.getElementById(`note-${idx}`)) document.getElementById(`note-${idx}`).value = ex.note || '';
+        });
+        calculateVolume();
+    } catch(e) {
+        console.error("Errore nel caricamento dei dati salvati", e);
+    }
+}
+
+loadDay(1);
+</script>
+
+</body>
+</html>
