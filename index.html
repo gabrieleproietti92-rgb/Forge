@@ -53,7 +53,6 @@
     .ex-card { background: #262628; border-radius: 10px; padding: 12px; margin-bottom: 12px; position: relative; }
     .ex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 5px; }
     
-    /* PULSANTE ROSSO YOUTUBE */
     .btn-yt { background: #ff0000; color: white; border: none; padding: 5px 10px; border-radius: 6px; font-size: 11px; text-decoration: none; font-weight: bold; display: inline-flex; align-items: center; gap: 3px; }
     .btn-del { background: #ff453a22; color: #ff453a; border: 1px solid #ff453a; padding: 4px 8px; border-radius: 6px; font-size: 11px; cursor: pointer; }
     
@@ -123,7 +122,7 @@
   <div id="profilo" class="tab-content">
     <div class="card">
       <h3>👤 Profilo Utente & Anamnesi</h3>
-      <div id="displayAnamnesi"></div>
+      <div id="displayAnamnesi">Nessun dato inserito.</div>
       <button class="btn-secondary btn" onclick="apriModalAnamnesi()">✏️ Modifica Anamnesi</button>
     </div>
 
@@ -211,11 +210,11 @@
 
   <script>
     const schedeBase = {
-      g1: [{ nome: "Strappo (Snatch)", yt: "https://www.youtube.com/results?search_query=snatch+technique", sets: 3, 1rm: 80 },
-           { nome: "Back Squat", yt: "https://www.youtube.com/results?search_query=back+squat+technique", sets: 3, 1rm: 100 }],
-      g2: [{ nome: "Slancio (Clean & Jerk)", yt: "https://www.youtube.com/results?search_query=clean+and+jerk", sets: 3, 1rm: 90 }],
-      g3: [{ nome: "Stacco da Terra", yt: "https://www.youtube.com/results?search_query=deadlift+technique", sets: 3, 1rm: 140 }],
-      g4: [{ nome: "Lento Avanti", yt: "https://www.youtube.com/results?search_query=overhead+press", sets: 3, 1rm: 60 }]
+      g1: [{ nome: "Strappo (Snatch)", yt: "https://www.youtube.com/results?search_query=snatch+technique", sets: 3, "1rm": 80 },
+           { nome: "Back Squat", yt: "https://www.youtube.com/results?search_query=back+squat+technique", sets: 3, "1rm": 100 }],
+      g2: [{ nome: "Slancio (Clean & Jerk)", yt: "https://www.youtube.com/results?search_query=clean+and+jerk", sets: 3, "1rm": 90 }],
+      g3: [{ nome: "Stacco da Terra", yt: "https://www.youtube.com/results?search_query=deadlift+technique", sets: 3, "1rm": 140 }],
+      g4: [{ nome: "Lento Avanti", yt: "https://www.youtube.com/results?search_query=overhead+press", sets: 3, "1rm": 60 }]
     };
 
     let forgeData = JSON.parse(localStorage.getItem('forge_v3_data')) || {
@@ -235,20 +234,22 @@
       localStorage.setItem('forge_v3_data', JSON.stringify(forgeData));
     }
 
+    // AVVIO SICURO DELL'APP
     window.onload = function() {
+      renderSchede();
+      aggiornaProfilo();
       if (!forgeData.anamnesi) {
         apriModalAnamnesi();
-      } else {
-        aggiornaProfilo();
       }
-      renderSchede();
     };
 
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-      document.getElementById(tabId).classList.add('active');
-      event.target.classList.add('active');
+      
+      const targetContent = document.getElementById(tabId);
+      if(targetContent) targetContent.classList.add('active');
+      if(event && event.target) event.target.classList.add('active');
       
       if(tabId === 'profilo') aggiornaProfilo();
       if(tabId === 'stats') aggiornaGrafici();
@@ -258,6 +259,8 @@
     function renderSchede() {
       ['g1', 'g2', 'g3', 'g4'].forEach(gKey => {
         const container = document.getElementById(gKey);
+        if(!container) return;
+
         let html = `<div class="card"><h3>🏋️ Sessione ${gKey.toUpperCase()}</h3>`;
 
         (forgeData.schede[gKey] || []).forEach((ex, exIdx) => {
@@ -476,7 +479,7 @@
         <p><strong>Note/Infortuni:</strong> ${ana.infortuni}</p>
       `;
 
-      const st = forgeData.storicoPeso;
+      const st = forgeData.storicoPeso || [];
       if(st.length > 0) {
         st.sort((a,b) => new Date(a.data) - new Date(b.data));
         const pesoAttuale = st[st.length - 1].peso;
@@ -508,7 +511,7 @@
       const oggi = new Date();
       let stress7 = 0, stress28 = 0;
 
-      forgeData.allenamenti.forEach(s => {
+      (forgeData.allenamenti || []).forEach(s => {
         const diffDays = (oggi - new Date(s.data)) / (1000 * 3600 * 24);
         let stressSessione = 0;
         s.esercizi.forEach(e => {
@@ -521,6 +524,7 @@
 
       const ratio = (stress7 / ((stress28 / 4) || 1)).toFixed(2);
       const el = document.getElementById('valAcwr');
+      if(!el) return;
       
       if (ratio > 1.4) el.innerHTML = `<span style="color:var(--accent-red);">🔴 ${ratio} - Rischio Sovrallenamento</span>`;
       else if (ratio >= 0.8) el.innerHTML = `<span style="color:var(--accent-green);">🟢 ${ratio} - Carico Ottimale</span>`;
@@ -552,12 +556,10 @@
       reader.readAsText(file);
     }
 
-    // GRAFICI CON DATI REALI
     function aggiornaGrafici() {
-      // 1. Calcola Volume per Giorno (Pie Chart)
       let volG1 = 0, volG2 = 0, volG3 = 0, volG4 = 0;
       
-      forgeData.allenamenti.forEach(s => {
+      (forgeData.allenamenti || []).forEach(s => {
         let volSessione = 0;
         s.esercizi.forEach(e => e.serie.forEach(st => volSessione += (st.peso * st.reps)));
         if (s.giorno === 'G1' || s.giorno === 'GIORNO 1') volG1 += volSessione;
@@ -580,9 +582,8 @@
         options: { plugins: { legend: { labels: { color: 'white' } } } }
       });
 
-      // 2. Storico Carichi (Line Chart)
-      const dateLabels = forgeData.allenamenti.slice(-6).map(s => s.data);
-      const dataCarichi = forgeData.allenamenti.slice(-6).map(s => {
+      const dateLabels = (forgeData.allenamenti || []).slice(-6).map(s => s.data);
+      const dataCarichi = (forgeData.allenamenti || []).slice(-6).map(s => {
         let maxS = 0;
         s.esercizi.forEach(e => e.serie.forEach(st => maxS = Math.max(maxS, st.peso)));
         return maxS;
