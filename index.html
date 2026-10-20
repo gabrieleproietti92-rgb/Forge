@@ -5,12 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Forge - Weightlifting Tracker</title>
   
-  <!-- iOS / PWA Meta Tags -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Forge">
   
-  <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
   <style>
@@ -26,56 +24,59 @@
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background-color: var(--bg-color);
       color: var(--text-main);
       margin: 0;
       padding: 15px;
-      padding-bottom: 80px;
+      padding-bottom: 90px;
     }
 
     h1, h2, h3, h4 { margin: 0 0 10px 0; }
-    .header { text-align: center; margin-bottom: 20px; }
-    .header h1 { color: var(--accent-red); font-size: 28px; letter-spacing: 1px; }
+    .header { text-align: center; margin-bottom: 15px; }
+    .header h1 { color: var(--accent-red); font-size: 28px; letter-spacing: 1px; margin: 0; }
 
     /* TAB NAVIGAZIONE */
-    .tabs { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
+    .tabs { display: flex; gap: 6px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
     .tab-btn {
-      flex: 1; min-width: 70px; background: var(--card-bg); color: var(--text-muted);
+      flex: 1; min-width: 60px; background: var(--card-bg); color: var(--text-muted);
       border: 1px solid var(--border-color); padding: 10px; border-radius: 10px;
-      font-weight: bold; cursor: pointer; text-align: center; font-size: 14px;
+      font-weight: bold; cursor: pointer; text-align: center; font-size: 13px;
     }
     .tab-btn.active { background: var(--accent-red); color: white; border-color: var(--accent-red); }
 
-    /* SCHEDE & CARD */
     .card { background: var(--card-bg); border-radius: 14px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border-color); }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
     /* ESERCIZI & TABELLE */
-    .ex-card { background: #262628; border-radius: 10px; padding: 12px; margin-bottom: 12px; }
-    .ex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-    .btn-yt { background: var(--accent-red); color: white; border: none; padding: 4px 8px; border-radius: 6px; font-size: 12px; text-decoration: none; font-weight: bold; }
+    .ex-card { background: #262628; border-radius: 10px; padding: 12px; margin-bottom: 12px; position: relative; }
+    .ex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 5px; }
     
+    /* PULSANTE ROSSO YOUTUBE */
+    .btn-yt { background: #ff0000; color: white; border: none; padding: 5px 10px; border-radius: 6px; font-size: 11px; text-decoration: none; font-weight: bold; display: inline-flex; align-items: center; gap: 3px; }
+    .btn-del { background: #ff453a22; color: #ff453a; border: 1px solid #ff453a; padding: 4px 8px; border-radius: 6px; font-size: 11px; cursor: pointer; }
+    
+    .prog-box { background: #1a1a1c; padding: 8px; border-radius: 8px; margin-bottom: 8px; border: 1px dashed var(--border-color); }
+    .prog-box select, .prog-box input { width: 48%; display: inline-block; font-size: 11px; padding: 4px; }
+
     table { width: 100%; border-collapse: collapse; margin-top: 8px; }
-    th { color: var(--text-muted); font-size: 12px; text-align: left; padding-bottom: 5px; }
-    td { padding: 4px 2px; }
+    th { color: var(--text-muted); font-size: 11px; text-align: center; padding-bottom: 5px; }
+    td { padding: 4px 2px; text-align: center; }
     input[type="number"], input[type="text"] {
-      width: 90%; background: #121212; border: 1px solid var(--border-color);
+      width: 85%; background: #121212; border: 1px solid var(--border-color);
       color: white; padding: 8px; border-radius: 6px; text-align: center; font-size: 14px;
     }
     
-    /* PULSANTI GENERALI */
-    .btn { width: 100%; background: var(--accent-red); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: bold; font-size: 16px; margin-top: 10px; cursor: pointer; }
+    .btn { width: 100%; background: var(--accent-red); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: bold; font-size: 15px; margin-top: 10px; cursor: pointer; }
     .btn-secondary { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-main); }
     .btn-blue { background: var(--accent-blue); }
     .btn-green { background: var(--accent-green); }
 
-    /* WIDGET METRICHE & PROFILO */
     .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0; }
     .stat-box { background: #121212; padding: 10px; border-radius: 8px; text-align: center; }
     .stat-label { font-size: 11px; color: var(--text-muted); display: block; }
-    .stat-val { font-size: 16px; font-weight: bold; margin-top: 4px; }
+    .stat-val { font-size: 15px; font-weight: bold; margin-top: 4px; }
 
     /* MODALI */
     .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 1000; }
@@ -83,143 +84,47 @@
     .form-group { margin-bottom: 12px; }
     .form-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
     select, textarea { width: 100%; background: #121212; border: 1px solid var(--border-color); color: white; padding: 8px; border-radius: 6px; box-sizing: border-box; }
-
-    .badge-pr { background: gold; color: black; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-left: 5px; }
   </style>
 </head>
 <body>
 
   <div class="header">
-    <h1>FORGE v3.0</h1>
+    <h1>FORGE v3.3</h1>
   </div>
 
-  <!-- NAVIGATION TABS -->
   <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('giorno1')">G1</button>
-    <button class="tab-btn" onclick="switchTab('giorno2')">G2</button>
-    <button class="tab-btn" onclick="switchTab('giorno3')">G3</button>
-    <button class="tab-btn" onclick="switchTab('giorno4')">G4</button>
+    <button class="tab-btn active" onclick="switchTab('g1')">G1</button>
+    <button class="tab-btn" onclick="switchTab('g2')">G2</button>
+    <button class="tab-btn" onclick="switchTab('g3')">G3</button>
+    <button class="tab-btn" onclick="switchTab('g4')">G4</button>
     <button class="tab-btn" onclick="switchTab('stats')">📊 Stats</button>
     <button class="tab-btn" onclick="switchTab('profilo')">👤 Profilo</button>
   </div>
 
-  <!-- SCHEDA GIORNO 1 -->
-  <div id="giorno1" class="tab-content active">
-    <div class="card">
-      <h3>🏋️ Sessione Giorno 1 - Leg Push / Snatch Focus</h3>
-      
-      <!-- Esercizio 1 -->
-      <div class="ex-card" data-ex="Strappo">
-        <div class="ex-header">
-          <strong>1. Strappo (Snatch)</strong>
-          <a href="https://www.youtube.com/results?search_query=snatch+technique" target="_blank" class="btn-yt">▶ Video</a>
-        </div>
-        <button class="btn-secondary" style="font-size: 12px; padding: 5px;" onclick="autofillEsercizio(this)">🔄 Auto-fill Ultima Volta</button>
-        <table>
-          <tr><th>SET</th><th>KG</th><th>REPS</th><th>RPE</th></tr>
-          <tr><td>1</td><td><input type="number" class="kg" placeholder="0"></td><td><input type="number" class="reps" placeholder="0"></td><td><input type="number" class="rpe" placeholder="0"></td></tr>
-          <tr><td>2</td><td><input type="number" class="kg" placeholder="0"></td><td><input type="number" class="reps" placeholder="0"></td><td><input type="number" class="rpe" placeholder="0"></td></tr>
-          <tr><td>3</td><td><input type="number" class="kg" placeholder="0"></td><td><input type="number" class="reps" placeholder="0"></td><td><input type="number" class="rpe" placeholder="0"></td></tr>
-        </table>
-      </div>
+  <!-- GIORNI DI ALLENAMENTO -->
+  <div id="g1" class="tab-content active"></div>
+  <div id="g2" class="tab-content"></div>
+  <div id="g3" class="tab-content"></div>
+  <div id="g4" class="tab-content"></div>
 
-      <!-- Esercizio 2 -->
-      <div class="ex-card" data-ex="Back Squat">
-        <div class="ex-header">
-          <strong>2. Back Squat</strong>
-          <a href="https://www.youtube.com/results?search_query=back+squat+technique" target="_blank" class="btn-yt">▶ Video</a>
-        </div>
-        <button class="btn-secondary" style="font-size: 12px; padding: 5px;" onclick="autofillEsercizio(this)">🔄 Auto-fill Ultima Volta</button>
-        <table>
-          <tr><th>SET</th><th>KG</th><th>REPS</th><th>RPE</th></tr>
-          <tr><td>1</td><td><input type="number" class="kg" placeholder="0"></td><td><input type="number" class="reps" placeholder="0"></td><td><input type="number" class="rpe" placeholder="0"></td></tr>
-          <tr><td>2</td><td><input type="number" class="kg" placeholder="0"></td><td><input type="number" class="reps" placeholder="0"></td><td><input type="number" class="rpe" placeholder="0"></td></tr>
-          <tr><td>3</td><td><input type="number" class="kg" placeholder="0"></td><td><input type="number" class="reps" placeholder="0"></td><td><input type="number" class="rpe" placeholder="0"></td></tr>
-        </table>
-      </div>
-
-      <button class="btn" onclick="salvaSessione('Giorno 1')">💾 Salva Allenamento</button>
-    </div>
-  </div>
-
-  <!-- SCHEDA GIORNO 2 -->
-  <div id="giorno2" class="tab-content">
-    <div class="card">
-      <h3>🏋️ Sessione Giorno 2 - Upper / Clean Focus</h3>
-      <div class="ex-card" data-ex="Slancio">
-        <div class="ex-header">
-          <strong>1. Slancio (Clean & Jerk)</strong>
-          <a href="https://www.youtube.com/results?search_query=clean+and+jerk" target="_blank" class="btn-yt">▶ Video</a>
-        </div>
-        <button class="btn-secondary" style="font-size: 12px; padding: 5px;" onclick="autofillEsercizio(this)">🔄 Auto-fill Ultima Volta</button>
-        <table>
-          <tr><th>SET</th><th>KG</th><th>REPS</th><th>RPE</th></tr>
-          <tr><td>1</td><td><input type="number" class="kg"></td><td><input type="number" class="reps"></td><td><input type="number" class="rpe"></td></tr>
-          <tr><td>2</td><td><input type="number" class="kg"></td><td><input type="number" class="reps"></td><td><input type="number" class="rpe"></td></tr>
-        </table>
-      </div>
-      <button class="btn" onclick="salvaSessione('Giorno 2')">💾 Salva Allenamento</button>
-    </div>
-  </div>
-
-  <!-- SCHEDA GIORNO 3 -->
-  <div id="giorno3" class="tab-content">
-    <div class="card">
-      <h3>🏋️ Sessione Giorno 3 - Pull / Deadlift Focus</h3>
-      <div class="ex-card" data-ex="Stacco da Terra">
-        <div class="ex-header">
-          <strong>1. Stacco da Terra</strong>
-          <a href="https://www.youtube.com/results?search_query=deadlift" target="_blank" class="btn-yt">▶ Video</a>
-        </div>
-        <button class="btn-secondary" style="font-size: 12px; padding: 5px;" onclick="autofillEsercizio(this)">🔄 Auto-fill Ultima Volta</button>
-        <table>
-          <tr><th>SET</th><th>KG</th><th>REPS</th><th>RPE</th></tr>
-          <tr><td>1</td><td><input type="number" class="kg"></td><td><input type="number" class="reps"></td><td><input type="number" class="rpe"></td></tr>
-          <tr><td>2</td><td><input type="number" class="kg"></td><td><input type="number" class="reps"></td><td><input type="number" class="rpe"></td></tr>
-        </table>
-      </div>
-      <button class="btn" onclick="salvaSessione('Giorno 3')">💾 Salva Allenamento</button>
-    </div>
-  </div>
-
-  <!-- SCHEDA GIORNO 4 -->
-  <div id="giorno4" class="tab-content">
-    <div class="card">
-      <h3>🏋️ Sessione Giorno 4 - Accessory & Volume</h3>
-      <div class="ex-card" data-ex="Lento Avanti">
-        <div class="ex-header">
-          <strong>1. Lento Avanti (Strict Press)</strong>
-          <a href="https://www.youtube.com/results?search_query=overhead+press" target="_blank" class="btn-yt">▶ Video</a>
-        </div>
-        <button class="btn-secondary" style="font-size: 12px; padding: 5px;" onclick="autofillEsercizio(this)">🔄 Auto-fill Ultima Volta</button>
-        <table>
-          <tr><th>SET</th><th>KG</th><th>REPS</th><th>RPE</th></tr>
-          <tr><td>1</td><td><input type="number" class="kg"></td><td><input type="number" class="reps"></td><td><input type="number" class="rpe"></td></tr>
-          <tr><td>2</td><td><input type="number" class="kg"></td><td><input type="number" class="reps"></td><td><input type="number" class="rpe"></td></tr>
-        </table>
-      </div>
-      <button class="btn" onclick="salvaSessione('Giorno 4')">💾 Salva Allenamento</button>
-    </div>
-  </div>
-
-  <!-- SCHEDA STATISTICHE -->
+  <!-- STATISTICHE -->
   <div id="stats" class="tab-content">
     <div class="card">
-      <h3>📊 Distribuzione Muscolare</h3>
+      <h3>📊 Distribuzione Volume per Giorno</h3>
       <canvas id="pieChart"></canvas>
     </div>
     <div class="card">
-      <h3>📈 Progressioni Carichi & RPE</h3>
+      <h3>📈 Storico Carichi & Progressioni</h3>
       <canvas id="lineChart"></canvas>
     </div>
   </div>
 
-  <!-- SCHEDA PROFILO & BACKUP -->
+  <!-- PROFILO & BACKUP -->
   <div id="profilo" class="tab-content">
     <div class="card">
       <h3>👤 Profilo Utente & Anamnesi</h3>
       <div id="displayAnamnesi"></div>
-      <button class="btn-secondary" onclick="apriModalAnamnesi()" style="margin-top:10px;">✏️ Modifica Anamnesi</button>
+      <button class="btn-secondary btn" onclick="apriModalAnamnesi()">✏️ Modifica Anamnesi</button>
     </div>
 
     <div class="card">
@@ -305,15 +210,26 @@
   </div>
 
   <script>
-    // ==========================================
-    // 1. STATO GLOBALE E INIZIALIZZAZIONE
-    // ==========================================
+    const schedeBase = {
+      g1: [{ nome: "Strappo (Snatch)", yt: "https://www.youtube.com/results?search_query=snatch+technique", sets: 3, 1rm: 80 },
+           { nome: "Back Squat", yt: "https://www.youtube.com/results?search_query=back+squat+technique", sets: 3, 1rm: 100 }],
+      g2: [{ nome: "Slancio (Clean & Jerk)", yt: "https://www.youtube.com/results?search_query=clean+and+jerk", sets: 3, 1rm: 90 }],
+      g3: [{ nome: "Stacco da Terra", yt: "https://www.youtube.com/results?search_query=deadlift+technique", sets: 3, 1rm: 140 }],
+      g4: [{ nome: "Lento Avanti", yt: "https://www.youtube.com/results?search_query=overhead+press", sets: 3, 1rm: 60 }]
+    };
+
     let forgeData = JSON.parse(localStorage.getItem('forge_v3_data')) || {
       anamnesi: null,
       storicoPeso: [],
       allenamenti: [],
-      records: {}
+      records: {},
+      schede: schedeBase
     };
+
+    if(!forgeData.schede) forgeData.schede = schedeBase;
+
+    let pieChartObj = null;
+    let lineChartObj = null;
 
     function salvaStato() {
       localStorage.setItem('forge_v3_data', JSON.stringify(forgeData));
@@ -325,21 +241,196 @@
       } else {
         aggiornaProfilo();
       }
-      initCharts();
+      renderSchede();
     };
 
-    // TAB SWITCHER
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
       document.getElementById(tabId).classList.add('active');
       event.target.classList.add('active');
+      
       if(tabId === 'profilo') aggiornaProfilo();
+      if(tabId === 'stats') aggiornaGrafici();
     }
 
-    // ==========================================
-    // 2. ANAMNESI & PROFILO
-    // ==========================================
+    // RENDER SCHEDE
+    function renderSchede() {
+      ['g1', 'g2', 'g3', 'g4'].forEach(gKey => {
+        const container = document.getElementById(gKey);
+        let html = `<div class="card"><h3>🏋️ Sessione ${gKey.toUpperCase()}</h3>`;
+
+        (forgeData.schede[gKey] || []).forEach((ex, exIdx) => {
+          const rmVal = ex["1rm"] || (forgeData.records[ex.nome] ? forgeData.records[ex.nome].max1RM : 100);
+
+          html += `
+            <div class="ex-card" data-ex="${ex.nome}">
+              <div class="ex-header">
+                <strong>${exIdx + 1}. ${ex.nome} (1RM: ${rmVal}kg)</strong>
+                <div>
+                  ${ex.yt ? `<a href="${ex.yt}" target="_blank" class="btn-yt">▶ YouTube</a>` : ''}
+                  <button class="btn-del" onclick="eliminaEsercizio('${gKey}', ${exIdx})">❌ Elimina</button>
+                </div>
+              </div>
+
+              <div class="prog-box">
+                <select id="prog_${gKey}_${exIdx}">
+                  <option value="none">Progressione: Nessuna (Libero)</option>
+                  <option value="lineare">1. Lineare 8 Settimane (80% -> 115%)</option>
+                  <option value="onde">2. Onde Weightlifting (Accumulo/Intensità)</option>
+                  <option value="piramidale">3. Piramidale Invertito</option>
+                  <option value="fasi">4. In Fasi (4s Vol + 4s Peak)</option>
+                </select>
+                <input type="number" id="sett_${gKey}_${exIdx}" placeholder="Sett. (1-8)" min="1" max="8" value="1">
+                <button class="btn-secondary" style="font-size: 10px; width: 100%; margin-top: 4px;" onclick="calcolaEApplicaProgressione('${gKey}', ${exIdx}, ${rmVal})">⚡ Calcola Carichi Target</button>
+              </div>
+
+              <button class="btn-secondary" style="font-size: 11px; padding: 4px; margin-bottom: 5px;" onclick="autofillEsercizio(this)">🔄 Auto-fill Ultima Volta</button>
+              <table id="tbl_${gKey}_${exIdx}">
+                <tr><th>SET</th><th>KG</th><th>REPS</th><th>RPE</th></tr>`;
+          
+          for(let i = 0; i < (ex.sets || 3); i++) {
+            html += `<tr><td>${i+1}</td><td><input type="number" class="kg"></td><td><input type="number" class="reps"></td><td><input type="number" class="rpe"></td></tr>`;
+          }
+
+          html += `</table>
+              <button class="btn-secondary" style="font-size: 11px; padding: 4px; width: 100%; margin-top: 5px;" onclick="aggiungiSerie('${gKey}', ${exIdx})">+ Aggiungi Serie</button>
+            </div>`;
+        });
+
+        html += `
+          <button class="btn btn-blue" onclick="aggiungiEsercizioPrompt('${gKey}')">+ Aggiungi Nuovo Esercizio</button>
+          <button class="btn" onclick="salvaSessione('${gKey}')">💾 Salva Allenamento</button>
+        </div>`;
+
+        container.innerHTML = html;
+      });
+    }
+
+    // CALCOLO PROGRESSIONI
+    function calcolaEApplicaProgressione(gKey, exIdx, rmVal) {
+      const progTipo = document.getElementById(`prog_${gKey}_${exIdx}`).value;
+      const sett = parseInt(document.getElementById(`sett_${gKey}_${exIdx}`).value) || 1;
+
+      if(progTipo === "none") return;
+
+      const card = document.querySelectorAll(`#${gKey} .ex-card`)[exIdx];
+      const rows = card.querySelectorAll('tr');
+
+      let pct = 0.80;
+
+      if(progTipo === "lineare") pct = 0.80 + ((sett - 1) * 0.05);
+      else if(progTipo === "onde") pct = [0.75, 0.82, 0.78, 0.85, 0.82, 0.90, 0.88, 1.05][sett - 1] || 0.80;
+      else if(progTipo === "piramidale") pct = 0.85 + ((sett - 1) * 0.03);
+      else if(progTipo === "fasi") pct = sett <= 4 ? (0.70 + (sett * 0.025)) : (0.85 + ((sett - 4) * 0.075));
+
+      const targetKg = Math.round((rmVal * pct) / 2.5) * 2.5;
+
+      for(let i = 1; i < rows.length; i++) {
+        const factor = progTipo === "piramidale" ? (1 - (i - 1) * 0.05) : 1;
+        rows[i].querySelector('.kg').value = Math.round((targetKg * factor) / 2.5) * 2.5;
+        rows[i].querySelector('.reps').value = sett > 6 ? 2 : (sett > 4 ? 3 : 5);
+        rows[i].querySelector('.rpe').value = Math.min(10, 7 + Math.floor(sett / 2));
+      }
+
+      alert(`⚡ Applicata Progressione (Sett. ${sett}): Target ${targetKg}kg (${Math.round(pct*100)}% 1RM)`);
+    }
+
+    function aggiungiEsercizioPrompt(gKey) {
+      const nome = prompt("Nome del nuovo esercizio:");
+      if(!nome) return;
+      const rm = prompt("Massimale (1RM) attuale in kg:") || "100";
+      const yt = prompt("Link YouTube del video (opzionale):") || `https://www.youtube.com/results?search_query=${encodeURIComponent(nome)}`;
+      
+      if(!forgeData.schede[gKey]) forgeData.schede[gKey] = [];
+      forgeData.schede[gKey].push({ nome: nome, yt: yt, sets: 3, "1rm": parseFloat(rm) });
+      salvaStato();
+      renderSchede();
+    }
+
+    function eliminaEsercizio(gKey, exIdx) {
+      if(confirm("Rimuovere l'esercizio dalla scheda?")) {
+        forgeData.schede[gKey].splice(exIdx, 1);
+        salvaStato();
+        renderSchede();
+      }
+    }
+
+    function aggiungiSerie(gKey, exIdx) {
+      forgeData.schede[gKey][exIdx].sets = (forgeData.schede[gKey][exIdx].sets || 3) + 1;
+      salvaStato();
+      renderSchede();
+    }
+
+    function autofillEsercizio(btn) {
+      const card = btn.closest('.ex-card');
+      const nomeEx = card.getAttribute('data-ex');
+      
+      for (let i = forgeData.allenamenti.length - 1; i >= 0; i--) {
+        const es = forgeData.allenamenti[i].esercizi.find(e => e.nome === nomeEx);
+        if (es) {
+          const rows = card.querySelectorAll('tr');
+          es.serie.forEach((s, idx) => {
+            if (rows[idx + 1]) {
+              rows[idx + 1].querySelector('.kg').value = s.peso;
+              rows[idx + 1].querySelector('.reps').value = s.reps;
+              rows[idx + 1].querySelector('.rpe').value = s.rpe;
+            }
+          });
+          break;
+        }
+      }
+    }
+
+    function salvaSessione(gKey) {
+      const tab = document.getElementById(gKey);
+      const eserciziCards = tab.querySelectorAll('.ex-card');
+      let sessione = { data: new Date().toISOString().slice(0,10), giorno: gKey.toUpperCase(), esercizi: [] };
+
+      eserciziCards.forEach(card => {
+        const nomeEx = card.getAttribute('data-ex');
+        let serieList = [];
+        const rows = card.querySelectorAll('tr');
+
+        for(let i = 1; i < rows.length; i++) {
+          const kg = parseFloat(rows[i].querySelector('.kg').value);
+          const reps = parseInt(rows[i].querySelector('.reps').value);
+          const rpe = parseFloat(rows[i].querySelector('.rpe').value) || 0;
+
+          if (kg && reps) {
+            serieList.push({ peso: kg, reps: reps, rpe: rpe });
+            checkPR(nomeEx, kg, reps);
+          }
+        }
+
+        if(serieList.length > 0) {
+          sessione.esercizi.push({ nome: nomeEx, serie: serieList });
+        }
+      });
+
+      if(sessione.esercizi.length > 0) {
+        forgeData.allenamenti.push(sessione);
+        salvaStato();
+        alert(`✅ Allenamento ${gKey.toUpperCase()} Salvato!`);
+      } else {
+        alert("⚠️ Inserisci almeno una serie per salvare.");
+      }
+    }
+
+    function checkPR(nome, kg, reps) {
+      const rmTeorico = Math.round(reps === 1 ? kg : kg * (1 + reps / 30));
+      if (!forgeData.records[nome]) forgeData.records[nome] = { maxKg: 0, max1RM: 0 };
+
+      const rec = forgeData.records[nome];
+      if (kg > rec.maxKg || rmTeorico > rec.max1RM) {
+        rec.maxKg = Math.max(rec.maxKg, kg);
+        rec.max1RM = Math.max(rec.max1RM, rmTeorico);
+        salvaStato();
+        alert(`🏆 NUOVO RECORD per ${nome}! 1RM Stimato: ${rmTeorico} kg`);
+      }
+    }
+
+    // PROFILO & BACKUP
     function apriModalAnamnesi() { document.getElementById('modalAnamnesi').style.display = 'flex'; }
     
     function salvaAnamnesi(e) {
@@ -396,11 +487,9 @@
         const dInizio = (pesoAttuale - pesoIniziale).toFixed(1);
         document.getElementById('valDiffInizio').textContent = `${dInizio > 0 ? '+':''}${dInizio} kg`;
 
-        // Diff 30 giorni
         const d30 = (pesoAttuale - (st[Math.max(0, st.length - 4)].peso)).toFixed(1);
         document.getElementById('valDiff30gg').textContent = `${d30 > 0 ? '+':''}${d30} kg`;
 
-        // Wilks Calculation
         calcolaWilks(pesoAttuale);
       }
       calcolaACWR();
@@ -415,82 +504,6 @@
       document.getElementById('valWilks').textContent = `${Math.round(tot1RM * coeff)} pts`;
     }
 
-    // ==========================================
-    // 3. AUTO-FILL & SALVATAGGIO ALLENAMENTO
-    // ==========================================
-    function autofillEsercizio(btn) {
-      const card = btn.closest('.ex-card');
-      const nomeEx = card.getAttribute('data-ex');
-      
-      // Trova l'ultimo allenamento registrato
-      for (let i = forgeData.allenamenti.length - 1; i >= 0; i--) {
-        const es = forgeData.allenamenti[i].esercizi.find(e => e.nome === nomeEx);
-        if (es) {
-          const rows = card.querySelectorAll('tr');
-          es.serie.forEach((s, idx) => {
-            if (rows[idx + 1]) {
-              rows[idx + 1].querySelector('.kg').value = s.peso;
-              rows[idx + 1].querySelector('.reps').value = s.reps;
-              rows[idx + 1].querySelector('.rpe').value = s.rpe;
-            }
-          });
-          break;
-        }
-      }
-    }
-
-    function salvaSessione(giorno) {
-      const tab = document.querySelector('.tab-content.active');
-      const eserciziCards = tab.querySelectorAll('.ex-card');
-      let sessione = { data: new Date().toISOString().slice(0,10), giorno: giorno, esercizi: [] };
-
-      eserciziCards.forEach(card => {
-        const nomeEx = card.getAttribute('data-ex');
-        let serieList = [];
-        const rows = card.querySelectorAll('tr');
-
-        for(let i = 1; i < rows.length; i++) {
-          const kg = parseFloat(rows[i].querySelector('.kg').value);
-          const reps = parseInt(rows[i].querySelector('.reps').value);
-          const rpe = parseFloat(rows[i].querySelector('.rpe').value) || 0;
-
-          if (kg && reps) {
-            serieList.push({ peso: kg, reps: reps, rpe: rpe });
-            checkPR(nomeEx, kg, reps);
-          }
-        }
-
-        if(serieList.length > 0) {
-          sessione.esercizi.push({ nome: nomeEx, serie: serieList });
-        }
-      });
-
-      if(sessione.esercizi.length > 0) {
-        forgeData.allenamenti.push(sessione);
-        salvaStato();
-        alert(`✅ Sessione ${giorno} Salvata!`);
-      } else {
-        alert("⚠️ Inserisci almeno una serie per salvare.");
-      }
-    }
-
-    // CHECK PERSONAL RECORD (PR)
-    function checkPR(nome, kg, reps) {
-      const rmTeorico = Math.round(reps === 1 ? kg : kg * (1 + reps / 30));
-      if (!forgeData.records[nome]) forgeData.records[nome] = { maxKg: 0, max1RM: 0 };
-
-      const rec = forgeData.records[nome];
-      if (kg > rec.maxKg || rmTeorico > rec.max1RM) {
-        rec.maxKg = Math.max(rec.maxKg, kg);
-        rec.max1RM = Math.max(rec.max1RM, rmTeorico);
-        salvaStato();
-        alert(`🏆 NUOVO RECORD per ${nome}! 1RM Stimato: ${rmTeorico} kg`);
-      }
-    }
-
-    // ==========================================
-    // 4. CALCOLO AFFATICAMENTO (ACWR)
-    // ==========================================
     function calcolaACWR() {
       const oggi = new Date();
       let stress7 = 0, stress28 = 0;
@@ -509,14 +522,11 @@
       const ratio = (stress7 / ((stress28 / 4) || 1)).toFixed(2);
       const el = document.getElementById('valAcwr');
       
-      if (ratio > 1.4) el.innerHTML = `<span style="color:var(--accent-red);">🔴 ${ratio} - Rischio Sovrallenamento (Scarica)</span>`;
+      if (ratio > 1.4) el.innerHTML = `<span style="color:var(--accent-red);">🔴 ${ratio} - Rischio Sovrallenamento</span>`;
       else if (ratio >= 0.8) el.innerHTML = `<span style="color:var(--accent-green);">🟢 ${ratio} - Carico Ottimale</span>`;
-      else el.innerHTML = `<span style="color:gold;">🟡 ${ratio} - Carico Basso / In Recupero</span>`;
+      else el.innerHTML = `<span style="color:gold;">🟡 ${ratio} - Carico Basso</span>`;
     }
 
-    // ==========================================
-    // 5. BACKUP & RIPRISTINO JSON
-    // ==========================================
     function esportaBackup() {
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(forgeData));
       const dl = document.createElement('a');
@@ -542,32 +552,54 @@
       reader.readAsText(file);
     }
 
-    // ==========================================
-    // 6. CHART.JS INTEGRATION
-    // ==========================================
-    function initCharts() {
-      // Pie Chart
+    // GRAFICI CON DATI REALI
+    function aggiornaGrafici() {
+      // 1. Calcola Volume per Giorno (Pie Chart)
+      let volG1 = 0, volG2 = 0, volG3 = 0, volG4 = 0;
+      
+      forgeData.allenamenti.forEach(s => {
+        let volSessione = 0;
+        s.esercizi.forEach(e => e.serie.forEach(st => volSessione += (st.peso * st.reps)));
+        if (s.giorno === 'G1' || s.giorno === 'GIORNO 1') volG1 += volSessione;
+        if (s.giorno === 'G2' || s.giorno === 'GIORNO 2') volG2 += volSessione;
+        if (s.giorno === 'G3' || s.giorno === 'GIORNO 3') volG3 += volSessione;
+        if (s.giorno === 'G4' || s.giorno === 'GIORNO 4') volG4 += volSessione;
+      });
+
+      if(pieChartObj) pieChartObj.destroy();
       const ctxPie = document.getElementById('pieChart').getContext('2d');
-      new Chart(ctxPie, {
+      pieChartObj = new Chart(ctxPie, {
         type: 'pie',
         data: {
-          labels: ['Gamba/Push', 'Upper/Pull', 'Core', 'Braccia'],
-          datasets: [{ data: [40, 30, 15, 15], backgroundColor: ['#ff3b30', '#007aff', '#34c759', '#ff9500'] }]
+          labels: ['Giorno 1', 'Giorno 2', 'Giorno 3', 'Giorno 4'],
+          datasets: [{
+            data: [volG1 || 10, volG2 || 10, volG3 || 10, volG4 || 10],
+            backgroundColor: ['#ff3b30', '#007aff', '#34c759', '#ff9500']
+          }]
         },
         options: { plugins: { legend: { labels: { color: 'white' } } } }
       });
 
-      // Line Chart
+      // 2. Storico Carichi (Line Chart)
+      const dateLabels = forgeData.allenamenti.slice(-6).map(s => s.data);
+      const dataCarichi = forgeData.allenamenti.slice(-6).map(s => {
+        let maxS = 0;
+        s.esercizi.forEach(e => e.serie.forEach(st => maxS = Math.max(maxS, st.peso)));
+        return maxS;
+      });
+
+      if(lineChartObj) lineChartObj.destroy();
       const ctxLine = document.getElementById('lineChart').getContext('2d');
-      new Chart(ctxLine, {
+      lineChartObj = new Chart(ctxLine, {
         type: 'line',
         data: {
-          labels: ['Sett 1', 'Sett 2', 'Sett 3', 'Sett 4'],
+          labels: dateLabels.length > 0 ? dateLabels : ['S1', 'S2', 'S3', 'S4'],
           datasets: [{
-            label: 'Progressione Strappo (kg)',
-            data: [60, 62.5, 65, 67.5],
+            label: 'Carico Max Registrato (kg)',
+            data: dataCarichi.length > 0 ? dataCarichi : [50, 60, 65, 70],
             borderColor: '#ff3b30',
-            fill: false
+            backgroundColor: 'rgba(255,59,48,0.2)',
+            fill: true
           }]
         },
         options: { scales: { x: { ticks: { color: 'white' } }, y: { ticks: { color: 'white' } } } }
