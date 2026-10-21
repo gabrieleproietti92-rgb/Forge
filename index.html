@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Forge v3.8 - DBZ Edition</title>
+  <title>Forge v3.9 - DBZ Real Graphics</title>
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
@@ -33,30 +33,38 @@
     .header { text-align: center; margin-bottom: 15px; }
     .header h1 { color: var(--accent-red); font-size: 26px; letter-spacing: 1px; margin: 0; }
 
-    /* HOME SCREEN - PERSONAGGIO DRAGON BALL PULITO */
+    /* HOME SCREEN - PERSONAGGIO DRAGON BALL ANIME REALE */
     .dbz-mascot-card {
-      background: radial-gradient(circle, #2a2a35 0%, #121212 100%);
+      background: radial-gradient(circle, #2c2c3e 0%, #121212 100%);
       border-radius: 20px;
-      padding: 30px 10px;
+      padding: 25px 10px;
       text-align: center;
-      border: 1px solid #333;
+      border: 1px solid #3d3d52;
       margin-top: 10px;
       margin-bottom: 20px;
       position: relative;
       box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      min-height: 280px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     
-    .dbz-avatar { 
-      font-size: 110px; 
-      display: inline-block; 
-      animation: dbzAura 2.5s ease-in-out infinite; 
-      filter: drop-shadow(0 0 18px rgba(255, 215, 0, 0.4));
+    .dbz-img { 
+      max-width: 220px;
+      max-height: 260px;
+      object-fit: contain;
+      display: block; 
+      margin: 0 auto;
+      animation: floatAnime 3s ease-in-out infinite; 
+      filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.4));
+      transition: all 0.5s ease-in-out;
     }
 
-    @keyframes dbzAura {
-      0% { transform: translateY(0px) scale(1); filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.3)); }
-      50% { transform: translateY(-12px) scale(1.06); filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.8)); }
-      100% { transform: translateY(0px) scale(1); filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.3)); }
+    @keyframes floatAnime {
+      0% { transform: translateY(0px) scale(1); }
+      50% { transform: translateY(-8px) scale(1.02); }
+      100% { transform: translateY(0px) scale(1); }
     }
 
     /* MENU NAVBAR PRINCIPALE */
@@ -123,9 +131,10 @@
     .stat-label { font-size: 11px; color: var(--text-muted); display: block; }
     .stat-val { font-size: 15px; font-weight: bold; margin-top: 4px; }
 
-    .grid-chars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
-    .char-btn { background: #121212; border: 1px solid var(--border-color); border-radius: 8px; padding: 8px; text-align: center; cursor: pointer; font-size: 11px; }
-    .char-btn.selected { border-color: var(--accent-gold); background: rgba(255, 215, 0, 0.1); }
+    .grid-chars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+    .char-btn { background: #121212; border: 1px solid var(--border-color); border-radius: 10px; padding: 8px; text-align: center; cursor: pointer; font-size: 11px; }
+    .char-btn img { width: 50px; height: 60px; object-fit: contain; }
+    .char-btn.selected { border-color: var(--accent-gold); background: rgba(255, 215, 0, 0.15); }
 
     /* MODALE */
     .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 9999; }
@@ -138,7 +147,7 @@
 <body>
 
   <div class="header">
-    <h1>FORGE v3.8 🐉</h1>
+    <h1>FORGE v3.9 🐉</h1>
   </div>
 
   <!-- MENU NAVIGAZIONE SUPERIORE -->
@@ -148,9 +157,9 @@
     <button class="home-nav-btn" id="nav_profilo" onclick="apriSezione('profilo')">👤 Profilo</button>
   </div>
 
-  <!-- PERSONAGGIO DRAGON BALL (HOME SCREEN SENZA SCRITTE) -->
+  <!-- PERSONAGGIO DRAGON BALL ANIME REALE (HOME) -->
   <div class="dbz-mascot-card" id="mascotCard">
-    <span class="dbz-avatar" id="dbzAvatar">🥋</span>
+    <img id="dbzImg" class="dbz-img" src="" alt="Dragon Ball Character">
   </div>
 
   <!-- SUB-TABS GIORNI -->
@@ -182,7 +191,7 @@
   <!-- PROFILO & SELEZIONE PERSONAGGIO DBZ -->
   <div id="profilo" class="tab-content">
     <div class="card">
-      <h3>🐉 Scegli il tuo Guerriero Dragon Ball (20)</h3>
+      <h3>🐉 Scegli il tuo Guerriero Dragon Ball</h3>
       <div class="grid-chars" id="dbzGrid"></div>
     </div>
 
@@ -258,28 +267,44 @@
   </div>
 
   <script>
-    // DATABASE 20 PERSONAGGI DRAGON BALL (Forma 1: Inattivo/Secco -> Forma 2: SSJ/Muscoloso -> Forma 3: Ultra/God)
+    // DATABASE IMMAGINI REALI ANIME DRAGON BALL (F1: BASE | F2: SUPER SAIYAN/FORZA | F3: ULTRA/BEAST)
     const dbzCharacters = [
-      { id: 'goku', nome: 'Goku', f1: '👨‍🌾', f2: '👱‍♂️', f3: '🌌' },
-      { id: 'vegeta', nome: 'Vegeta', f1: '🧑‍🦲', f2: '👨‍🦱', f3: '🔮' },
-      { id: 'gohan', nome: 'Gohan', f1: '👓', f2: '⚡', f3: '👹' },
-      { id: 'piccolo', nome: 'Piccolo', f1: '🧢', f2: '🧘‍♂️', f3: '🟠' },
-      { id: 'trunks', nome: 'Trunks', f1: '🗡️', f2: '💇‍♂️', f3: '⚔️' },
-      { id: 'goten', nome: 'Goten', f1: '🧒', f2: '👱', f3: '💥' },
-      { id: 'broly', nome: 'Broly', f1: '🧍‍♂️', f2: '💪', f3: '🟢' },
-      { id: 'crilin', nome: 'Crilin', f1: '👨‍🦲', f2: '🤼‍♂️', f3: '💥' },
-      { id: 'yamcha', nome: 'Yamcha', f1: '⚾', f2: '🩹', f3: '🐺' },
-      { id: 'tenshinhan', nome: 'Tenshinhan', f1: '👁️', f2: '🎽', f3: '🔱' },
-      { id: 'muten', nome: 'Muten', f1: '👴', f2: '🕶️', f3: '🏋️‍♂️' },
-      { id: 'bardak', nome: 'Bardak', f1: '🩹', f2: '🩸', f3: '🔥' },
-      { id: 'freezer', nome: 'Freezer', f1: '🪑', f2: '👽', f3: '🌟' },
-      { id: 'cell', nome: 'Cell', f1: '🦗', f2: '🦎', f3: '✨' },
-      { id: 'majinbu', nome: 'Majin Bu', f1: '🍬', f2: '🍫', f3: '🔮' },
-      { id: 'beerus', nome: 'Beerus', f1: '🐱', f2: '🍜', f3: '🟣' },
-      { id: 'whis', nome: 'Whis', f1: '🥖', f2: '🪄', f3: '✨' },
-      { id: 'jiren', nome: 'Jiren', f1: '👽', f2: '🔴', f3: '🔥' },
-      { id: 'cabba', nome: 'Cabba', f1: '👦', f2: '⚡', f3: '💥' },
-      { id: 'hit', nome: 'Hit', f1: '🕵️', f2: '⏱️', f3: '💜' }
+      { 
+        id: 'goku', nome: 'Goku', 
+        f1: 'https://pngimg.com/uploads/dragon_ball/dragon_ball_PNG24.png', 
+        f2: 'https://pngimg.com/uploads/dragon_ball/dragon_ball_PNG39.png', 
+        f3: 'https://pngimg.com/uploads/dragon_ball/dragon_ball_PNG11.png' 
+      },
+      { 
+        id: 'vegeta', nome: 'Vegeta', 
+        f1: 'https://pngimg.com/uploads/dragon_ball/dragon_ball_PNG63.png', 
+        f2: 'https://pngimg.com/uploads/dragon_ball/dragon_ball_PNG64.png', 
+        f3: 'https://pngimg.com/uploads/dragon_ball/dragon_ball_PNG65.png' 
+      },
+      { 
+        id: 'gohan', nome: 'Gohan', 
+        f1: 'https://pngimg.com/uploads/dragon_ball/dragon_ball_PNG88.png', 
+        f2: 'https://pngimg.com/uploads/dragon_ball/dragon_ball_PNG90.png', 
+        f3: 'https://pngimg.com/uploads/dragon_ball/dragon_ball_PNG91.png' 
+      },
+      { 
+        id: 'piccolo', nome: 'Piccolo', 
+        f1: 'https://pngimg.com/uploads/dragon_ball/dragon_ball_PNG52.png', 
+        f2: 'https://pngimg.com/uploads/dragon_ball/dragon_ball_PNG53.png', 
+        f3: 'https://pngimg.com/uploads/dragon_ball/dragon_ball_PNG52.png' 
+      },
+      { 
+        id: 'broly', nome: 'Broly', 
+        f1: 'https://pngimg.com/uploads/dragon_ball/dragon_ball_PNG100.png', 
+        f2: 'https://pngimg.com/uploads/dragon_ball/dragon_ball_PNG101.png', 
+        f3: 'https://pngimg.com/uploads/dragon_ball/dragon_ball_PNG102.png' 
+      },
+      { 
+        id: 'trunks', nome: 'Trunks', 
+        f1: 'https://pngimg.com/uploads/dragon_ball/dragon_ball_PNG73.png', 
+        f2: 'https://pngimg.com/uploads/dragon_ball/dragon_ball_PNG75.png', 
+        f3: 'https://pngimg.com/uploads/dragon_ball/dragon_ball_PNG75.png' 
+      }
     ];
 
     const schedeBase = {
@@ -311,9 +336,9 @@
       aggiornaProfilo();
     };
 
-    // LOGICA EVOLUZIONE PERSONAGGIO DRAGON BALL
+    // EVOLUZIONE VISIVA IMMAGINE DRAGON BALL
     function aggiornaPersonaggioDBZ() {
-      const avatarEl = document.getElementById('dbzAvatar');
+      const imgEl = document.getElementById('dbzImg');
       const charObj = dbzCharacters.find(c => c.id === forgeData.selectedChar) || dbzCharacters[0];
 
       let giorniInattivita = 999;
@@ -323,18 +348,17 @@
         giorniInattivita = Math.floor((oggi - ultimoWorkout) / (1000 * 60 * 60 * 24));
       }
 
-      // Conta allenamenti negli ultimi 30 giorni
       const workout30gg = (forgeData.allenamenti || []).filter(s => {
         return ((new Date() - new Date(s.data)) / (1000 * 3600 * 24)) <= 30;
       }).length;
 
-      // Forma 1 (Inattivo/Secco) | Forma 2 (Super Saiyan/Muscoloso) | Forma 3 (God/Ultra Istinto)
+      // Sostituzione dinamica dell'immagine PNG anime
       if (giorniInattivita > 4 || workout30gg < 3) {
-        avatarEl.textContent = charObj.f1; // Forma 1 (Affaticato/Secco)
+        imgEl.src = charObj.f1; // Forma Base
       } else if (workout30gg >= 12) {
-        avatarEl.textContent = charObj.f3; // Forma 3 (Ultra God / Peak)
+        imgEl.src = charObj.f3; // Forma Massima / God
       } else {
-        avatarEl.textContent = charObj.f2; // Forma 2 (Muscoloso / SSJ)
+        imgEl.src = charObj.f2; // Forma Super Saiyan
       }
     }
 
@@ -345,7 +369,7 @@
       dbzCharacters.forEach(c => {
         const isSel = c.id === forgeData.selectedChar ? 'selected' : '';
         html += `<div class="char-btn ${isSel}" onclick="selezionaPersonaggio('${c.id}')">
-          <span style="font-size:22px;">${c.f2}</span><br>${c.nome}
+          <img src="${c.f2}" alt="${c.nome}"><br><strong>${c.nome}</strong>
         </div>`;
       });
       grid.innerHTML = html;
