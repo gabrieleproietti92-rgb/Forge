@@ -38,467 +38,98 @@
       padding-bottom: 90px;
     }
 
-    h1, h2, h3, h4 {
-      margin: 0 0 10px 0;
-    }
-
-    .header {
-      text-align: center;
-      margin-bottom: 15px;
-    }
-
-    .header h1 {
-      color: var(--accent-red);
-      font-size: 26px;
-      letter-spacing: 1px;
-      margin: 0;
-    }
+    h1, h2, h3, h4 { margin: 0 0 10px 0; }
+    .header { text-align: center; margin-bottom: 15px; }
+    .header h1 { color: var(--accent-red); font-size: 26px; letter-spacing: 1px; margin: 0; }
 
     .toast-container {
-      position: fixed;
-      top: 20px;
-      left: 50%;
+      position: fixed; top: 20px; left: 50%;
       transform: translateX(-50%) translateY(-100px);
-      width: 90%;
-      max-width: 380px;
+      width: 90%; max-width: 380px;
       background: rgba(30, 30, 30, 0.95);
       border: 1px solid var(--accent-gold);
-      border-radius: 12px;
-      padding: 12px 16px;
+      border-radius: 12px; padding: 12px 16px;
       color: var(--text-main);
       box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-      backdrop-filter: blur(10px);
-      z-index: 10000;
+      backdrop-filter: blur(10px); z-index: 10000;
       transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
-      opacity: 0;
-      display: flex;
-      align-items: center;
-      gap: 12px;
+      opacity: 0; display: flex; align-items: center; gap: 12px;
     }
-
-    .toast-container.show {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
-    }
-
-    .toast-icon {
-      font-size: 24px;
-    }
-
-    .toast-title {
-      font-weight: bold;
-      font-size: 13px;
-      color: var(--accent-gold);
-      margin-bottom: 2px;
-    }
-
-    .toast-msg {
-      font-size: 12px;
-      color: #e0e0e0;
-      line-height: 1.3;
-    }
+    .toast-container.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .toast-icon { font-size: 24px; }
+    .toast-title { font-weight: bold; font-size: 13px; color: var(--accent-gold); margin-bottom: 2px; }
+    .toast-msg { font-size: 12px; color: #e0e0e0; line-height: 1.3; }
 
     .dashboard-streak {
       background: radial-gradient(circle, #2a2a38 0%, #121212 100%);
-      border-radius: 16px;
-      padding: 15px;
-      margin-bottom: 15px;
-      border: 1px solid #3d3d52;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.6);
-      text-align: center;
+      border-radius: 16px; padding: 15px; margin-bottom: 15px;
+      border: 1px solid #3d3d52; box-shadow: 0 8px 20px rgba(0,0,0,0.6); text-align: center;
     }
+    .streak-banner { display: flex; justify-content: space-around; align-items: center; margin-bottom: 12px; }
+    .streak-item { text-align: center; }
+    .streak-val { font-size: 24px; font-weight: bold; color: var(--accent-gold); }
+    .streak-lbl { font-size: 11px; color: var(--text-muted); text-transform: uppercase; }
 
-    .streak-banner {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      margin-bottom: 12px;
-    }
+    .xp-container { background: #121212; border-radius: 10px; height: 12px; width: 100%; overflow: hidden; border: 1px solid var(--border-color); margin-top: 6px; }
+    .xp-bar { background: linear-gradient(90deg, #007aff, #34c759); height: 100%; width: 0%; transition: width 0.5s ease; }
+    .rank-title { font-size: 14px; font-weight: bold; color: var(--accent-green); margin-bottom: 4px; }
 
-    .streak-item {
-      text-align: center;
-    }
+    .badges-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+    .badge-card { background: #121212; border: 1px solid var(--border-color); border-radius: 10px; padding: 10px 5px; text-align: center; opacity: 0.35; filter: grayscale(100%); transition: all 0.3s ease; }
+    .badge-card.unlocked { opacity: 1; filter: grayscale(0%); border-color: var(--accent-gold); background: rgba(255, 215, 0, 0.08); }
+    .badge-icon { font-size: 26px; display: block; margin-bottom: 4px; }
+    .badge-name { font-size: 11px; font-weight: bold; }
 
-    .streak-val {
-      font-size: 24px;
-      font-weight: bold;
-      color: var(--accent-gold);
-    }
+    .home-nav-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
+    .home-nav-btn { background: var(--card-bg); border: 1px solid var(--border-color); color: white; padding: 14px 5px; border-radius: 12px; font-weight: bold; font-size: 13px; cursor: pointer; text-align: center; transition: all 0.2s ease; }
+    .home-nav-btn.active { background: var(--accent-red); border-color: var(--accent-red); }
 
-    .streak-lbl {
-      font-size: 11px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-    }
+    .workout-subtabs { display: none; gap: 6px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
+    .tab-btn { flex: 1; min-width: 60px; background: var(--card-bg); color: var(--text-muted); border: 1px solid var(--border-color); padding: 10px; border-radius: 10px; font-weight: bold; cursor: pointer; text-align: center; font-size: 13px; }
+    .tab-btn.active { background: var(--accent-red); color: white; border-color: var(--accent-red); }
 
-    .xp-container {
-      background: #121212;
-      border-radius: 10px;
-      height: 12px;
-      width: 100%;
-      overflow: hidden;
-      border: 1px solid var(--border-color);
-      margin-top: 6px;
-    }
+    .card { background: var(--card-bg); border-radius: 14px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--border-color); }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
 
-    .xp-bar {
-      background: linear-gradient(90deg, #007aff, #34c759);
-      height: 100%;
-      width: 0%;
-      transition: width 0.5s ease;
-    }
+    .ex-card { background: #262628; border-radius: 12px; padding: 12px; margin-bottom: 15px; border: 1px solid #333; }
+    .ex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 5px; }
+    .tag-muscolo { font-size: 10px; background: #3a3a3c; padding: 2px 6px; border-radius: 4px; color: var(--accent-blue); font-weight: bold; }
+    
+    .pr-badge { display: inline-flex; align-items: center; gap: 4px; background: rgba(255, 215, 0, 0.15); border: 1px solid var(--accent-gold); color: var(--accent-gold); font-size: 11px; font-weight: bold; padding: 3px 8px; border-radius: 6px; margin-top: 4px; }
+    .trading-box { background: #141416; border-radius: 8px; padding: 8px; margin: 8px 0; border: 1px solid #222; }
+    .trading-title { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: bold; margin-bottom: 4px; display: flex; justify-content: space-between; }
+    .trading-canvas { width: 100% !important; height: 60px !important; }
 
-    .rank-title {
-      font-size: 14px;
-      font-weight: bold;
-      color: var(--accent-green);
-      margin-bottom: 4px;
-    }
+    .btn-del { background: #ff453a22; color: #ff453a; border: 1px solid #ff453a; padding: 4px 8px; border-radius: 6px; font-size: 11px; cursor: pointer; }
 
-    .badges-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-top: 10px;
-    }
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+    th { color: var(--text-muted); font-size: 11px; text-align: center; padding-bottom: 5px; }
+    td { padding: 4px 2px; text-align: center; }
+    input[type="number"], input[type="text"] { width: 85%; background: #121212; border: 1px solid var(--border-color); color: white; padding: 8px; border-radius: 6px; text-align: center; font-size: 14px; }
+    
+    .btn { width: 100%; background: var(--accent-red); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: bold; font-size: 15px; margin-top: 10px; cursor: pointer; }
+    .btn-secondary { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-main); }
+    .btn-blue { background: var(--accent-blue); }
+    .btn-green { background: var(--accent-green); }
 
-    .badge-card {
-      background: #121212;
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
-      padding: 10px 5px;
-      text-align: center;
-      opacity: 0.35;
-      filter: grayscale(100%);
-      transition: all 0.3s ease;
-    }
+    .btn-sets-row { display: flex; gap: 8px; margin-top: 8px; }
+    .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0; }
+    .stat-box { background: #121212; padding: 10px; border-radius: 8px; text-align: center; }
+    .stat-label { font-size: 11px; color: var(--text-muted); display: block; }
+    .stat-val { font-size: 15px; font-weight: bold; margin-top: 4px; }
 
-    .badge-card.unlocked {
-      opacity: 1;
-      filter: grayscale(0%);
-      border-color: var(--accent-gold);
-      background: rgba(255, 215, 0, 0.08);
-    }
+    .day-manager-item { display: flex; justify-content: space-between; align-items: center; background: #121212; padding: 8px 12px; border-radius: 8px; margin-bottom: 6px; border: 1px solid var(--border-color); }
 
-    .badge-icon {
-      font-size: 26px;
-      display: block;
-      margin-bottom: 4px;
-    }
+    .heatmap-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 10px; }
+    .heatmap-day { aspect-ratio: 1; border-radius: 4px; background: #262628; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--text-muted); }
+    .heatmap-day.active { background: var(--accent-green); color: black; font-weight: bold; }
 
-    .badge-name {
-      font-size: 11px;
-      font-weight: bold;
-    }
-
-    .home-nav-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-bottom: 15px;
-    }
-
-    .home-nav-btn {
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      color: white;
-      padding: 14px 5px;
-      border-radius: 12px;
-      font-weight: bold;
-      font-size: 13px;
-      cursor: pointer;
-      text-align: center;
-      transition: all 0.2s ease;
-    }
-
-    .home-nav-btn.active {
-      background: var(--accent-red);
-      border-color: var(--accent-red);
-    }
-
-    .workout-subtabs {
-      display: none;
-      gap: 6px;
-      margin-bottom: 15px;
-      overflow-x: auto;
-      padding-bottom: 5px;
-    }
-
-    .tab-btn {
-      flex: 1;
-      min-width: 60px;
-      background: var(--card-bg);
-      color: var(--text-muted);
-      border: 1px solid var(--border-color);
-      padding: 10px;
-      border-radius: 10px;
-      font-weight: bold;
-      cursor: pointer;
-      text-align: center;
-      font-size: 13px;
-    }
-
-    .tab-btn.active {
-      background: var(--accent-red);
-      color: white;
-      border-color: var(--accent-red);
-    }
-
-    .card {
-      background: var(--card-bg);
-      border-radius: 14px;
-      padding: 15px;
-      margin-bottom: 15px;
-      border: 1px solid var(--border-color);
-    }
-
-    .tab-content {
-      display: none;
-    }
-
-    .tab-content.active {
-      display: block;
-    }
-
-    .ex-card {
-      background: #262628;
-      border-radius: 12px;
-      padding: 12px;
-      margin-bottom: 15px;
-      border: 1px solid #333;
-    }
-
-    .ex-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-      flex-wrap: wrap;
-      gap: 5px;
-    }
-
-    .tag-muscolo {
-      font-size: 10px;
-      background: #3a3a3c;
-      padding: 2px 6px;
-      border-radius: 4px;
-      color: var(--accent-blue);
-      font-weight: bold;
-    }
-
-    .pr-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      background: rgba(255, 215, 0, 0.15);
-      border: 1px solid var(--accent-gold);
-      color: var(--accent-gold);
-      font-size: 11px;
-      font-weight: bold;
-      padding: 3px 8px;
-      border-radius: 6px;
-      margin-top: 4px;
-    }
-
-    .trading-box {
-      background: #141416;
-      border-radius: 8px;
-      padding: 8px;
-      margin: 8px 0;
-      border: 1px solid #222;
-    }
-
-    .trading-title {
-      font-size: 10px;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      font-weight: bold;
-      margin-bottom: 4px;
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .trading-canvas {
-      width: 100% !important;
-      height: 60px !important;
-    }
-
-    .btn-del {
-      background: #ff453a22;
-      color: #ff453a;
-      border: 1px solid #ff453a;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 11px;
-      cursor: pointer;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 8px;
-    }
-
-    th {
-      color: var(--text-muted);
-      font-size: 11px;
-      text-align: center;
-      padding-bottom: 5px;
-    }
-
-    td {
-      padding: 4px 2px;
-      text-align: center;
-    }
-
-    input[type="number"], input[type="text"] {
-      width: 85%;
-      background: #121212;
-      border: 1px solid var(--border-color);
-      color: white;
-      padding: 8px;
-      border-radius: 6px;
-      text-align: center;
-      font-size: 14px;
-    }
-
-    .btn {
-      width: 100%;
-      background: var(--accent-red);
-      color: white;
-      border: none;
-      padding: 12px;
-      border-radius: 10px;
-      font-weight: bold;
-      font-size: 15px;
-      margin-top: 10px;
-      cursor: pointer;
-    }
-
-    .btn-secondary {
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-    }
-
-    .btn-blue {
-      background: var(--accent-blue);
-    }
-
-    .btn-green {
-      background: var(--accent-green);
-    }
-
-    .btn-sets-row {
-      display: flex;
-      gap: 8px;
-      margin-top: 8px;
-    }
-
-    .stat-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin: 10px 0;
-    }
-
-    .stat-box {
-      background: #121212;
-      padding: 10px;
-      border-radius: 8px;
-      text-align: center;
-    }
-
-    .stat-label {
-      font-size: 11px;
-      color: var(--text-muted);
-      display: block;
-    }
-
-    .stat-val {
-      font-size: 15px;
-      font-weight: bold;
-      margin-top: 4px;
-    }
-
-    .day-manager-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #121212;
-      padding: 8px 12px;
-      border-radius: 8px;
-      margin-bottom: 6px;
-      border: 1px solid var(--border-color);
-    }
-
-    .heatmap-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 4px;
-      margin-top: 10px;
-    }
-
-    .heatmap-day {
-      aspect-ratio: 1;
-      border-radius: 4px;
-      background: #262628;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 10px;
-      color: var(--text-muted);
-    }
-
-    .heatmap-day.active {
-      background: var(--accent-green);
-      color: black;
-      font-weight: bold;
-    }
-
-    .modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.85);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-    }
-
-    .modal-content {
-      background: var(--card-bg);
-      width: 85%;
-      max-width: 380px;
-      padding: 20px;
-      border-radius: 14px;
-      max-height: 80vh;
-      overflow-y: auto;
-    }
-
-    .form-group {
-      margin-bottom: 12px;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-bottom: 4px;
-    }
-
-    select, textarea, input {
-      width: 100%;
-      background: #121212;
-      border: 1px solid var(--border-color);
-      color: white;
-      padding: 8px;
-      border-radius: 6px;
-      box-sizing: border-box;
-    }
+    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 9999; }
+    .modal-content { background: var(--card-bg); width: 85%; max-width: 380px; padding: 20px; border-radius: 14px; max-height: 80vh; overflow-y: auto; }
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+    select, textarea, input { width: 100%; background: #121212; border: 1px solid var(--border-color); color: white; padding: 8px; border-radius: 6px; box-sizing: border-box; }
   </style>
 </head>
 <body>
@@ -552,12 +183,12 @@
   <!-- SEZIONE STATISTICHE -->
   <div id="stats" class="tab-content">
     <div class="card">
-      <h3>🍕 Serie Allenanti Settimanali (Hard Sets)</h3>
+      <h3>🍕 Distribuzione Serie per Esercizio</h3>
       <canvas id="pieChart"></canvas>
     </div>
 
     <div class="card">
-      <h3>🏋️ Volume Totale Sollevato (Tonnellaggio)</h3>
+      <h3>🏋️ Volume Mensile Sollevato (Kg per Settimana)</h3>
       <canvas id="volumeChart"></canvas>
     </div>
 
@@ -1222,52 +853,64 @@
 
     function aggiornaGrafici() {
       const oggi = new Date();
-      let muscoloSerieMap = {};
-      let volumeData = {};
+      let esercizioSerieMap = {};
+      let volumeSettimanale = { "Settimana 1": 0, "Settimana 2": 0, "Settimana 3": 0, "Settimana 4": 0 };
+
+      // 1. TARTA BASATA SUGLI ESERCIZI E LE LORO SERIE (Schede Inserite + Allenamenti)
+      Object.keys(forgeData.schede).forEach(gKey => {
+        (forgeData.schede[gKey] || []).forEach(ex => {
+          esercizioSerieMap[ex.nome] = (esercizioSerieMap[ex.nome] || 0) + (ex.sets || 3);
+        });
+      });
 
       (forgeData.allenamenti || []).forEach(s => {
         const diffDays = (oggi - new Date(s.data)) / (1000 * 3600 * 24);
-        const wKey = s.data;
 
-        if (diffDays <= 7) {
-          s.esercizi.forEach(e => {
-            const m = e.muscolo || "Generale";
-            muscoloSerieMap[m] = (muscoloSerieMap[m] || 0) + e.serie.length;
-          });
+        // Raggruppa i kg nelle 4 settimane del mese
+        if (diffDays <= 28) {
+          let totalVol = 0;
+          s.esercizi.forEach(e => e.serie.forEach(set => totalVol += (set.peso * set.reps)));
+
+          if (diffDays <= 7) volumeSettimanale["Settimana 4"] += totalVol;
+          else if (diffDays <= 14) volumeSettimanale["Settimana 3"] += totalVol;
+          else if (diffDays <= 21) volumeSettimanale["Settimana 2"] += totalVol;
+          else volumeSettimanale["Settimana 1"] += totalVol;
         }
-
-        let totalVol = 0;
-        s.esercizi.forEach(e => e.serie.forEach(set => totalVol += (set.peso * set.reps)));
-        volumeData[wKey] = (volumeData[wKey] || 0) + totalVol;
       });
 
-      // GRAFICO HARD SETS (SERIE ALLENANTI PER MUSCOLO)
-      const labelsSets = Object.keys(muscoloSerieMap);
-      const dataSets = Object.values(muscoloSerieMap);
+      // RENDER DIAGRAMMA A TORTA
+      const labelsEx = Object.keys(esercizioSerieMap);
+      const dataSetsEx = Object.values(esercizioSerieMap);
 
       if (pieChartObj) pieChartObj.destroy();
       pieChartObj = new Chart(document.getElementById('pieChart').getContext('2d'), {
         type: 'pie',
         data: {
-          labels: labelsSets.length > 0 ? labelsSets : ['Nessun dato'],
+          labels: labelsEx.length > 0 ? labelsEx : ['Nessun esercizio'],
           datasets: [{
-            data: dataSets.length > 0 ? dataSets : [1],
-            backgroundColor: ['#ff3b30', '#007aff', '#34c759', '#ff9500', '#af52de', '#5856d6']
+            data: dataSetsEx.length > 0 ? dataSetsEx : [1],
+            backgroundColor: ['#ff3b30', '#007aff', '#34c759', '#ff9500', '#af52de', '#5856d6', '#ff2d55', '#10c030']
           }]
         },
         options: { plugins: { legend: { labels: { color: 'white' } } } }
       });
 
-      // GRAFICO VOLUME SOLLEVATO
-      const volKeys = Object.keys(volumeData).slice(-7);
-      const volVals = volKeys.map(k => volumeData[k]);
-
+      // RENDER VOLUME MENSILE SETTIMANA PER SETTIMANA
       if (volumeChartObj) volumeChartObj.destroy();
       volumeChartObj = new Chart(document.getElementById('volumeChart').getContext('2d'), {
         type: 'bar',
         data: {
-          labels: volKeys,
-          datasets: [{ label: 'Kg Totali', data: volVals, backgroundColor: '#007aff' }]
+          labels: ['Settimana 1', 'Settimana 2', 'Settimana 3', 'Settimana 4'],
+          datasets: [{
+            label: 'Kg Totali Sollevati',
+            data: [
+              volumeSettimanale["Settimana 1"],
+              volumeSettimanale["Settimana 2"],
+              volumeSettimanale["Settimana 3"],
+              volumeSettimanale["Settimana 4"]
+            ],
+            backgroundColor: '#007aff'
+          }]
         },
         options: {
           scales: {
