@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Forge v3.5 - Weightlifting Tracker</title>
+  <title>Forge v3.6 - Weightlifting Tracker</title>
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
@@ -32,29 +32,46 @@
     .header { text-align: center; margin-bottom: 15px; }
     .header h1 { color: var(--accent-red); font-size: 26px; letter-spacing: 1px; margin: 0; }
 
-    /* DASHBOARD HOME & MASCOT */
+    /* DASHBOARD HOME & MASCOT ANIMATA */
     .mascot-card {
       background: linear-gradient(145deg, #1e1e1e, #2a2a2e);
-      border-radius: 16px;
-      padding: 20px;
+      border-radius: 18px;
+      padding: 25px 15px;
       text-align: center;
       border: 1px solid var(--border-color);
+      margin-top: 10px;
       margin-bottom: 20px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
     }
-    .mascot-avatar { font-size: 70px; margin: 10px 0; display: block; animation: pulse 2s infinite; }
-    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-    .mascot-status { font-weight: bold; font-size: 18px; margin-bottom: 5px; }
-    .mascot-msg { font-size: 13px; color: var(--text-muted); line-height: 1.4; }
+    
+    .mascot-avatar { 
+      font-size: 80px; 
+      margin: 15px 0; 
+      display: inline-block; 
+      animation: floatMascot 3s ease-in-out infinite; 
+      filter: drop-shadow(0 0 12px rgba(255, 59, 48, 0.3));
+    }
 
-    .home-nav-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+    @keyframes floatMascot {
+      0% { transform: translateY(0px) scale(1); }
+      50% { transform: translateY(-10px) scale(1.04); }
+      100% { transform: translateY(0px) scale(1); }
+    }
+
+    .mascot-status { font-weight: bold; font-size: 19px; margin-bottom: 8px; }
+    .mascot-msg { font-size: 13px; color: var(--text-muted); line-height: 1.4; padding: 0 10px; }
+
+    /* MENU NAVBAR PRINCIPALE */
+    .home-nav-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
     .home-nav-btn {
       background: var(--card-bg); border: 1px solid var(--border-color);
-      color: white; padding: 15px 5px; border-radius: 12px; font-weight: bold;
-      font-size: 12px; cursor: pointer; text-align: center;
+      color: white; padding: 14px 5px; border-radius: 12px; font-weight: bold;
+      font-size: 13px; cursor: pointer; text-align: center; transition: all 0.2s ease;
     }
+    .home-nav-btn.active { background: var(--accent-red); border-color: var(--accent-red); }
 
-    /* TABS NAVIGAZIONE */
-    .tabs { display: flex; gap: 6px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
+    /* SEZIONE SUB-TABS (NASCOSTA ALL'INIZIO) */
+    .workout-subtabs { display: none; gap: 6px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
     .tab-btn {
       flex: 1; min-width: 55px; background: var(--card-bg); color: var(--text-muted);
       border: 1px solid var(--border-color); padding: 10px; border-radius: 10px;
@@ -66,11 +83,17 @@
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* ESERCIZI */
-    .ex-card { background: #262628; border-radius: 10px; padding: 12px; margin-bottom: 12px; }
+    /* ESERCIZI & TRADING GRAPH */
+    .ex-card { background: #262628; border-radius: 12px; padding: 12px; margin-bottom: 15px; border: 1px solid #333; }
     .ex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 5px; }
     .tag-muscolo { font-size: 10px; background: #3a3a3c; padding: 2px 6px; border-radius: 4px; color: var(--accent-blue); font-weight: bold; }
     
+    .trading-box {
+      background: #141416; border-radius: 8px; padding: 8px; margin: 8px 0; border: 1px solid #222;
+    }
+    .trading-title { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: bold; margin-bottom: 4px; display: flex; justify-content: space-between; }
+    .trading-canvas { width: 100% !important; height: 60px !important; }
+
     .btn-yt { background: #ff0000; color: white; border: none; padding: 5px 10px; border-radius: 6px; font-size: 11px; text-decoration: none; font-weight: bold; }
     .btn-del { background: #ff453a22; color: #ff453a; border: 1px solid #ff453a; padding: 4px 8px; border-radius: 6px; font-size: 11px; cursor: pointer; }
     
@@ -106,40 +129,38 @@
 <body>
 
   <div class="header">
-    <h1>FORGE v3.5 🏋️</h1>
+    <h1>FORGE v3.6 🏋️</h1>
   </div>
 
-  <!-- MENU PRINCIPALE INIZIALE (HOME NAV) -->
+  <!-- MENU NAVIGAZIONE SUPERIORE -->
   <div class="home-nav-grid">
-    <button class="home-nav-btn" onclick="switchTab('g1')">🏋️ Allenamenti</button>
-    <button class="home-nav-btn" onclick="switchTab('stats')">📊 Statistiche</button>
-    <button class="home-nav-btn" onclick="switchTab('profilo')">👤 Profilo</button>
+    <button class="home-nav-btn" id="nav_allenamenti" onclick="apriAllenamenti()">🏋️ Allenamenti</button>
+    <button class="home-nav-btn" id="nav_stats" onclick="apriSezione('stats')">📊 Statistiche</button>
+    <button class="home-nav-btn" id="nav_profilo" onclick="apriSezione('profilo')">👤 Profilo</button>
   </div>
 
-  <!-- MASCOTTE DINAMICA DI COSTANZA -->
+  <!-- MASCOTTE DI COSTANZA (HOME SCREEN) -->
   <div class="mascot-card" id="mascotCard">
-    <span class="mascot-avatar" id="mascotAvatar">🤖</span>
+    <span class="mascot-avatar" id="mascotAvatar">🐉</span>
     <div class="mascot-status" id="mascotStatus">Caricamento...</div>
-    <div class="mascot-msg" id="mascotMsg">Analisi della costanza di allenamento in corso...</div>
+    <div class="mascot-msg" id="mascotMsg">Analisi della costanza in corso...</div>
   </div>
 
-  <!-- TABS GIORNI E SEZIONI -->
-  <div class="tabs">
-    <button class="tab-btn active" id="btn_g1" onclick="switchTab('g1', this)">G1</button>
-    <button class="tab-btn" id="btn_g2" onclick="switchTab('g2', this)">G2</button>
-    <button class="tab-btn" id="btn_g3" onclick="switchTab('g3', this)">G3</button>
-    <button class="tab-btn" id="btn_g4" onclick="switchTab('g4', this)">G4</button>
-    <button class="tab-btn" id="btn_stats" onclick="switchTab('stats', this)">📊 Stats</button>
-    <button class="tab-btn" id="btn_profilo" onclick="switchTab('profilo', this)">👤 Profilo</button>
+  <!-- SUB-TABS GIORNI (VISIBILI SOLO DENTRO ALLENAMENTI) -->
+  <div class="workout-subtabs" id="workoutSubtabs">
+    <button class="tab-btn active" id="sub_g1" onclick="switchGiorno('g1', this)">G1</button>
+    <button class="tab-btn" id="sub_g2" onclick="switchGiorno('g2', this)">G2</button>
+    <button class="tab-btn" id="sub_g3" onclick="switchGiorno('g3', this)">G3</button>
+    <button class="tab-btn" id="sub_g4" onclick="switchGiorno('g4', this)">G4</button>
   </div>
 
-  <!-- GIORNI ALLENAMENTO -->
-  <div id="g1" class="tab-content active"></div>
+  <!-- SEZIONI GIORNI ALLENAMENTO -->
+  <div id="g1" class="tab-content"></div>
   <div id="g2" class="tab-content"></div>
   <div id="g3" class="tab-content"></div>
   <div id="g4" class="tab-content"></div>
 
-  <!-- STATS -->
+  <!-- STATISTICHE -->
   <div id="stats" class="tab-content">
     <div class="card">
       <h3>📊 Distribuzione Muscolare Settimanale</h3>
@@ -191,7 +212,7 @@
     </div>
   </div>
 
-  <!-- MODAL NUOVO ESERCIZIO CON GRUPPO MUSCOLARE -->
+  <!-- MODALE AGGIUNGI ESERCIZIO -->
   <div id="modalAddEx" class="modal">
     <div class="modal-content">
       <h3>🏋️ Aggiungi Nuovo Esercizio</h3>
@@ -225,22 +246,22 @@
     </div>
   </div>
 
-  <!-- MODAL SPIEGAZIONE PROGRESSIONI -->
+  <!-- MODALE INFO PROGRESSIONI -->
   <div id="modalInfoProg" class="modal">
     <div class="modal-content">
       <h3>📖 Guida alle 4 Progressioni</h3>
-      <p><strong>1. Lineare (8 Settimane):</strong> Incremento costante del carico ($+5\%$ a settimana) partendo dall'80% fino al $115\%$. Ottimo per la forza generale su Squat, Panca e Stacco.</p>
+      <p><strong>1. Lineare (8 Settimane):</strong> Incremento costante ($+5\%$ a settimana) partendo dall'80% fino al $115\%$. Ottimo per la forza generale.</p>
       <hr style="border-color:var(--border-color);">
-      <p><strong>2. Onde Weightlifting:</strong> Alterna settimane ad alta intensità a settimane di volume ($80\% \rightarrow 85\% \rightarrow 82\% \rightarrow 88\%$). Preserva il sistema nervoso ed è ideale per Strappo e Slancio.</p>
+      <p><strong>2. Onde Weightlifting:</strong> Alterna intensità e volume ($80\% \rightarrow 85\% \rightarrow 82\% \rightarrow 88\%$). Preserva il SNC ed è ideale per Strappo e Slancio.</p>
       <hr style="border-color:var(--border-color);">
-      <p><strong>3. Piramidale Invertito:</strong> Prima serie al massimo carico target ($85\%-90\%$), serie successive a calare di peso ($+1-2$ reps). Ideale per la massima resa nervosa.</p>
+      <p><strong>3. Piramidale Invertito:</strong> Prima serie al massimo carico target ($85\%-90\%$), serie successive a calare di peso.</p>
       <hr style="border-color:var(--border-color);">
-      <p><strong>4. In Fasi (Accumulo + Peak):</strong> Mese 1 a volume moderato ($70-80\%$) per creare massa, Mese 2 ad alta intensità ($85-115\%$) per esprimere il picco di forza.</p>
+      <p><strong>4. In Fasi (Accumulo + Peak):</strong> Mese 1 a volume moderato ($70-80\%$), Mese 2 ad alta intensità ($85-115\%$) per esprimere il picco.</p>
       <button onclick="document.getElementById('modalInfoProg').style.display='none'" class="btn">Ho Capito</button>
     </div>
   </div>
 
-  <!-- MODAL ANAMNESI & PESATA -->
+  <!-- MODALI ANAMNESI & PESATA -->
   <div id="modalAnamnesi" class="modal">
     <div class="modal-content">
       <h2>📋 Anamnesi Iniziale</h2>
@@ -286,29 +307,34 @@
     let tempGKeyForAdd = 'g1';
     let pieChartObj = null;
     let lineChartObj = null;
+    let tradingCharts = {};
 
     function salvaStato() { localStorage.setItem('forge_v3_data', JSON.stringify(forgeData)); }
 
     window.onload = function() {
-      renderSchede();
-      aggiornaProfilo();
       aggiornaMascot();
+      aggiornaProfilo();
+      // L'app parte in modalità Home pura: nessuna scheda aperta sotto
     };
 
-    // LOGICA MASCOTTE ANIMATA
+    // GENERAZIONE CASUALE PERSONAGGIO FANTASIOSO ANIMATO
     function aggiornaMascot() {
       const avatarEl = document.getElementById('mascotAvatar');
       const statusEl = document.getElementById('mascotStatus');
       const msgEl = document.getElementById('mascotMsg');
 
-      const mascotteList = [
-        { nome: "Titan Titanio", heroEmoji: "🏋️‍♂️", sadEmoji: "🧟‍♂️", neutralEmoji: "🤖" },
-        { nome: "Gorilla Bicipite", heroEmoji: "🦍", sadEmoji: "🐵", neutralEmoji: "🦧" },
-        { nome: "Vichingo della Ghisa", heroEmoji: "⚡", sadEmoji: "🌧️", neutralEmoji: "🛡️" }
+      const fantasyCharacters = [
+        { nome: "Drago di Magma", strongIcon: "🐉", weakIcon: "🦎" },
+        { nome: "Cavaliere d'Acciaio", strongIcon: "🛡️", weakIcon: "🗡️" },
+        { nome: "Golem di Pietra", strongIcon: "🗿", weakIcon: "🪨" },
+        { nome: "Cyborg Cyber-Forge", strongIcon: "🤖", weakIcon: "🔌" },
+        { nome: "Mago delle Rune", strongIcon: "🧙‍♂️", weakIcon: "🧙" },
+        { nome: "Demone delle Vette", strongIcon: "👹", weakIcon: "👻" },
+        { nome: "Tigre dei Ghiacci", strongIcon: "🐅", weakIcon: "🐈" }
       ];
 
-      // Scegli una mascotte casuale ad ogni apertura
-      const m = mascotteList[Math.floor(Math.random() * mascotteList.length)];
+      // Scegli casualmente un personaggio ad ogni avvio
+      const char = fantasyCharacters[Math.floor(Math.random() * fantasyCharacters.length)];
 
       let giorniInattivita = 999;
       if (forgeData.allenamenti.length > 0) {
@@ -318,106 +344,185 @@
       }
 
       if (giorniInattivita <= 3) {
-        avatarEl.textContent = m.heroEmoji;
-        statusEl.textContent = `${m.nome}: ORGOGLIOSO! 🔥`;
+        avatarEl.textContent = char.strongIcon;
+        statusEl.textContent = `${char.nome}: POTENTE E IN FORMA! 🔥`;
         statusEl.style.color = "var(--accent-green)";
-        msgEl.textContent = `Sei una macchina! Rispetto dell'ultimo allenamento: ${giorniInattivita === 0 ? 'Oggi' : giorniInattivita + ' gg fa'}. Continua così!`;
-      } else if (giorniInattivita <= 7) {
-        avatarEl.textContent = m.neutralEmoji;
-        statusEl.textContent = `${m.nome}: IN ATTESA... ⏳`;
-        statusEl.style.color = "gold";
-        msgEl.textContent = `Sono trascorsi ${giorniInattivita} giorni dall'ultimo workout. È ora di tornare in palestra prima di perdere tono!`;
+        msgEl.textContent = `Prestazione eccellente! Ultimo allenamento: ${giorniInattivita === 0 ? 'Oggi' : giorniInattivita + ' giorni fa'}. Sei imbattibile!`;
       } else {
-        avatarEl.textContent = m.sadEmoji;
-        statusEl.textContent = `${m.nome}: SVILITO E GIÙ DI TONO... 📉`;
+        avatarEl.textContent = char.weakIcon;
+        statusEl.textContent = `${char.nome}: DEBOLE E SVILITO... 📉`;
         statusEl.style.color = "var(--accent-red)";
-        msgEl.textContent = `Inattività da ${giorniInattivita === 999 ? 'molti' : giorniInattivita} giorni! La forza sta calando, torna subito ad allenarti!`;
+        msgEl.textContent = `Inattività da ${giorniInattivita === 999 ? 'molti' : giorniInattivita} giorni. I livelli di forza stanno crollando, riprendi gli allenamenti!`;
       }
     }
 
-    function switchTab(tabId, btn) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-      
-      const target = document.getElementById(tabId);
-      if(target) target.classList.add('active');
+    // CONTROLLO SCHERMATE PRINCIPALI
+    function resetNavState() {
+      document.querySelectorAll('.home-nav-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.getElementById('workoutSubtabs').style.display = 'none';
+    }
 
-      const btnTarget = btn || document.getElementById(`btn_${tabId}`);
-      if(btnTarget) btnTarget.classList.add('active');
+    function apriAllenamenti() {
+      resetNavState();
+      document.getElementById('nav_allenamenti').classList.add('active');
+      document.getElementById('workoutSubtabs').style.display = 'flex';
+      switchGiorno('g1', document.getElementById('sub_g1'));
+    }
+
+    function apriSezione(tabId) {
+      resetNavState();
+      document.getElementById(`nav_${tabId}`).classList.add('active');
+      document.getElementById(tabId).classList.add('active');
 
       if(tabId === 'profilo') aggiornaProfilo();
       if(tabId === 'stats') aggiornaGrafici();
     }
 
-    // RENDER SCHEDE
-    function renderSchede() {
-      ['g1', 'g2', 'g3', 'g4'].forEach(gKey => {
-        const container = document.getElementById(gKey);
-        if(!container) return;
+    function switchGiorno(gKey, btn) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.workout-subtabs .tab-btn').forEach(b => b.classList.remove('active'));
 
-        let html = `<div class="card"><h3>🏋️ Sessione ${gKey.toUpperCase()}</h3>`;
+      document.getElementById(gKey).classList.add('active');
+      if(btn) btn.classList.add('active');
 
-        (forgeData.schede[gKey] || []).forEach((ex, exIdx) => {
-          const rmVal = ex["1rm"] || 100;
-          const muscolo = ex.muscolo || "Generale";
+      renderGiorno(gKey);
+    }
 
-          html += `
-            <div class="ex-card" data-ex="${ex.nome}">
-              <div class="ex-header">
-                <div>
-                  <strong>${exIdx + 1}. ${ex.nome} (${rmVal}kg)</strong>
-                  <span class="tag-muscolo">${muscolo}</span>
-                </div>
-                <div>
-                  ${ex.yt ? `<a href="${ex.yt}" target="_blank" class="btn-yt">▶ Video</a>` : ''}
-                  <button class="btn-del" onclick="eliminaEsercizio('${gKey}', ${exIdx})">❌</button>
-                </div>
-              </div>
+    // RENDER SCHEDA GIORNO CON TRADING CHART PER ESERCIZIO
+    function renderGiorno(gKey) {
+      const container = document.getElementById(gKey);
+      if(!container) return;
 
-              <!-- BOX PROGRESSIONE -->
-              <div class="prog-box">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                  <span style="font-size:10px; color:var(--text-muted); font-weight:bold;">MODELLO PROGRESSIONE</span>
-                  <button style="background:none; border:none; color:var(--accent-blue); font-size:11px; cursor:pointer;" onclick="apriModalInfoProg()">ℹ️ Spiegazione</button>
-                </div>
-                <select id="prog_${gKey}_${exIdx}">
-                  <option value="none">Progressione: Libera</option>
-                  <option value="lineare">1. Lineare 8s (80% -> 115%)</option>
-                  <option value="onde">2. Onde Weightlifting</option>
-                  <option value="piramidale">3. Piramidale Invertito</option>
-                  <option value="fasi">4. In Fasi (Vol + Peak)</option>
-                </select>
-                <input type="number" id="sett_${gKey}_${exIdx}" placeholder="Sett" min="1" max="8" value="1">
-                <button class="btn-secondary" style="font-size: 10px; width: 100%; margin-top: 4px;" onclick="calcolaEApplicaProgressione('${gKey}', ${exIdx}, ${rmVal})">⚡ Calcola Carichi Target</button>
-              </div>
+      let html = `<div class="card"><h3>🏋️ Sessione ${gKey.toUpperCase()}</h3>`;
 
-              <table id="tbl_${gKey}_${exIdx}">
-                <tr><th>SET</th><th>KG</th><th>REPS</th><th>RPE</th></tr>`;
-          
-          for(let i = 0; i < (ex.sets || 3); i++) {
-            html += `<tr><td>${i+1}</td><td><input type="number" class="kg"></td><td><input type="number" class="reps"></td><td><input type="number" class="rpe"></td></tr>`;
-          }
-
-          html += `</table>
-              <button class="btn-secondary" style="font-size: 11px; padding: 4px; width: 100%; margin-top: 5px;" onclick="aggiungiSerie('${gKey}', ${exIdx})">+ Aggiungi Serie</button>
-            </div>`;
-        });
+      (forgeData.schede[gKey] || []).forEach((ex, exIdx) => {
+        const rmVal = ex["1rm"] || 100;
+        const muscolo = ex.muscolo || "Generale";
+        const canvasId = `trading_${gKey}_${exIdx}`;
 
         html += `
-          <button class="btn btn-blue" onclick="apriModalAddEx('${gKey}')">+ Aggiungi Nuovo Esercizio</button>
-          <button class="btn" onclick="salvaSessione('${gKey}')">💾 Salva Allenamento</button>
-        </div>`;
+          <div class="ex-card" data-ex="${ex.nome}">
+            <div class="ex-header">
+              <div>
+                <strong>${exIdx + 1}. ${ex.nome} (${rmVal}kg)</strong>
+                <span class="tag-muscolo">${muscolo}</span>
+              </div>
+              <div>
+                ${ex.yt ? `<a href="${ex.yt}" target="_blank" class="btn-yt">▶ Video</a>` : ''}
+                <button class="btn-del" onclick="eliminaEsercizio('${gKey}', ${exIdx})">❌</button>
+              </div>
+            </div>
 
-        container.innerHTML = html;
+            <!-- GRAFICO TRADING PROGRESSI -->
+            <div class="trading-box">
+              <div class="trading-title">
+                <span>📈 TRADING CARICO (TREND)</span>
+                <span id="trend_text_${canvasId}">--</span>
+              </div>
+              <canvas id="${canvasId}" class="trading-canvas"></canvas>
+            </div>
+
+            <!-- BOX PROGRESSIONE -->
+            <div class="prog-box">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <span style="font-size:10px; color:var(--text-muted); font-weight:bold;">MODELLO PROGRESSIONE</span>
+                <button style="background:none; border:none; color:var(--accent-blue); font-size:11px; cursor:pointer;" onclick="apriModalInfoProg()">ℹ️ Spiegazione</button>
+              </div>
+              <select id="prog_${gKey}_${exIdx}">
+                <option value="none">Progressione: Libera</option>
+                <option value="lineare">1. Lineare 8s (80% -> 115%)</option>
+                <option value="onde">2. Onde Weightlifting</option>
+                <option value="piramidale">3. Piramidale Invertito</option>
+                <option value="fasi">4. In Fasi (Vol + Peak)</option>
+              </select>
+              <input type="number" id="sett_${gKey}_${exIdx}" placeholder="Sett" min="1" max="8" value="1">
+              <button class="btn-secondary" style="font-size: 10px; width: 100%; margin-top: 4px;" onclick="calcolaEApplicaProgressione('${gKey}', ${exIdx}, ${rmVal})">⚡ Calcola Carichi Target</button>
+            </div>
+
+            <table id="tbl_${gKey}_${exIdx}">
+              <tr><th>SET</th><th>KG</th><th>REPS</th><th>RPE</th></tr>`;
+        
+        for(let i = 0; i < (ex.sets || 3); i++) {
+          html += `<tr><td>${i+1}</td><td><input type="number" class="kg"></td><td><input type="number" class="reps"></td><td><input type="number" class="rpe"></td></tr>`;
+        }
+
+        html += `</table>
+            <button class="btn-secondary" style="font-size: 11px; padding: 4px; width: 100%; margin-top: 5px;" onclick="aggiungiSerie('${gKey}', ${exIdx})">+ Aggiungi Serie</button>
+          </div>`;
+      });
+
+      html += `
+        <button class="btn btn-blue" onclick="apriModalAddEx('${gKey}')">+ Aggiungi Nuovo Esercizio</button>
+        <button class="btn" onclick="salvaSessione('${gKey}')">💾 Salva Allenamento</button>
+      </div>`;
+
+      container.innerHTML = html;
+
+      // Inizializza i grafici di trading per ciascun esercizio
+      setTimeout(() => {
+        (forgeData.schede[gKey] || []).forEach((ex, exIdx) => {
+          renderTradingChart(ex.nome, `trading_${gKey}_${exIdx}`);
+        });
+      }, 100);
+    }
+
+    // RENDER GRAFICO TRADING PER SINGOLO ESERCIZIO
+    function renderTradingChart(nomeEx, canvasId) {
+      const ctx = document.getElementById(canvasId);
+      if(!ctx) return;
+
+      // Estrai lo storico carichi max di questo specifico esercizio
+      let storico = [];
+      (forgeData.allenamenti || []).forEach(s => {
+        const exFound = s.esercizi.find(e => e.nome === nomeEx);
+        if(exFound) {
+          let maxKg = 0;
+          exFound.serie.forEach(set => maxKg = Math.max(maxKg, set.peso || 0));
+          if(maxKg > 0) storico.push(maxKg);
+        }
+      });
+
+      if(storico.length < 2) {
+        storico = [60, 62.5, 65, 65, 67.5]; // Placeholder decorativo iniziale
+      }
+
+      const delta = storico[storico.length - 1] - storico[0];
+      const isUp = delta >= 0;
+      const color = isUp ? '#34c759' : '#ff3b30';
+
+      const trendTxt = document.getElementById(`trend_text_${canvasId}`);
+      if(trendTxt) {
+        trendTxt.textContent = `${isUp ? '▲ +' : '▼ '}${delta.toFixed(1)} kg`;
+        trendTxt.style.color = color;
+      }
+
+      if(tradingCharts[canvasId]) tradingCharts[canvasId].destroy();
+
+      tradingCharts[canvasId] = new Chart(ctx.getContext('2d'), {
+        type: 'line',
+        data: {
+          labels: storico.map((_, i) => `S${i+1}`),
+          datasets: [{
+            data: storico,
+            borderColor: color,
+            borderWidth: 2,
+            pointRadius: 2,
+            tension: 0.3,
+            fill: false
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: { x: { display: false }, y: { display: false } }
+        }
       });
     }
 
     function apriModalInfoProg() { document.getElementById('modalInfoProg').style.display = 'flex'; }
-
-    function apriModalAddEx(gKey) {
-      tempGKeyForAdd = gKey;
-      document.getElementById('modalAddEx').style.display = 'flex';
-    }
+    function apriModalAddEx(gKey) { tempGKeyForAdd = gKey; document.getElementById('modalAddEx').style.display = 'flex'; }
     function chiudiModalAddEx() { document.getElementById('modalAddEx').style.display = 'none'; }
 
     function confermaAggiungiEsercizio() {
@@ -432,7 +537,7 @@
       forgeData.schede[tempGKeyForAdd].push({ nome: nome, muscolo: muscolo, yt: yt, sets: 3, "1rm": rm });
       
       salvaStato();
-      renderSchede();
+      renderGiorno(tempGKeyForAdd);
       chiudiModalAddEx();
       document.getElementById('newEx_nome').value = '';
     }
@@ -465,14 +570,14 @@
       if(confirm("Eliminare esercizio?")) {
         forgeData.schede[gKey].splice(exIdx, 1);
         salvaStato();
-        renderSchede();
+        renderGiorno(gKey);
       }
     }
 
     function aggiungiSerie(gKey, exIdx) {
       forgeData.schede[gKey][exIdx].sets = (forgeData.schede[gKey][exIdx].sets || 3) + 1;
       salvaStato();
-      renderSchede();
+      renderGiorno(gKey);
     }
 
     function salvaSessione(gKey) {
@@ -483,7 +588,6 @@
       eserciziCards.forEach(card => {
         const nomeEx = card.getAttribute('data-ex');
         
-        // Cerca muscolo target
         let muscoloTarget = "Generale";
         Object.keys(forgeData.schede).forEach(gk => {
           const exObj = forgeData.schede[gk].find(e => e.nome === nomeEx);
@@ -513,17 +617,16 @@
         salvaStato();
         aggiornaMascot();
         alert(`✅ Allenamento ${gKey.toUpperCase()} Salvato!`);
+        renderGiorno(gKey);
       } else {
         alert("⚠️ Inserisci almeno una serie per salvare.");
       }
     }
 
-    // STATISTICHE & DIAGRAMMA A TORTA SETTIMANALE PER MUSCOLO
     function aggiornaGrafici() {
       const oggi = new Date();
       let muscoloVolumeMap = {};
 
-      // Analizza le sessioni degli ultimi 7 giorni
       (forgeData.allenamenti || []).forEach(s => {
         const diffDays = (oggi - new Date(s.data)) / (1000 * 3600 * 24);
         if (diffDays <= 7) {
