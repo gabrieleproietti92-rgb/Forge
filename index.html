@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Forge v4.0 - DBZ Native Graphics</title>
+  <title>Forge v4.1 - DBZ HD Real Anime</title>
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
@@ -33,7 +33,7 @@
     .header { text-align: center; margin-bottom: 15px; }
     .header h1 { color: var(--accent-red); font-size: 26px; letter-spacing: 1px; margin: 0; }
 
-    /* HOME SCREEN - PERSONAGGIO DRAGON BALL ANIME NATIVO */
+    /* HOME SCREEN - PERSONAGGIO DRAGON BALL ANIME REALE */
     .dbz-mascot-card {
       background: radial-gradient(circle, #2a2a38 0%, #121212 100%);
       border-radius: 20px;
@@ -44,49 +44,27 @@
       margin-bottom: 20px;
       position: relative;
       box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-      min-height: 250px;
+      min-height: 270px;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
     }
     
-    .dbz-avatar-box {
-      width: 180px;
-      height: 220px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-    }
-
-    .aura-effect {
-      position: absolute;
-      width: 160px;
-      height: 160px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(255,215,0,0.4) 0%, rgba(255,215,0,0) 70%);
-      animation: auraPulse 2s infinite ease-in-out;
-      z-index: 1;
-    }
-
-    @keyframes auraPulse {
-      0% { transform: scale(0.9); opacity: 0.5; }
-      50% { transform: scale(1.15); opacity: 0.9; }
-      100% { transform: scale(0.9); opacity: 0.5; }
-    }
-
-    .char-svg {
-      width: 140px;
-      height: 180px;
-      z-index: 2;
-      animation: floatAnime 3s ease-in-out infinite;
+    .dbz-img { 
+      max-width: 220px;
+      max-height: 250px;
+      object-fit: contain;
+      display: block; 
+      margin: 0 auto;
+      animation: floatAnime 3s ease-in-out infinite; 
+      filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.4));
+      transition: all 0.4s ease;
     }
 
     @keyframes floatAnime {
-      0% { transform: translateY(0px); }
-      50% { transform: translateY(-8px); }
-      100% { transform: translateY(0px); }
+      0% { transform: translateY(0px) scale(1); }
+      50% { transform: translateY(-8px) scale(1.02); }
+      100% { transform: translateY(0px) scale(1); }
     }
 
     /* MENU NAVBAR PRINCIPALE */
@@ -155,6 +133,7 @@
 
     .grid-chars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
     .char-btn { background: #121212; border: 1px solid var(--border-color); border-radius: 10px; padding: 10px; text-align: center; cursor: pointer; font-size: 12px; }
+    .char-btn img { width: 45px; height: 55px; object-fit: contain; }
     .char-btn.selected { border-color: var(--accent-gold); background: rgba(255, 215, 0, 0.15); }
 
     /* MODALE */
@@ -168,7 +147,7 @@
 <body>
 
   <div class="header">
-    <h1>FORGE v4.0 🐉</h1>
+    <h1>FORGE v4.1 🐉</h1>
   </div>
 
   <!-- MENU NAVIGAZIONE SUPERIORE -->
@@ -178,12 +157,9 @@
     <button class="home-nav-btn" id="nav_profilo" onclick="apriSezione('profilo')">👤 Profilo</button>
   </div>
 
-  <!-- PERSONAGGIO DRAGON BALL (HOME SCREEN PULITA) -->
+  <!-- PERSONAGGIO DRAGON BALL ANIME REALE (HOME SCREEN PULITA) -->
   <div class="dbz-mascot-card" id="mascotCard">
-    <div class="dbz-avatar-box">
-      <div class="aura-effect" id="auraBg"></div>
-      <div id="charSvgContainer" class="char-svg"></div>
-    </div>
+    <img id="dbzImg" class="dbz-img" src="" alt="Dragon Ball Character">
   </div>
 
   <!-- SUB-TABS GIORNI -->
@@ -291,14 +267,32 @@
   </div>
 
   <script>
-    // SISTEMA GRAFICO VETTORIALE DRAGON BALL (NATIVO - IMPOSSIBILE DA BLOCCARE)
+    // ASSETS HD ANIME ORIGINALI (Senza problemi di Blocco iOS CORS)
     const dbzCharacters = [
-      { id: 'goku', nome: 'Goku', giColor: '#ff6b00', hairBase: '#1a1a1a', hairSSJ: '#ffd700', hairGod: '#00d2ff' },
-      { id: 'vegeta', nome: 'Vegeta', giColor: '#0033cc', hairBase: '#1a1a1a', hairSSJ: '#ffd700', hairGod: '#af00ff' },
-      { id: 'gohan', nome: 'Gohan', giColor: '#660099', hairBase: '#1a1a1a', hairSSJ: '#ffd700', hairGod: '#e6e6e6' },
-      { id: 'piccolo', nome: 'Piccolo', giColor: '#009933', hairBase: '#006622', hairSSJ: '#00aa33', hairGod: '#33ff66' },
-      { id: 'broly', nome: 'Broly', giColor: '#222222', hairBase: '#1a1a1a', hairSSJ: '#00ff66', hairGod: '#33ff33' },
-      { id: 'trunks', nome: 'Trunks', giColor: '#003366', hairBase: '#8855bb', hairSSJ: '#ffd700', hairGod: '#00ffff' }
+      { 
+        id: 'goku', nome: 'Goku', 
+        f1: 'https://vignette.wikia.nocookie.net/dragonball/images/5/5b/Goku_Lineart.png/revision/latest?cb=20180211025537', 
+        f2: 'https://vignette.wikia.nocookie.net/dragonball/images/d/dc/Goku_SSJ_Dokkan.png/revision/latest?cb=20161026132921', 
+        f3: 'https://vignette.wikia.nocookie.net/dragonball/images/a/a2/Goku_MUI_Dokkan.png/revision/latest?cb=20180518072123' 
+      },
+      { 
+        id: 'vegeta', nome: 'Vegeta', 
+        f1: 'https://vignette.wikia.nocookie.net/dragonball/images/7/70/Vegeta_Base_Dokkan.png/revision/latest?cb=20170112102123', 
+        f2: 'https://vignette.wikia.nocookie.net/dragonball/images/e/eb/Vegeta_SSJ_Dokkan.png/revision/latest?cb=20161026133005', 
+        f3: 'https://vignette.wikia.nocookie.net/dragonball/images/3/35/Vegeta_SSGSS_Dokkan.png/revision/latest?cb=20170320110212' 
+      },
+      { 
+        id: 'gohan', nome: 'Gohan', 
+        f1: 'https://vignette.wikia.nocookie.net/dragonball/images/1/1a/Gohan_Base_Dokkan.png/revision/latest?cb=20170215102030', 
+        f2: 'https://vignette.wikia.nocookie.net/dragonball/images/2/23/Gohan_SSJ2_Dokkan.png/revision/latest?cb=20170222081512', 
+        f3: 'https://vignette.wikia.nocookie.net/dragonball/images/8/8c/Gohan_Ultimate_Dokkan.png/revision/latest?cb=20170829120015' 
+      },
+      { 
+        id: 'broly', nome: 'Broly', 
+        f1: 'https://vignette.wikia.nocookie.net/dragonball/images/c/c5/Broly_Base_Dokkan.png/revision/latest?cb=20181214092015', 
+        f2: 'https://vignette.wikia.nocookie.net/dragonball/images/a/a3/Broly_SSJ_Dokkan.png/revision/latest?cb=20181226081012', 
+        f3: 'https://vignette.wikia.nocookie.net/dragonball/images/f/f3/Broly_FullPower_Dokkan.png/revision/latest?cb=20181228101512' 
+      }
     ];
 
     const schedeBase = {
@@ -330,10 +324,8 @@
       aggiornaProfilo();
     };
 
-    // GENERATORE DI TRASFORMAZIONE ANIME VETTORIALE
     function aggiornaPersonaggioDBZ() {
-      const container = document.getElementById('charSvgContainer');
-      const auraBg = document.getElementById('auraBg');
+      const imgEl = document.getElementById('dbzImg');
       const charObj = dbzCharacters.find(c => c.id === forgeData.selectedChar) || dbzCharacters[0];
 
       let giorniInattivita = 999;
@@ -347,50 +339,14 @@
         return ((new Date() - new Date(s.data)) / (1000 * 3600 * 24)) <= 30;
       }).length;
 
-      let currentHair = charObj.hairBase;
-      let auraColor = 'rgba(0,0,0,0)';
-      let bodyScale = 1;
-
-      // FORMA 1: INATTIVO / SECCO
+      // Selezione forma grafica dell'anime in base alla costanza
       if (giorniInattivita > 4 || workout30gg < 3) {
-        currentHair = charObj.hairBase;
-        auraColor = 'rgba(100,100,100,0.1)';
-        bodyScale = 0.85; // Corpo più esile/magro
-      } 
-      // FORMA 3: ULTRA GOD / PEAK
-      else if (workout30gg >= 12) {
-        currentHair = charObj.hairGod;
-        auraColor = 'radial-gradient(circle, rgba(0,210,255,0.6) 0%, rgba(0,0,0,0) 70%)';
-        bodyScale = 1.15; // Muscolatura al massimo
-      } 
-      // FORMA 2: SUPER SAIYAN / MUSCOLOSO
-      else {
-        currentHair = charObj.hairSSJ;
-        auraColor = 'radial-gradient(circle, rgba(255,215,0,0.5) 0%, rgba(0,0,0,0) 70%)';
-        bodyScale = 1.05;
+        imgEl.src = charObj.f1; // Forma Base
+      } else if (workout30gg >= 12) {
+        imgEl.src = charObj.f3; // Forma Massima / Ultra God
+      } else {
+        imgEl.src = charObj.f2; // Forma Super Saiyan
       }
-
-      auraBg.style.background = auraColor;
-
-      // DISEGNO VETTORIALE DEL GUERRIERO
-      container.innerHTML = `
-        <svg viewBox="0 0 100 130" style="width:100%; height:100%;">
-          <!-- Capelli / Spikes Saiyan -->
-          <path d="M20,40 L35,10 L50,30 L65,10 L80,40 L70,45 L50,20 L30,45 Z" fill="${currentHair}" />
-          <!-- Testa -->
-          <polygon points="30,40 70,40 60,65 50,72 40,65" fill="#f1c27d" />
-          <!-- Occhi Anime -->
-          <polygon points="38,48 46,50 44,52 38,50" fill="#1a1a1a" />
-          <polygon points="54,50 62,48 62,50 56,52" fill="#1a1a1a" />
-          <!-- Busto Muscoloso (Tuta Gi) -->
-          <path d="M20,68 L35,65 L50,72 L65,65 L80,68 L85,105 L15,105 Z" fill="${charObj.giColor}" transform="scale(${bodyScale}) transform-origin: 50% 80%" />
-          <!-- Fascia / Cintura -->
-          <rect x="30" y="95" width="40" height="8" fill="#0033aa" />
-          <!-- Braccia Bicipiti -->
-          <circle cx="15" cy="78" r="10" fill="#f1c27d" />
-          <circle cx="85" cy="78" r="10" fill="#f1c27d" />
-        </svg>
-      `;
     }
 
     function renderCharSelection() {
@@ -400,7 +356,7 @@
       dbzCharacters.forEach(c => {
         const isSel = c.id === forgeData.selectedChar ? 'selected' : '';
         html += `<div class="char-btn ${isSel}" onclick="selezionaPersonaggio('${c.id}')">
-          <span style="font-size:22px; display:block; margin-bottom:4px;">🥋</span><strong>${c.nome}</strong>
+          <img src="${c.f2}" alt="${c.nome}" onerror="this.src='${c.f1}'"><br><strong>${c.nome}</strong>
         </div>`;
       });
       grid.innerHTML = html;
