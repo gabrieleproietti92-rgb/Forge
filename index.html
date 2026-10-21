@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Forge v4.2 - DBZ Native Engine</title>
+  <title>Forge v4.5 - Gestione Giorni & Anamnesi</title>
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
@@ -29,11 +29,11 @@
       padding-bottom: 90px;
     }
 
-    h1, h2, h3 { margin: 0 0 10px 0; }
+    h1, h2, h3, h4 { margin: 0 0 10px 0; }
     .header { text-align: center; margin-bottom: 15px; }
     .header h1 { color: var(--accent-red); font-size: 26px; letter-spacing: 1px; margin: 0; }
 
-    /* HOME SCREEN - PERSONAGGIO DRAGON BALL ANIME NATIVO */
+    /* HOME SCREEN MASCOTTE */
     .dbz-mascot-card {
       background: radial-gradient(circle, #2a2a38 0%, #121212 100%);
       border-radius: 20px;
@@ -44,43 +44,17 @@
       margin-bottom: 20px;
       position: relative;
       box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-      min-height: 270px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .aura-effect {
-      position: absolute;
-      width: 170px;
-      height: 170px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(255,215,0,0.3) 0%, rgba(255,215,0,0) 70%);
-      animation: auraPulse 2s infinite ease-in-out;
-      z-index: 1;
-    }
-
-    @keyframes auraPulse {
-      0% { transform: scale(0.9); opacity: 0.4; }
-      50% { transform: scale(1.2); opacity: 0.8; }
-      100% { transform: scale(0.9); opacity: 0.4; }
-    }
-
-    .dbz-avatar-box {
-      width: 200px;
-      height: 240px;
+      min-height: 250px;
       display: flex;
       align-items: center;
       justify-content: center;
-      position: relative;
-      z-index: 2;
     }
 
-    .dbz-avatar-box svg {
-      width: 100%;
-      height: 100%;
-      filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.4));
+    .dbz-img-real {
+      max-width: 230px;
+      max-height: 250px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.4));
       animation: floatAnime 3s ease-in-out infinite;
     }
 
@@ -102,7 +76,7 @@
     /* SUB-TABS GIORNI */
     .workout-subtabs { display: none; gap: 6px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
     .tab-btn {
-      flex: 1; min-width: 55px; background: var(--card-bg); color: var(--text-muted);
+      flex: 1; min-width: 60px; background: var(--card-bg); color: var(--text-muted);
       border: 1px solid var(--border-color); padding: 10px; border-radius: 10px;
       font-weight: bold; cursor: pointer; text-align: center; font-size: 13px;
     }
@@ -149,6 +123,8 @@
     .btn-blue { background: var(--accent-blue); }
     .btn-green { background: var(--accent-green); }
 
+    .btn-sets-row { display: flex; gap: 8px; margin-top: 8px; }
+
     .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0; }
     .stat-box { background: #121212; padding: 10px; border-radius: 8px; text-align: center; }
     .stat-label { font-size: 11px; color: var(--text-muted); display: block; }
@@ -157,6 +133,8 @@
     .grid-chars { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; }
     .char-btn { background: #121212; border: 1px solid var(--border-color); border-radius: 10px; padding: 12px; text-align: center; cursor: pointer; font-size: 13px; font-weight: bold; }
     .char-btn.selected { border-color: var(--accent-gold); background: rgba(255, 215, 0, 0.15); }
+
+    .day-manager-item { display: flex; justify-content: space-between; align-items: center; background: #121212; padding: 8px 12px; border-radius: 8px; margin-bottom: 6px; border: 1px solid var(--border-color); }
 
     /* MODALE */
     .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 9999; }
@@ -169,7 +147,7 @@
 <body>
 
   <div class="header">
-    <h1>FORGE v4.2 🐉</h1>
+    <h1>FORGE v4.5 🐉</h1>
   </div>
 
   <!-- MENU NAVIGAZIONE SUPERIORE -->
@@ -179,25 +157,16 @@
     <button class="home-nav-btn" id="nav_profilo" onclick="apriSezione('profilo')">👤 Profilo</button>
   </div>
 
-  <!-- PERSONAGGIO DRAGON BALL (HOME SCREEN NATIVA PULITA) -->
+  <!-- PERSONAGGIO DRAGON BALL CARICATO NATIVAMENTE -->
   <div class="dbz-mascot-card" id="mascotCard">
-    <div class="aura-effect" id="auraBg"></div>
-    <div class="dbz-avatar-box" id="avatarContainer"></div>
+    <img id="dbzRealImg" class="dbz-img-real" src="assets/goku_base.png" alt="Dragon Ball Character" onerror="this.src='assets/goku_base.png'">
   </div>
 
-  <!-- SUB-TABS GIORNI -->
-  <div class="workout-subtabs" id="workoutSubtabs">
-    <button class="tab-btn active" id="sub_g1" onclick="switchGiorno('g1', this)">G1</button>
-    <button class="tab-btn" id="sub_g2" onclick="switchGiorno('g2', this)">G2</button>
-    <button class="tab-btn" id="sub_g3" onclick="switchGiorno('g3', this)">G3</button>
-    <button class="tab-btn" id="sub_g4" onclick="switchGiorno('g4', this)">G4</button>
-  </div>
+  <!-- SUB-TABS GIORNI DINAMICI -->
+  <div class="workout-subtabs" id="workoutSubtabs"></div>
 
-  <!-- SEZIONI GIORNI ALLENAMENTO -->
-  <div id="g1" class="tab-content"></div>
-  <div id="g2" class="tab-content"></div>
-  <div id="g3" class="tab-content"></div>
-  <div id="g4" class="tab-content"></div>
+  <!-- CONTENITORE DINAMICO GIORNI ALLENAMENTO -->
+  <div id="workoutDaysContainer"></div>
 
   <!-- STATISTICHE -->
   <div id="stats" class="tab-content">
@@ -211,8 +180,23 @@
     </div>
   </div>
 
-  <!-- PROFILO & SELEZIONE PERSONAGGIO DBZ -->
+  <!-- PROFILO, GESTIONE GIORNI & ANAMNESI -->
   <div id="profilo" class="tab-content">
+    
+    <!-- GESTIONE GIORNI ALLENAMENTO -->
+    <div class="card">
+      <h3>📅 Giorni di Allenamento</h3>
+      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Aggiungi, rimuovi o rinomina le tue sessioni (es. G1, Legs, Push, Pull):</p>
+      <div id="daysManagerList"></div>
+      <button class="btn btn-blue" onclick="aggiungiNuovoGiorno()">+ Aggiungi Giorno di Allenamento</button>
+    </div>
+
+    <div class="card">
+      <h3>👤 Profilo & Anamnesi</h3>
+      <div id="displayAnamnesi">Nessuna anamnesi salvata.</div>
+      <button class="btn-secondary btn" onclick="apriModalAnamnesi()">✏️ Compila / Modifica Anamnesi</button>
+    </div>
+
     <div class="card">
       <h3>🐉 Scegli il tuo Guerriero Dragon Ball</h3>
       <div class="grid-chars" id="dbzGrid"></div>
@@ -221,12 +205,6 @@
     <div class="card">
       <h3>🏆 Bacheca Personal Record (PR)</h3>
       <div id="displayRecordsList" style="font-size:13px; line-height:1.6;">Nessun record registrato.</div>
-    </div>
-
-    <div class="card">
-      <h3>👤 Profilo & Anamnesi</h3>
-      <div id="displayAnamnesi">Nessuna anamnesi salvata.</div>
-      <button class="btn-secondary btn" onclick="apriModalAnamnesi()">✏️ Compila Anamnesi</button>
     </div>
 
     <div class="card">
@@ -254,7 +232,7 @@
       <h3>🏋️ Aggiungi Esercizio</h3>
       <div class="form-group"><label>Nome:</label><input type="text" id="newEx_nome"></div>
       <div class="form-group">
-        <label>Muscolo:</label>
+        <label>Muscolo Target:</label>
         <select id="newEx_muscolo">
           <option value="Quadricipiti">🦵 Quadricipiti</option>
           <option value="Femorali/Glutei">🍑 Femorali / Glutei</option>
@@ -264,7 +242,7 @@
           <option value="Spalle">🦵 Spalle</option>
         </select>
       </div>
-      <div class="form-group"><label>1RM (kg):</label><input type="number" id="newEx_1rm" value="100"></div>
+      <div class="form-group"><label>Massimale 1RM (kg):</label><input type="number" id="newEx_1rm" value="100"></div>
       <button onclick="confermaAggiungiEsercizio()" class="btn">Aggiungi</button>
       <button onclick="document.getElementById('modalAddEx').style.display='none'" class="btn btn-secondary">Annulla</button>
     </div>
@@ -274,9 +252,31 @@
     <div class="modal-content">
       <h2>📋 Anamnesi Iniziale</h2>
       <form onsubmit="salvaAnamnesi(event)">
-        <div class="form-group"><label>Peso (kg):</label><input type="number" id="ana_peso" step="0.1" required></div>
+        <div class="form-group"><label>Peso Corporeo (kg):</label><input type="number" id="ana_peso" step="0.1" required></div>
         <div class="form-group"><label>Altezza (cm):</label><input type="number" id="ana_altezza" required></div>
-        <button type="submit" class="btn">Salva Profilo</button>
+        <div class="form-group">
+          <label>Obiettivo Principale:</label>
+          <select id="ana_obiettivo">
+            <option value="Aumento Massa (Ipertrofia)">Aumento Massa (Ipertrofia)</option>
+            <option value="Dimagrimento / Definizione">Dimagrimento / Definizione</option>
+            <option value="Forza Pura / Weightlifting">Forza Pura / Weightlifting</option>
+            <option value="Ricomposizione Corporea">Ricomposizione Corporea</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Livello di Preparazione:</label>
+          <select id="ana_livello">
+            <option value="Principiante">Principiante</option>
+            <option value="Intermedio">Intermedio</option>
+            <option value="Avanzato">Avanzato</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Infortuni o Limitazioni:</label>
+          <textarea id="ana_infortuni" rows="3" placeholder="Es. Fastidio spalla destra..."></textarea>
+        </div>
+        <button type="submit" class="btn">Salva Profilo Anamnesi</button>
+        <button type="button" class="btn btn-secondary" onclick="document.getElementById('modalAnamnesi').style.display='none'">Chiudi</button>
       </form>
     </div>
   </div>
@@ -286,16 +286,13 @@
       <h3>⚖️ Nuova Pesata</h3>
       <input type="number" id="inputNuovoPeso" step="0.1" placeholder="Peso Attuale (kg)">
       <button onclick="salvaNuovaPesata()" class="btn" style="margin-top:10px;">Salva</button>
+      <button onclick="document.getElementById('modalPesata').style.display='none'" class="btn btn-secondary">Annulla</button>
     </div>
   </div>
 
   <script>
-    // MOTORE GRAFICO NATIVO ANIME DRAGON BALL (GARANTITO AL 100% SU IOS)
     const dbzCharacters = [
-      { id: 'goku', nome: 'Goku', gi: '#ff6600', baseHair: '#1a1a1a', ssjHair: '#ffd700', godHair: '#00e5ff' },
-      { id: 'vegeta', nome: 'Vegeta', gi: '#0044cc', baseHair: '#1a1a1a', ssjHair: '#ffd700', godHair: '#9900ff' },
-      { id: 'gohan', nome: 'Gohan', gi: '#550088', baseHair: '#1a1a1a', ssjHair: '#ffd700', godHair: '#e6e6e6' },
-      { id: 'broly', nome: 'Broly', gi: '#111111', baseHair: '#1a1a1a', ssjHair: '#00ff66', godHair: '#33ff33' }
+      { id: 'goku', nome: 'Goku', f1: 'assets/goku_base.png', f2: 'assets/goku_ssj.png', f3: 'assets/goku_god.png' }
     ];
 
     const schedeBase = {
@@ -322,14 +319,105 @@
     function salvaStato() { localStorage.setItem('forge_v3_data', JSON.stringify(forgeData)); }
 
     window.onload = function() {
+      inizializzaStrutturaGiorni();
       renderCharSelection();
       aggiornaPersonaggioDBZ();
       aggiornaProfilo();
     };
 
+    // GESTIONE DINAMICA GIORNI DI ALLENAMENTO
+    function inizializzaStrutturaGiorni() {
+      const subtabs = document.getElementById('workoutSubtabs');
+      const container = document.getElementById('workoutDaysContainer');
+      
+      let subHtml = '';
+      let contHtml = '';
+
+      const gKeys = Object.keys(forgeData.schede);
+      if(gKeys.length === 0) {
+        forgeData.schede = schedeBase;
+      }
+
+      Object.keys(forgeData.schede).forEach((gKey, idx) => {
+        const isFirst = idx === 0 ? 'active' : '';
+        const dayLabel = gKey.toUpperCase();
+
+        subHtml += `<button class="tab-btn ${isFirst}" id="sub_${gKey}" onclick="switchGiorno('${gKey}', this)">${dayLabel}</button>`;
+        contHtml += `<div id="${gKey}" class="tab-content ${isFirst}"></div>`;
+      });
+
+      subtabs.innerHTML = subHtml;
+      container.innerHTML = contHtml;
+    }
+
+    function renderDaysManager() {
+      const list = document.getElementById('daysManagerList');
+      if(!list) return;
+
+      let html = '';
+      Object.keys(forgeData.schede).forEach((gKey) => {
+        html += `
+          <div class="day-manager-item">
+            <strong>${gKey.toUpperCase()}</strong>
+            <div>
+              <button class="btn-secondary" style="font-size:11px; padding:4px 8px; margin-right:4px;" onclick="rinominaGiorno('${gKey}')">✏️ Rinomina</button>
+              <button class="btn-del" onclick="rimuoviGiorno('${gKey}')">❌ Elimina</button>
+            </div>
+          </div>
+        `;
+      });
+      list.innerHTML = html;
+    }
+
+    function aggiungiNuovoGiorno() {
+      const nomeInput = prompt("Inserisci il nome del nuovo giorno (es. G5, Push, FullBody):");
+      if(!nomeInput) return;
+      const keyClean = nomeInput.toLowerCase().replace(/\s+/g, '_');
+
+      if(forgeData.schede[keyClean]) {
+        alert("⚠️ Esiste già un giorno con questo nome.");
+        return;
+      }
+
+      forgeData.schede[keyClean] = [
+        { nome: "Nuovo Esercizio", muscolo: "Generale", yt: "", sets: 3, "1rm": 80 }
+      ];
+      salvaStato();
+      inizializzaStrutturaGiorni();
+      renderDaysManager();
+      alert(`✅ Giorno ${nomeInput.toUpperCase()} aggiunto!`);
+    }
+
+    function rinominaGiorno(oldKey) {
+      const nuovoNome = prompt("Inserisci il nuovo nome per questo giorno:", oldKey.toUpperCase());
+      if(!nuovoNome) return;
+      const newKey = nuovoNome.toLowerCase().replace(/\s+/g, '_');
+
+      if(newKey !== oldKey) {
+        forgeData.schede[newKey] = forgeData.schede[oldKey];
+        delete forgeData.schede[oldKey];
+        salvaStato();
+        inizializzaStrutturaGiorni();
+        renderDaysManager();
+      }
+    }
+
+    function rimuoviGiorno(gKey) {
+      if(Object.keys(forgeData.schede).length <= 1) {
+        alert("⚠️ Devi mantenere almeno un giorno di allenamento.");
+        return;
+      }
+
+      if(confirm(`Sei sicuro di voler eliminare il giorno ${gKey.toUpperCase()} e i suoi esercizi?`)) {
+        delete forgeData.schede[gKey];
+        salvaStato();
+        inizializzaStrutturaGiorni();
+        renderDaysManager();
+      }
+    }
+
     function aggiornaPersonaggioDBZ() {
-      const container = document.getElementById('avatarContainer');
-      const auraBg = document.getElementById('auraBg');
+      const imgEl = document.getElementById('dbzRealImg');
       const charObj = dbzCharacters.find(c => c.id === forgeData.selectedChar) || dbzCharacters[0];
 
       let giorniInattivita = 999;
@@ -343,72 +431,13 @@
         return ((new Date() - new Date(s.data)) / (1000 * 3600 * 24)) <= 30;
       }).length;
 
-      let hairColor = charObj.baseHair;
-      let auraGradient = 'rgba(0,0,0,0)';
-      let muscleWidth = 1;
-
       if (giorniInattivita > 4 || workout30gg < 3) {
-        hairColor = charObj.baseHair;
-        auraGradient = 'radial-gradient(circle, rgba(120,120,120,0.2) 0%, rgba(0,0,0,0) 70%)';
-        muscleWidth = 0.85; // Secco / Affaticato
+        imgEl.src = charObj.f1;
       } else if (workout30gg >= 12) {
-        hairColor = charObj.godHair;
-        auraGradient = 'radial-gradient(circle, rgba(0,229,255,0.6) 0%, rgba(0,0,0,0) 70%)';
-        muscleWidth = 1.2; // Ultra / Full Power
+        imgEl.src = charObj.f3;
       } else {
-        hairColor = charObj.ssjHair;
-        auraGradient = 'radial-gradient(circle, rgba(255,215,0,0.5) 0%, rgba(0,0,0,0) 70%)';
-        muscleWidth = 1.05; // Super Saiyan
+        imgEl.src = charObj.f2;
       }
-
-      auraBg.style.background = auraGradient;
-
-      // VECTOR ANIME RENDERING ENGINE
-      container.innerHTML = `
-        <svg viewBox="0 0 100 140">
-          <defs>
-            <linearGradient id="skinGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#ffe0bd"/>
-              <stop offset="100%" stop-color="#d4a373"/>
-            </linearGradient>
-            <linearGradient id="giGrad" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="${charObj.gi}"/>
-              <stop offset="100%" stop-color="#881100"/>
-            </linearGradient>
-          </defs>
-
-          <!-- CHIOMA SAIYAN SPIKES -->
-          <path d="M 15 45 Q 10 15 35 10 Q 40 25 50 5 Q 60 25 65 10 Q 90 15 85 45 Q 70 35 50 25 Q 30 35 15 45 Z" fill="${hairColor}" stroke="#111" stroke-width="1.5" />
-          
-          <!-- TESTA ANIME -->
-          <polygon points="32,40 68,40 58,68 50,75 42,68" fill="url(#skinGrad)" stroke="#222" stroke-width="1.2"/>
-          
-          <!-- OCCHI DRAGON BALL -->
-          <polygon points="36,48 45,50 43,53 37,51" fill="#fff" stroke="#000" stroke-width="1"/>
-          <polygon points="55,50 64,48 63,51 57,53" fill="#fff" stroke="#000" stroke-width="1"/>
-          <circle cx="41" cy="50" r="1.5" fill="${hairColor === '#1a1a1a' ? '#000' : hairColor}"/>
-          <circle cx="59" cy="50" r="1.5" fill="${hairColor === '#1a1a1a' ? '#000' : hairColor}"/>
-          
-          <!-- SOPRACCIGLIA INCLINATE -->
-          <line x1="34" y1="45" x2="46" y2="48" stroke="${hairColor}" stroke-width="2.5" />
-          <line x1="54" y1="48" x2="66" y2="45" stroke="${hairColor}" stroke-width="2.5" />
-
-          <!-- BUSTO ANATOMICO CON TRAPEZI E PETTORALI -->
-          <g transform="translate(50, 75) scale(${muscleWidth}, 1) translate(-50, -75)">
-            <!-- Trapezi / Collo -->
-            <polygon points="40,68 60,68 66,80 34,80" fill="url(#skinGrad)" stroke="#333" stroke-width="1"/>
-            
-            <!-- Tuta da Combattimento (Gi) -->
-            <path d="M 20 80 Q 35 75 50 82 Q 65 75 80 80 L 85 125 L 15 125 Z" fill="url(#giGrad)" stroke="#111" stroke-width="1.5"/>
-            <polygon points="42,82 58,82 50,105" fill="#112244"/>
-            <rect x="28" y="112" width="44" height="10" fill="#0033aa"/>
-
-            <!-- BICIPITI SCOLPITI -->
-            <circle cx="12" cy="92" r="11" fill="url(#skinGrad)" stroke="#222" stroke-width="1.2"/>
-            <circle cx="88" cy="92" r="11" fill="url(#skinGrad)" stroke="#222" stroke-width="1.2"/>
-          </g>
-        </svg>
-      `;
     }
 
     function renderCharSelection() {
@@ -441,7 +470,9 @@
       resetNavState();
       document.getElementById('nav_allenamenti').classList.add('active');
       document.getElementById('workoutSubtabs').style.display = 'flex';
-      switchGiorno('g1', document.getElementById('sub_g1'));
+      
+      const firstKey = Object.keys(forgeData.schede)[0] || 'g1';
+      switchGiorno(firstKey, document.getElementById(`sub_${firstKey}`));
     }
 
     function apriSezione(tabId) {
@@ -457,7 +488,8 @@
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
       document.querySelectorAll('.workout-subtabs .tab-btn').forEach(b => b.classList.remove('active'));
 
-      document.getElementById(gKey).classList.add('active');
+      const target = document.getElementById(gKey);
+      if(target) target.classList.add('active');
       if(btn) btn.classList.add('active');
 
       renderGiorno(gKey);
@@ -520,7 +552,10 @@
         }
 
         html += `</table>
-            <button class="btn-secondary" style="font-size: 11px; padding: 4px; width: 100%; margin-top: 5px;" onclick="aggiungiSerie('${gKey}', ${exIdx})">+ Aggiungi Serie</button>
+            <div class="btn-sets-row">
+              <button class="btn-secondary" style="font-size: 11px; padding: 6px; flex: 1;" onclick="aggiungiSerie('${gKey}', ${exIdx})">+ Aggiungi Serie</button>
+              <button class="btn-secondary" style="font-size: 11px; padding: 6px; flex: 1; color: var(--accent-red);" onclick="rimuoviSerie('${gKey}', ${exIdx})">- Rimuovi Serie</button>
+            </div>
           </div>`;
       });
 
@@ -536,6 +571,23 @@
           renderTradingChart(ex.nome, `trading_${gKey}_${exIdx}`);
         });
       }, 100);
+    }
+
+    function aggiungiSerie(gKey, exIdx) {
+      forgeData.schede[gKey][exIdx].sets = (forgeData.schede[gKey][exIdx].sets || 3) + 1;
+      salvaStato();
+      renderGiorno(gKey);
+    }
+
+    function rimuoviSerie(gKey, exIdx) {
+      const attuali = forgeData.schede[gKey][exIdx].sets || 3;
+      if (attuali > 1) {
+        forgeData.schede[gKey][exIdx].sets = attuali - 1;
+        salvaStato();
+        renderGiorno(gKey);
+      } else {
+        alert("⚠️ L'esercizio deve avere almeno 1 serie.");
+      }
     }
 
     function renderTradingChart(nomeEx, canvasId) {
@@ -641,12 +693,6 @@
       }
     }
 
-    function aggiungiSerie(gKey, exIdx) {
-      forgeData.schede[gKey][exIdx].sets = (forgeData.schede[gKey][exIdx].sets || 3) + 1;
-      salvaStato();
-      renderGiorno(gKey);
-    }
-
     function salvaSessione(gKey) {
       const tab = document.getElementById(gKey);
       const eserciziCards = tab.querySelectorAll('.ex-card');
@@ -724,16 +770,40 @@
       });
     }
 
-    function apriModalAnamnesi() { document.getElementById('modalAnamnesi').style.display = 'flex'; }
-    function apriModalPesata() { document.getElementById('modalPesata').style.display = 'flex'; }
+    function apriModalAnamnesi() {
+      const ana = forgeData.anamnesi || {};
+      if(ana.altezza) document.getElementById('ana_altezza').value = ana.altezza;
+      if(ana.obiettivo) document.getElementById('ana_obiettivo').value = ana.obiettivo;
+      if(ana.livello) document.getElementById('ana_livello').value = ana.livello;
+      if(ana.infortuni) document.getElementById('ana_infortuni').value = ana.infortuni;
+      
+      const st = forgeData.storicoPeso || [];
+      if(st.length > 0) document.getElementById('ana_peso').value = st[st.length - 1].peso;
+
+      document.getElementById('modalAnamnesi').style.display = 'flex';
+    }
 
     function salvaAnamnesi(e) {
       e.preventDefault();
-      forgeData.anamnesi = { altezza: document.getElementById('ana_altezza').value };
+      const peso = parseFloat(document.getElementById('ana_peso').value);
+
+      forgeData.anamnesi = {
+        altezza: document.getElementById('ana_altezza').value,
+        obiettivo: document.getElementById('ana_obiettivo').value,
+        livello: document.getElementById('ana_livello').value,
+        infortuni: document.getElementById('ana_infortuni').value || "Nessuno"
+      };
+
+      if(peso) {
+        forgeData.storicoPeso.push({ data: new Date().toISOString().slice(0,10), peso: peso });
+      }
+
       salvaStato();
       document.getElementById('modalAnamnesi').style.display = 'none';
       aggiornaProfilo();
     }
+
+    function apriModalPesata() { document.getElementById('modalPesata').style.display = 'flex'; }
 
     function salvaNuovaPesata() {
       const val = parseFloat(document.getElementById('inputNuovoPeso').value);
@@ -746,6 +816,39 @@
     }
 
     function aggiornaProfilo() {
+      renderDaysManager();
+
+      const anaContainer = document.getElementById('displayAnamnesi');
+      const ana = forgeData.anamnesi;
+
+      if(ana && ana.obiettivo) {
+        anaContainer.innerHTML = `
+          <div style="font-size:13px; line-height:1.6;">
+            <p style="margin:4px 0;">🎯 <strong>Obiettivo:</strong> ${ana.obiettivo}</p>
+            <p style="margin:4px 0;">📊 <strong>Livello:</strong> ${ana.livello || 'Non specificato'} | 📏 <strong>Altezza:</strong> ${ana.altezza || '--'} cm</p>
+            <p style="margin:4px 0;">🩹 <strong>Infortuni / Note:</strong> ${ana.infortuni || 'Nessuno'}</p>
+          </div>
+        `;
+      } else {
+        anaContainer.innerHTML = 'Nessuna anamnesi salvata. Clicca sul pulsante sottostante per crearla!';
+      }
+
+      const st = forgeData.storicoPeso || [];
+      if(st.length > 0) {
+        st.sort((a,b) => new Date(a.data) - new Date(b.data));
+        const pesoAttuale = st[st.length - 1].peso;
+        const pesoIniziale = st[0].peso;
+
+        document.getElementById('valPesoAttuale').textContent = `${pesoAttuale} kg`;
+        
+        const dInizio = (pesoAttuale - pesoIniziale).toFixed(1);
+        document.getElementById('valDiffInizio').textContent = `${dInizio > 0 ? '+':''}${dInizio} kg`;
+
+        const idx30 = Math.max(0, st.length - 4);
+        const d30 = (pesoAttuale - st[idx30].peso).toFixed(1);
+        document.getElementById('valDiff30gg').textContent = `${d30 > 0 ? '+':''}${d30} kg`;
+      }
+
       const recContainer = document.getElementById('displayRecordsList');
       const recKeys = Object.keys(forgeData.records || {});
 
