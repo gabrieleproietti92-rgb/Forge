@@ -24,6 +24,7 @@
       --accent-green: #34c759;
       --accent-blue: #007aff;
       --accent-gold: #ffd700;
+      --accent-orange: #ff9500;
       --text-main: #ffffff;
       --text-muted: #a0a0a0;
       --border-color: #2c2c2e;
@@ -84,7 +85,6 @@
     .home-nav-btn { background: var(--card-bg); border: 1px solid var(--border-color); color: white; padding: 14px 5px; border-radius: 12px; font-weight: bold; font-size: 13px; cursor: pointer; text-align: center; transition: all 0.2s ease; }
     .home-nav-btn.active { background: var(--accent-red); border-color: var(--accent-red); }
 
-    /* SCROLL ORIZZONTALE PER I GIORNI DI ALLENAMENTO */
     .workout-subtabs { display: none; gap: 8px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
     .workout-subtabs::-webkit-scrollbar { display: none; }
     .tab-btn { flex: 0 0 auto; min-width: 75px; background: var(--card-bg); color: var(--text-muted); border: 1px solid var(--border-color); padding: 10px 14px; border-radius: 10px; font-weight: bold; cursor: pointer; text-align: center; font-size: 13px; }
@@ -98,7 +98,16 @@
     .ex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 5px; }
     .tag-muscolo { font-size: 10px; background: #3a3a3c; padding: 2px 6px; border-radius: 4px; color: var(--accent-blue); font-weight: bold; }
     
-    .pr-badge { display: inline-flex; align-items: center; gap: 4px; background: rgba(255, 215, 0, 0.15); border: 1px solid var(--accent-gold); color: var(--accent-gold); font-size: 11px; font-weight: bold; padding: 3px 8px; border-radius: 6px; margin-top: 4px; }
+    .pr-badge { display: inline-flex; align-items: center; gap: 4px; background: rgba(255, 215, 0, 0.15); border: 1px solid var(--accent-gold); color: var(--accent-gold); font-size: 11px; font-weight: bold; padding: 3px 8px; border-radius: 6px; margin-top: 4px; margin-right: 4px; }
+    
+    /* BADGE SMART COACH AVVISO INFORTUNIO */
+    .smart-warning-badge {
+      background: rgba(255, 59, 48, 0.15); border: 1px solid var(--accent-red);
+      color: #ff6b6b; font-size: 11px; padding: 8px; border-radius: 8px;
+      margin-top: 6px; margin-bottom: 6px; line-height: 1.3;
+    }
+    .smart-warning-title { font-weight: bold; color: #ff453a; margin-bottom: 2px; display: flex; align-items: center; gap: 4px; }
+
     .trading-box { background: #141416; border-radius: 8px; padding: 8px; margin: 8px 0; border: 1px solid #222; }
     .trading-title { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: bold; margin-bottom: 4px; display: flex; justify-content: space-between; }
     .trading-canvas { width: 100% !important; height: 60px !important; }
@@ -128,8 +137,6 @@
     .stat-label { font-size: 11px; color: var(--text-muted); display: block; }
     .stat-val { font-size: 15px; font-weight: bold; margin-top: 4px; }
 
-    .day-manager-item { display: flex; justify-content: space-between; align-items: center; background: #121212; padding: 8px 12px; border-radius: 8px; margin-bottom: 6px; border: 1px solid var(--border-color); }
-
     .heatmap-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 10px; }
     .heatmap-day { aspect-ratio: 1; border-radius: 4px; background: #262628; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--text-muted); }
     .heatmap-day.active { background: var(--accent-green); color: black; font-weight: bold; }
@@ -143,6 +150,9 @@
     .form-group { margin-bottom: 12px; }
     .form-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
     select, textarea, input { width: 100%; background: #121212; border: 1px solid var(--border-color); color: white; padding: 8px; border-radius: 6px; box-sizing: border-box; }
+    
+    .pr-section-title { font-size: 12px; font-weight: bold; color: var(--accent-gold); margin: 10px 0 6px 0; border-bottom: 1px solid #333; padding-bottom: 2px; }
+    .coach-box { background: rgba(0, 122, 255, 0.08); border: 1px solid var(--accent-blue); border-radius: 10px; padding: 10px; margin-top: 10px; font-size: 12px; }
   </style>
 </head>
 <body>
@@ -231,6 +241,10 @@
       <h3>👤 Profilo & Anamnesi Adattiva</h3>
       <div id="displayAnamnesi">Nessuna anamnesi salvata.</div>
       <button class="btn-secondary btn" onclick="apriModalAnamnesi()">✏️ Compila / Modifica Anamnesi</button>
+      
+      <div class="coach-box" id="smartCoachSummary">
+        <strong>🩺 Smart Coach Anamnesi:</strong> Nessuna limitazione rilevata.
+      </div>
     </div>
 
     <div class="card">
@@ -239,7 +253,7 @@
     </div>
 
     <div class="card">
-      <h3>🏆 Bacheca Personal Record (PR)</h3>
+      <h3>🏆 Bacheca Personal Record (PR) Multidisciplinare</h3>
       <div id="displayRecordsList" style="font-size:13px; line-height:1.6;">Nessun record registrato.</div>
     </div>
 
@@ -267,8 +281,14 @@
     <div class="modal-content">
       <h3>🏋️ Aggiungi Esercizio</h3>
       <div class="form-group">
-        <label>Nome Esercizio:</label>
-        <input type="text" id="newEx_nome">
+        <label>Seleziona Esercizio da Libreria:</label>
+        <select id="newEx_select" onchange="gestisciSelezioneLibreria(this.value)">
+          <!-- Popolato dinamicamente -->
+        </select>
+      </div>
+      <div class="form-group" id="grp_nome_custom" style="display:none;">
+        <label>Nome Esercizio Personalizzato:</label>
+        <input type="text" id="newEx_nome" placeholder="Es. Squat Bulgaro">
       </div>
       <div class="form-group">
         <label>Muscolo Target:</label>
@@ -281,9 +301,10 @@
           <option value="Spalle">🦵 Spalle</option>
           <option value="Braccia">💪 Braccia</option>
           <option value="Cardio/Corsa">🏃 Cardio / Corsa</option>
+          <option value="Core/Addome">🧘 Core / Addome</option>
         </select>
       </div>
-      <div class="form-group">
+      <div class="form-group" id="grp_1rm_init">
         <label>Massimale 1RM iniziale (opzionale):</label>
         <input type="number" id="newEx_1rm" placeholder="Es. 80 (lascia vuoto per auto-calcolo)">
       </div>
@@ -331,7 +352,8 @@
         </div>
         <div class="form-group">
           <label>Infortuni o Limitazioni:</label>
-          <textarea id="ana_infortuni" rows="3" placeholder="Es. Fastidio spalla destra..."></textarea>
+          <textarea id="ana_infortuni" rows="3" placeholder="Es. Fastidio spalla destra, dolore al ginocchio..."></textarea>
+          <span style="font-size: 10px; color: var(--accent-orange);">💡 Inserisci parti anatomiche (spalla, ginocchio, schiena, caviglia...) per attivare lo Smart Coach.</span>
         </div>
         <button type="submit" class="btn">Salva Profilo Anamnesi</button>
         <button type="button" class="btn btn-secondary" onclick="document.getElementById('modalAnamnesi').style.display='none'">Chiudi</button>
@@ -350,11 +372,96 @@
   </div>
 
   <script>
+    // LIBRERIA PREIMPOSTATA DIVISA PER METODO
+    const libreriaEsercizi = {
+      pesistica: [
+        { nome: "Back Squat", muscolo: "Quadricipiti" },
+        { nome: "Panca Piana Bilanciere", muscolo: "Petto" },
+        { nome: "Stacco da Terra", muscolo: "Schiena" },
+        { nome: "Lento Avanti (Overhead Press)", muscolo: "Spalle" },
+        { nome: "Rematore Bilanciere", muscolo: "Schiena" },
+        { nome: "Strappo (Snatch)", muscolo: "Weightlifting" },
+        { nome: "Slancio (Clean & Jerk)", muscolo: "Weightlifting" },
+        { nome: "Leg Press", muscolo: "Quadricipiti" },
+        { nome: "Hip Thrust", muscolo: "Femorali/Glutei" },
+        { nome: "Curl Bilanciere", muscolo: "Braccia" },
+        { nome: "French Press", muscolo: "Braccia" }
+      ],
+      calisthenics: [
+        { nome: "Trazioni Zavorrate (Pull-up)", muscolo: "Schiena" },
+        { nome: "Dip Zavorrate alle Parallele", muscolo: "Petto" },
+        { nome: "Push-up Zavorrati", muscolo: "Petto" },
+        { nome: "Muscle-up", muscolo: "Schiena" },
+        { nome: "Pistol Squat", muscolo: "Quadricipiti" },
+        { nome: "Front Lever Rows", muscolo: "Schiena" },
+        { nome: "Handstand Push-ups", muscolo: "Spalle" }
+      ],
+      corsa: [
+        { nome: "Corsa Aperto", muscolo: "Cardio/Corsa" },
+        { nome: "Corsa Tapis Roulant", muscolo: "Cardio/Corsa" },
+        { nome: "Ripetute 400m", muscolo: "Cardio/Corsa" },
+        { nome: "Sprint 100m", muscolo: "Cardio/Corsa" },
+        { nome: "Corsa Lenta Rigenerante", muscolo: "Cardio/Corsa" }
+      ],
+      hiit: [
+        { nome: "Circuito Burpees & Jump", muscolo: "Cardio/Corsa" },
+        { nome: "Tabata Kettlebell Swings", muscolo: "Femorali/Glutei" },
+        { nome: "EMOM Mountain Climbers", muscolo: "Core/Addome" },
+        { nome: "Circuito AMRAP Bodyweight", muscolo: "Cardio/Corsa" }
+      ],
+      stretching: [
+        { nome: "Stretching Catena Posteriore", muscolo: "Femorali/Glutei" },
+        { nome: "Mobilità Anca / Psoas", muscolo: "Quadricipiti" },
+        { nome: "Mobilità Toracica & Spalle", muscolo: "Spalle" },
+        { nome: "Stretching Adduttori", muscolo: "Quadricipiti" }
+      ]
+    };
+
+    // REGOLARIO SMART COACH PER WARNING E SUGGERIMENTI
+    const regoleSmartCoach = [
+      {
+        parolaChiave: "spalla",
+        eserciziRischiosi: ["Lento Avanti", "Handstand Push-ups", "Panca Piana", "Dip", "Military Press"],
+        avviso: "Rischio stress alla cuffia dei ruotatori/articolazione scapolo-omerale.",
+        variante: "Floor Press, Alzate Laterali con manubri leggeri o Panca Inclinata con manubri neutri."
+      },
+      {
+        parolaChiave: "ginocchio",
+        eserciziRischiosi: ["Back Squat", "Leg Press", "Pistol Squat", "Sprint 100m", "Lunge"],
+        avviso: "Forte sollecitazione sul tendine rotuleo/articolazione del ginocchio.",
+        variante: "Box Squat controllato, Stacco Rumeno o Leg Curl."
+      },
+      {
+        parolaChiave: "schiena",
+        eserciziRischiosi: ["Stacco da Terra", "Back Squat", "Rematore Bilanciere", "Overhead Press"],
+        avviso: "Elevato carico assiale sulla colonna vertebrale e tratto lombare.",
+        variante: "Rematore con petto appoggiato su panca, Trap Bar Deadlift o Chest Press."
+      },
+      {
+        parolaChiave: "lombare",
+        eserciziRischiosi: ["Stacco da Terra", "Back Squat", "Good Morning", "Hyperextension"],
+        avviso: "Elevata compressione e shearing sulle vertebre lombari.",
+        variante: "Leg Press monopodale, Hip Thrust guidato o Macchine Iso-laterali."
+      },
+      {
+        parolaChiave: "caviglia",
+        eserciziRischiosi: ["Pistol Squat", "Corsa Aperto", "Sprint 100m", "Jump"],
+        avviso: "Tensione su legamenti caviglia e tendine d'Achille.",
+        variante: "Ciclismo / Cyclette o Esercizi a catena chiusa su superficie stabile."
+      },
+      {
+        parolaChiave: "gomito",
+        eserciziRischiosi: ["French Press", "Dip", "Push-up", "Trazioni Zavorrate"],
+        avviso: "Rischio sollecitazione epicondilo/epitroclea.",
+        variante: "Pushdown ai cavi con corda o Trazioni con presa neutra."
+      }
+    ];
+
     const schedeBase = {
       g1: { metodo: "pesistica", esercizi: [{ nome: "Strappo (Snatch)", muscolo: "Weightlifting", sets: 3 }, { nome: "Back Squat", muscolo: "Quadricipiti", sets: 3 }] },
       g2: { metodo: "pesistica", esercizi: [{ nome: "Slancio (Clean & Jerk)", muscolo: "Weightlifting", sets: 3 }] },
       g3: { metodo: "pesistica", esercizi: [{ nome: "Stacco da Terra", muscolo: "Schiena", sets: 3 }] },
-      g4: { metodo: "corsa", esercizi: [{ nome: "Corsa Corsa Aperto", muscolo: "Cardio/Corsa", sets: 1 }] }
+      g4: { metodo: "corsa", esercizi: [{ nome: "Corsa Aperto", muscolo: "Cardio/Corsa", sets: 1 }] }
     };
 
     const frasiMotivazionali = {
@@ -385,8 +492,10 @@
     if (!forgeData.schede) forgeData.schede = schedeBase;
     if (!forgeData.allenamenti) forgeData.allenamenti = [];
     if (!forgeData.records) forgeData.records = {};
+    if (!forgeData.recordsCardio) forgeData.recordsCardio = { migliorPasso: null, maxDistanza: 0, distanze: {} };
+    if (!forgeData.recordsHIIT) forgeData.recordsHIIT = {};
     if (!forgeData.storicoPeso) forgeData.storicoPeso = [];
-    if (!forgeData.anamnesi) forgeData.anamnesi = { livello: "Principiante", genere: "Uomo" };
+    if (!forgeData.anamnesi) forgeData.anamnesi = { livello: "Principiante", genere: "Uomo", infortuni: "" };
 
     let tempGKeyForAdd = 'g1';
     let currentOrizzonte = 'settimana';
@@ -501,7 +610,8 @@
       const totalW = forgeData.allenamenti.length;
       const streak = calcolaStreak();
       const xpBase = calcolaXPPerSessione();
-      const totalXP = totalW * xpBase + Object.keys(forgeData.records || {}).length * 50;
+      const numPR = Object.keys(forgeData.records || {}).length + Object.keys(forgeData.recordsHIIT || {}).length;
+      const totalXP = totalW * xpBase + numPR * 50;
 
       document.getElementById('valStreak').textContent = `${streak} 🔥`;
       document.getElementById('valTotalWorkouts').textContent = totalW;
@@ -692,6 +802,26 @@
       renderGiorno(gKey);
     }
 
+    // CHECK SMART COACH SU SINGOLO ESERCIZIO
+    function checkSmartCoachWarning(nomeEsercizio) {
+      const infortuniTxt = (forgeData.anamnesi && forgeData.anamnesi.infortuni) ? forgeData.anamnesi.infortuni.toLowerCase() : "";
+      if (!infortuniTxt) return null;
+
+      for (let regola of regoleSmartCoach) {
+        if (infortuniTxt.includes(regola.parolaChiave)) {
+          const isStressante = regola.eserciziRischiosi.some(exR => nomeEsercizio.toLowerCase().includes(exR.toLowerCase()));
+          if (isStressante) {
+            return {
+              zona: regola.parolaChiave,
+              avviso: regola.avviso,
+              variante: regola.variante
+            };
+          }
+        }
+      }
+      return null;
+    }
+
     function renderGiorno(gKey) {
       const container = document.getElementById(gKey);
       if (!container) return;
@@ -725,10 +855,22 @@
       exList.forEach((ex, exIdx) => {
         const muscolo = ex.muscolo || "Generale";
         const canvasId = `trading_${gKey}_${exIdx}`;
-        const prObj = forgeData.records[ex.nome];
-        const prTxt = prObj ? `${prObj.maxKg}kg | 1RM: ${prObj.max1RM}kg` : `-- (Auto-calcolo)`;
         const ytSearchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(ex.nome + ' esercizio execution')}`;
-        const rmVal = prObj ? prObj.max1RM : 100;
+        
+        let prTxt = "";
+        let rmVal = 100;
+
+        if (metodoObj === 'pesistica' || metodoObj === 'calisthenics') {
+          const prObj = forgeData.records[ex.nome];
+          prTxt = prObj ? `${prObj.maxKg}kg | 1RM: ${prObj.max1RM}kg` : `-- (Auto-calcolo)`;
+          rmVal = prObj ? prObj.max1RM : 100;
+        } else if (metodoObj === 'hiit') {
+          const prHiit = (forgeData.recordsHIIT && forgeData.recordsHIIT[ex.nome]) || 0;
+          prTxt = `Max Round: ${prHiit}`;
+        }
+
+        // CONTROL SMART COACH AVVISO
+        const coachWarn = checkSmartCoachWarning(ex.nome);
 
         html += `
           <div class="ex-card" data-ex="${ex.nome}">
@@ -743,7 +885,15 @@
               </div>
             </div>
 
-            ${metodoObj === 'pesistica' || metodoObj === 'calisthenics' ? `<div class="pr-badge">🏆 PR Max: ${prTxt}</div>` : ''}
+            ${coachWarn ? `
+              <div class="smart-warning-badge">
+                <div class="smart-warning-title">⚠️ SMART COACH WARNING: ${coachWarn.zona.toUpperCase()}</div>
+                <div>${coachWarn.avviso}</div>
+                <div style="margin-top:2px;">💡 <strong>Variante Consigliata:</strong> ${coachWarn.variante}</div>
+              </div>
+            ` : ''}
+
+            ${prTxt ? `<div class="pr-badge">🏆 PR: ${prTxt}</div>` : ''}
 
             <div class="trading-box">
               <div class="trading-title">
@@ -784,7 +934,7 @@
       });
 
       html += `
-        <button class="btn btn-blue" onclick="apriModalAddEx('${gKey}')">+ Aggiungi Nuovo Esercizio</button>
+        <button class="btn btn-blue" onclick="apriModalAddEx('${gKey}')">+ Aggiungi Esercizio (da Libreria o Personalizzato)</button>
         <button class="btn btn-green" onclick="aggiungiNuovoGiorno()">+ Aggiungi Nuovo Giorno di Allenamento</button>
         <button class="btn" onclick="salvaSessione('${gKey}')">💾 Salva Allenamento</button>
       </div>`;
@@ -916,6 +1066,7 @@
       });
     }
 
+    // GESTIONE NUOVI RECORD MULTIDISCIPLINARI
     function checkPR(nome, kg, reps) {
       const rmTeorico = Math.round(reps === 1 ? kg : kg * (1 + reps / 30));
       if (!forgeData.records[nome]) {
@@ -937,17 +1088,83 @@
       if (nuovoRecord) {
         rec.data = new Date().toISOString().slice(0, 10);
         salvaStato();
-        mostraToast("🏆", "NUOVO PR SUPERATO!", `${nome.toUpperCase()}: ${rec.maxKg} kg | 1RM: ${rec.max1RM} kg`);
+        mostraToast("🏆", "NUOVO PR PESISTICA!", `${nome.toUpperCase()}: ${rec.maxKg} kg | 1RM: ${rec.max1RM} kg`);
+      }
+    }
+
+    function checkPRCardio(km, min, passoTxt) {
+      if (!forgeData.recordsCardio) forgeData.recordsCardio = { migliorPasso: null, maxDistanza: 0, distanze: {} };
+      const rec = forgeData.recordsCardio;
+      let notifiche = [];
+
+      if (km > rec.maxDistanza) {
+        rec.maxDistanza = km;
+        notifiche.push(`Nuova Max Distanza: ${km} km`);
+      }
+
+      // Check Distanze standard (5km, 10km, 21km, 42km)
+      const distanzeStd = [5, 10, 21, 42];
+      distanzeStd.forEach(dTarget => {
+        if (km >= dTarget) {
+          const tempoPerTarget = (min / km) * dTarget;
+          if (!rec.distanze[dTarget] || tempoPerTarget < rec.distanze[dTarget]) {
+            rec.distanze[dTarget] = tempoPerTarget;
+            notifiche.push(`Record ${dTarget}km: ${tempoPerTarget.toFixed(1)} min`);
+          }
+        }
+      });
+
+      if (notifiche.length > 0) {
+        salvaStato();
+        mostraToast("🏃", "RECORD CARDIO!", notifiche.join(" | "));
+      }
+    }
+
+    function checkPRHIIT(nome, rounds) {
+      if (!forgeData.recordsHIIT) forgeData.recordsHIIT = {};
+      if (!forgeData.recordsHIIT[nome] || rounds > forgeData.recordsHIIT[nome]) {
+        forgeData.recordsHIIT[nome] = rounds;
+        salvaStato();
+        mostraToast("⏱️", "RECORD HIIT!", `${nome.toUpperCase()}: ${rounds} Round completati!`);
       }
     }
 
     function apriModalAddEx(gKey) {
       tempGKeyForAdd = gKey;
+      const metodo = (forgeData.schede[gKey] && forgeData.schede[gKey].metodo) ? forgeData.schede[gKey].metodo : 'pesistica';
+      
+      const selectLibreria = document.getElementById('newEx_select');
+      let optionsHtml = `<option value="custom">+ Esercizio Personalizzato</option>`;
+
+      const listaDisponibile = libreriaEsercizi[metodo] || libreriaEsercizi.pesistica;
+      listaDisponibile.forEach(ex => {
+        optionsHtml += `<option value="${ex.nome}" data-muscolo="${ex.muscolo}">${ex.nome} (${ex.muscolo})</option>`;
+      });
+
+      selectLibreria.innerHTML = optionsHtml;
+      gestisciSelezioneLibreria(selectLibreria.value);
+
       document.getElementById('modalAddEx').style.display = 'flex';
     }
 
+    function gestisciSelezioneLibreria(valore) {
+      const grpCustom = document.getElementById('grp_nome_custom');
+      const selectMuscolo = document.getElementById('newEx_muscolo');
+      const selectLibreria = document.getElementById('newEx_select');
+
+      if (valore === 'custom') {
+        grpCustom.style.display = 'block';
+      } else {
+        grpCustom.style.display = 'none';
+        const optSelected = selectLibreria.options[selectLibreria.selectedIndex];
+        const muscoloTarget = optSelected.getAttribute('data-muscolo');
+        if (muscoloTarget) selectMuscolo.value = muscoloTarget;
+      }
+    }
+
     function confermaAggiungiEsercizio() {
-      const nome = document.getElementById('newEx_nome').value;
+      const selVal = document.getElementById('newEx_select').value;
+      let nome = selVal === 'custom' ? document.getElementById('newEx_nome').value : selVal;
       const muscolo = document.getElementById('newEx_muscolo').value;
       const rm = parseFloat(document.getElementById('newEx_1rm').value);
 
@@ -1009,7 +1226,15 @@
 
           if (kg || reps) {
             serieList.push({ peso: kg, reps: reps, rpe: rpe });
-            if (metodo === 'pesistica' && kg && reps) checkPR(nomeEx, kg, reps);
+            
+            // VERIFICA RECORD IN BASE ALLA DISCIPLINA
+            if (metodo === 'pesistica' || metodo === 'calisthenics') {
+              if (kg && reps) checkPR(nomeEx, kg, reps);
+            } else if (metodo === 'corsa') {
+              if (kg > 0 && reps > 0) checkPRCardio(kg, reps, rpe);
+            } else if (metodo === 'hiit') {
+              if (kg > 0) checkPRHIIT(nomeEx, kg);
+            }
           }
         }
 
@@ -1179,7 +1404,7 @@
         altezza: document.getElementById('ana_altezza').value,
         obiettivo: document.getElementById('ana_obiettivo').value,
         livello: document.getElementById('ana_livello').value,
-        infortuni: document.getElementById('ana_infortuni').value || "Nessuno"
+        infortuni: document.getElementById('ana_infortuni').value || ""
       };
 
       if (peso) {
@@ -1225,6 +1450,26 @@
         anaContainer.innerHTML = 'Nessuna anamnesi salvata.';
       }
 
+      // RENDER SMART COACH SUMMARY IN PROFILO
+      const coachSummary = document.getElementById('smartCoachSummary');
+      const infortuniTxt = (ana && ana.infortuni) ? ana.infortuni.toLowerCase() : "";
+
+      let rilevati = [];
+      regoleSmartCoach.forEach(r => {
+        if (infortuniTxt.includes(r.parolaChiave)) {
+          rilevati.push(`<li><strong>${r.parolaChiave.toUpperCase()}:</strong> Evitare ${r.eserciziRischiosi.slice(0, 3).join(", ")}. <br><span style="color:var(--accent-green);">Consigliati:</span> ${r.variante}</li>`);
+        }
+      });
+
+      if (rilevati.length > 0) {
+        coachSummary.innerHTML = `
+          <strong style="color:var(--accent-orange);">🩺 Smart Coach Anamnesi (Limitazioni Attive):</strong>
+          <ul style="margin: 6px 0 0 16px; padding:0;">${rilevati.join('')}</ul>
+        `;
+      } else {
+        coachSummary.innerHTML = `<strong>🩺 Smart Coach Anamnesi:</strong> Nessuna limitazione rilevata. Stato di forma ottimale!`;
+      }
+
       const st = forgeData.storicoPeso || [];
       let pesoAttuale = 0;
 
@@ -1257,12 +1502,18 @@
         }
       });
 
-      // BACHECA PR AVANZATA
+      // BACHECA PR MULTIDISCIPLINARE ESTESA
       const recContainer = document.getElementById('displayRecordsList');
       const recKeys = Object.keys(forgeData.records || {});
+      const recCardio = forgeData.recordsCardio || { maxDistanza: 0, distanze: {} };
+      const recHIIT = forgeData.recordsHIIT || {};
 
+      let recHtml = '';
+
+      // Section 1: Pesistica & Calisthenics
+      recHtml += `<div class="pr-section-title">🏋️ PESISTICA & CALISTHENICS</div>`;
       if (recKeys.length > 0) {
-        let recHtml = '<div style="display:grid; grid-template-columns: 1fr 1fr; gap: 8px;">';
+        recHtml += '<div style="display:grid; grid-template-columns: 1fr 1fr; gap: 8px;">';
         recKeys.forEach(k => {
           const r = forgeData.records[k];
           const relRatio = pesoAttuale > 0 ? (r.maxKg / pesoAttuale).toFixed(2) : '--';
@@ -1273,8 +1524,40 @@
             <span style="font-size:10px; color:#666;">Data: ${r.data || '--'}</span>
           </div>`;
         });
-        recContainer.innerHTML = recHtml + '</div>';
+        recHtml += '</div>';
+      } else {
+        recHtml += `<div style="font-size:11px; color:var(--text-muted);">Nessun PR registrato.</div>`;
       }
+
+      // Section 2: Corsa & Cardio
+      recHtml += `<div class="pr-section-title">🏃 CORSA & CARDIO</div>`;
+      recHtml += `<div style="background:#121212; padding:8px; border-radius:8px; border:1px solid #333;">
+        <div>Distanza Massima: <strong>${recCardio.maxDistanza || 0} km</strong></div>
+        <div style="margin-top:4px; font-size:11px; color:var(--text-muted);">
+          <span>5km: ${recCardio.distanze[5] ? recCardio.distanze[5].toFixed(1) + ' min' : '--'}</span> | 
+          <span>10km: ${recCardio.distanze[10] ? recCardio.distanze[10].toFixed(1) + ' min' : '--'}</span><br>
+          <span>21km (Mezza): ${recCardio.distanze[21] ? recCardio.distanze[21].toFixed(1) + ' min' : '--'}</span> | 
+          <span>42km (Maratona): ${recCardio.distanze[42] ? recCardio.distanze[42].toFixed(1) + ' min' : '--'}</span>
+        </div>
+      </div>`;
+
+      // Section 3: HIIT & Circuiti
+      recHtml += `<div class="pr-section-title">⏱️ HIIT & CIRCUITI</div>`;
+      const hiitKeys = Object.keys(recHIIT);
+      if (hiitKeys.length > 0) {
+        recHtml += '<div style="display:grid; grid-template-columns: 1fr 1fr; gap: 8px;">';
+        hiitKeys.forEach(k => {
+          recHtml += `<div style="background:#121212; padding:8px; border-radius:8px; border:1px solid #333;">
+            <strong style="color:var(--accent-gold);">⏱️ ${k}</strong><br>
+            <span>Max Rounds: <strong>${recHIIT[k]}</strong></span>
+          </div>`;
+        });
+        recHtml += '</div>';
+      } else {
+        recHtml += `<div style="font-size:11px; color:var(--text-muted);">Nessun record HIIT registrato.</div>`;
+      }
+
+      recContainer.innerHTML = recHtml;
     }
 
     function esportaBackup() {
