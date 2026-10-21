@@ -856,7 +856,7 @@
       let esercizioSerieMap = {};
       let volumeSettimanale = { "Settimana 1": 0, "Settimana 2": 0, "Settimana 3": 0, "Settimana 4": 0 };
 
-      // 1. TARTA BASATA SUGLI ESERCIZI E LE LORO SERIE (Schede Inserite + Allenamenti)
+      // 1. TORTA BASATA SUGLI ESERCIZI E LE LORO SERIE
       Object.keys(forgeData.schede).forEach(gKey => {
         (forgeData.schede[gKey] || []).forEach(ex => {
           esercizioSerieMap[ex.nome] = (esercizioSerieMap[ex.nome] || 0) + (ex.sets || 3);
@@ -866,7 +866,6 @@
       (forgeData.allenamenti || []).forEach(s => {
         const diffDays = (oggi - new Date(s.data)) / (1000 * 3600 * 24);
 
-        // Raggruppa i kg nelle 4 settimane del mese
         if (diffDays <= 28) {
           let totalVol = 0;
           s.esercizi.forEach(e => e.serie.forEach(set => totalVol += (set.peso * set.reps)));
