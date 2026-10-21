@@ -3,11 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Forge - Weightlifting Tracker</title>
-  
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Forge">
+  <title>Forge v3.5 - Weightlifting Tracker</title>
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
@@ -34,12 +30,33 @@
 
     h1, h2, h3, h4 { margin: 0 0 10px 0; }
     .header { text-align: center; margin-bottom: 15px; }
-    .header h1 { color: var(--accent-red); font-size: 28px; letter-spacing: 1px; margin: 0; }
+    .header h1 { color: var(--accent-red); font-size: 26px; letter-spacing: 1px; margin: 0; }
 
-    /* TAB NAVIGAZIONE */
+    /* DASHBOARD HOME & MASCOT */
+    .mascot-card {
+      background: linear-gradient(145deg, #1e1e1e, #2a2a2e);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      border: 1px solid var(--border-color);
+      margin-bottom: 20px;
+    }
+    .mascot-avatar { font-size: 70px; margin: 10px 0; display: block; animation: pulse 2s infinite; }
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+    .mascot-status { font-weight: bold; font-size: 18px; margin-bottom: 5px; }
+    .mascot-msg { font-size: 13px; color: var(--text-muted); line-height: 1.4; }
+
+    .home-nav-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+    .home-nav-btn {
+      background: var(--card-bg); border: 1px solid var(--border-color);
+      color: white; padding: 15px 5px; border-radius: 12px; font-weight: bold;
+      font-size: 12px; cursor: pointer; text-align: center;
+    }
+
+    /* TABS NAVIGAZIONE */
     .tabs { display: flex; gap: 6px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
     .tab-btn {
-      flex: 1; min-width: 60px; background: var(--card-bg); color: var(--text-muted);
+      flex: 1; min-width: 55px; background: var(--card-bg); color: var(--text-muted);
       border: 1px solid var(--border-color); padding: 10px; border-radius: 10px;
       font-weight: bold; cursor: pointer; text-align: center; font-size: 13px;
     }
@@ -49,15 +66,16 @@
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* ESERCIZI & TABELLE */
-    .ex-card { background: #262628; border-radius: 10px; padding: 12px; margin-bottom: 12px; position: relative; }
+    /* ESERCIZI */
+    .ex-card { background: #262628; border-radius: 10px; padding: 12px; margin-bottom: 12px; }
     .ex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 5px; }
+    .tag-muscolo { font-size: 10px; background: #3a3a3c; padding: 2px 6px; border-radius: 4px; color: var(--accent-blue); font-weight: bold; }
     
-    .btn-yt { background: #ff0000; color: white; border: none; padding: 5px 10px; border-radius: 6px; font-size: 11px; text-decoration: none; font-weight: bold; display: inline-flex; align-items: center; gap: 3px; }
+    .btn-yt { background: #ff0000; color: white; border: none; padding: 5px 10px; border-radius: 6px; font-size: 11px; text-decoration: none; font-weight: bold; }
     .btn-del { background: #ff453a22; color: #ff453a; border: 1px solid #ff453a; padding: 4px 8px; border-radius: 6px; font-size: 11px; cursor: pointer; }
     
     .prog-box { background: #1a1a1c; padding: 8px; border-radius: 8px; margin-bottom: 8px; border: 1px dashed var(--border-color); }
-    .prog-box select, .prog-box input { width: 48%; display: inline-block; font-size: 11px; padding: 4px; }
+    .prog-box select, .prog-box input { width: 48%; display: inline-block; font-size: 11px; padding: 4px; box-sizing: border-box; }
 
     table { width: 100%; border-collapse: collapse; margin-top: 8px; }
     th { color: var(--text-muted); font-size: 11px; text-align: center; padding-bottom: 5px; }
@@ -77,53 +95,68 @@
     .stat-label { font-size: 11px; color: var(--text-muted); display: block; }
     .stat-val { font-size: 15px; font-weight: bold; margin-top: 4px; }
 
-    /* MODALI */
-    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-    .modal-content { background: var(--card-bg); width: 90%; max-width: 400px; padding: 20px; border-radius: 14px; max-height: 85vh; overflow-y: auto; }
+    /* MODALE */
+    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 9999; }
+    .modal-content { background: var(--card-bg); width: 85%; max-width: 380px; padding: 20px; border-radius: 14px; max-height: 80vh; overflow-y: auto; }
     .form-group { margin-bottom: 12px; }
     .form-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
-    select, textarea { width: 100%; background: #121212; border: 1px solid var(--border-color); color: white; padding: 8px; border-radius: 6px; box-sizing: border-box; }
+    select, textarea, input { width: 100%; background: #121212; border: 1px solid var(--border-color); color: white; padding: 8px; border-radius: 6px; box-sizing: border-box; }
   </style>
 </head>
 <body>
 
   <div class="header">
-    <h1>FORGE v3.3</h1>
+    <h1>FORGE v3.5 🏋️</h1>
   </div>
 
+  <!-- MENU PRINCIPALE INIZIALE (HOME NAV) -->
+  <div class="home-nav-grid">
+    <button class="home-nav-btn" onclick="switchTab('g1')">🏋️ Allenamenti</button>
+    <button class="home-nav-btn" onclick="switchTab('stats')">📊 Statistiche</button>
+    <button class="home-nav-btn" onclick="switchTab('profilo')">👤 Profilo</button>
+  </div>
+
+  <!-- MASCOTTE DINAMICA DI COSTANZA -->
+  <div class="mascot-card" id="mascotCard">
+    <span class="mascot-avatar" id="mascotAvatar">🤖</span>
+    <div class="mascot-status" id="mascotStatus">Caricamento...</div>
+    <div class="mascot-msg" id="mascotMsg">Analisi della costanza di allenamento in corso...</div>
+  </div>
+
+  <!-- TABS GIORNI E SEZIONI -->
   <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('g1')">G1</button>
-    <button class="tab-btn" onclick="switchTab('g2')">G2</button>
-    <button class="tab-btn" onclick="switchTab('g3')">G3</button>
-    <button class="tab-btn" onclick="switchTab('g4')">G4</button>
-    <button class="tab-btn" onclick="switchTab('stats')">📊 Stats</button>
-    <button class="tab-btn" onclick="switchTab('profilo')">👤 Profilo</button>
+    <button class="tab-btn active" id="btn_g1" onclick="switchTab('g1', this)">G1</button>
+    <button class="tab-btn" id="btn_g2" onclick="switchTab('g2', this)">G2</button>
+    <button class="tab-btn" id="btn_g3" onclick="switchTab('g3', this)">G3</button>
+    <button class="tab-btn" id="btn_g4" onclick="switchTab('g4', this)">G4</button>
+    <button class="tab-btn" id="btn_stats" onclick="switchTab('stats', this)">📊 Stats</button>
+    <button class="tab-btn" id="btn_profilo" onclick="switchTab('profilo', this)">👤 Profilo</button>
   </div>
 
-  <!-- GIORNI DI ALLENAMENTO -->
+  <!-- GIORNI ALLENAMENTO -->
   <div id="g1" class="tab-content active"></div>
   <div id="g2" class="tab-content"></div>
   <div id="g3" class="tab-content"></div>
   <div id="g4" class="tab-content"></div>
 
-  <!-- STATISTICHE -->
+  <!-- STATS -->
   <div id="stats" class="tab-content">
     <div class="card">
-      <h3>📊 Distribuzione Volume per Giorno</h3>
+      <h3>📊 Distribuzione Muscolare Settimanale</h3>
       <canvas id="pieChart"></canvas>
     </div>
     <div class="card">
-      <h3>📈 Storico Carichi & Progressioni</h3>
+      <h3>📈 Progressione Carichi Storici</h3>
       <canvas id="lineChart"></canvas>
     </div>
   </div>
 
-  <!-- PROFILO & BACKUP -->
+  <!-- PROFILO -->
   <div id="profilo" class="tab-content">
     <div class="card">
-      <h3>👤 Profilo Utente & Anamnesi</h3>
-      <div id="displayAnamnesi">Nessun dato inserito.</div>
-      <button class="btn-secondary btn" onclick="apriModalAnamnesi()">✏️ Modifica Anamnesi</button>
+      <h3>👤 Profilo & Anamnesi</h3>
+      <div id="displayAnamnesi">Nessuna anamnesi salvata.</div>
+      <button class="btn-secondary btn" onclick="apriModalAnamnesi()">✏️ Compila Anamnesi</button>
     </div>
 
     <div class="card">
@@ -133,7 +166,7 @@
         <div class="stat-box"><span class="stat-label">Inizio</span><span class="stat-val" id="valDiffInizio">-- kg</span></div>
         <div class="stat-box"><span class="stat-label">30 gg</span><span class="stat-val" id="valDiff30gg">-- kg</span></div>
       </div>
-      <button class="btn-blue btn" onclick="apriModalPesata()">+ Registra Nuova Pesata</button>
+      <button class="btn-blue btn" onclick="apriModalPesata()">+ Nuova Pesata</button>
       
       <div style="margin-top: 15px; background: #121212; padding: 12px; border-radius: 8px;">
         <span class="stat-label">Forza Relativa (Punteggio Wilks):</span>
@@ -150,59 +183,84 @@
     </div>
 
     <div class="card">
-      <h3>💾 Backup & Sicurezza Dati</h3>
+      <h3>💾 Backup Dati</h3>
       <button class="btn btn-blue" onclick="esportaBackup()">📥 Esporta Backup JSON</button>
       <input type="file" id="fileImport" style="display:none" onchange="importaBackup(event)">
       <button class="btn btn-green" onclick="document.getElementById('fileImport').click()">📤 Ripristina Backup JSON</button>
+      <button class="btn btn-secondary" style="margin-top:20px; color:red;" onclick="resetMemoriaLocale()">⚠️ Reset Totale Dati</button>
     </div>
   </div>
 
-  <!-- MODAL ANAMNESI -->
-  <div id="modalAnamnesi" class="modal" style="display:none;">
+  <!-- MODAL NUOVO ESERCIZIO CON GRUPPO MUSCOLARE -->
+  <div id="modalAddEx" class="modal">
+    <div class="modal-content">
+      <h3>🏋️ Aggiungi Nuovo Esercizio</h3>
+      <div class="form-group">
+        <label>Nome Esercizio:</label>
+        <input type="text" id="newEx_nome" placeholder="Es. Back Squat">
+      </div>
+      <div class="form-group">
+        <label>Gruppo Muscolare Target:</label>
+        <select id="newEx_muscolo">
+          <option value="Quadricipiti">🦵 Quadricipiti</option>
+          <option value="Femorali/Glutei">🍑 Femorali / Glutei</option>
+          <option value="Weightlifting">🏋️ Weightlifting (Strappo/Slancio)</option>
+          <option value="Petto">🗣️ Petto</option>
+          <option value="Schiena">🪵 Schiena / Tirata</option>
+          <option value="Spalle">🦵 Spalle / Deltoidi</option>
+          <option value="Braccia">🦾 Braccia</option>
+          <option value="Core">🍫 Core / Addominali</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Massimale (1RM) kg:</label>
+        <input type="number" id="newEx_1rm" value="100">
+      </div>
+      <div class="form-group">
+        <label>Link Video YouTube (opzionale):</label>
+        <input type="text" id="newEx_yt" placeholder="https://youtube.com/...">
+      </div>
+      <button onclick="confermaAggiungiEsercizio()" class="btn">Aggiungi in Scheda</button>
+      <button onclick="chiudiModalAddEx()" class="btn btn-secondary">Annulla</button>
+    </div>
+  </div>
+
+  <!-- MODAL SPIEGAZIONE PROGRESSIONI -->
+  <div id="modalInfoProg" class="modal">
+    <div class="modal-content">
+      <h3>📖 Guida alle 4 Progressioni</h3>
+      <p><strong>1. Lineare (8 Settimane):</strong> Incremento costante del carico ($+5\%$ a settimana) partendo dall'80% fino al $115\%$. Ottimo per la forza generale su Squat, Panca e Stacco.</p>
+      <hr style="border-color:var(--border-color);">
+      <p><strong>2. Onde Weightlifting:</strong> Alterna settimane ad alta intensità a settimane di volume ($80\% \rightarrow 85\% \rightarrow 82\% \rightarrow 88\%$). Preserva il sistema nervoso ed è ideale per Strappo e Slancio.</p>
+      <hr style="border-color:var(--border-color);">
+      <p><strong>3. Piramidale Invertito:</strong> Prima serie al massimo carico target ($85\%-90\%$), serie successive a calare di peso ($+1-2$ reps). Ideale per la massima resa nervosa.</p>
+      <hr style="border-color:var(--border-color);">
+      <p><strong>4. In Fasi (Accumulo + Peak):</strong> Mese 1 a volume moderato ($70-80\%$) per creare massa, Mese 2 ad alta intensità ($85-115\%$) per esprimere il picco di forza.</p>
+      <button onclick="document.getElementById('modalInfoProg').style.display='none'" class="btn">Ho Capito</button>
+    </div>
+  </div>
+
+  <!-- MODAL ANAMNESI & PESATA -->
+  <div id="modalAnamnesi" class="modal">
     <div class="modal-content">
       <h2>📋 Anamnesi Iniziale</h2>
       <form onsubmit="salvaAnamnesi(event)">
+        <div class="form-group"><label>Peso Corporeo (kg):</label><input type="number" id="ana_peso" step="0.1" required></div>
+        <div class="form-group"><label>Altezza (cm):</label><input type="number" id="ana_altezza" required></div>
         <div class="form-group">
-          <label>Peso Corporeo (kg):</label>
-          <input type="number" id="ana_peso" step="0.1" required>
+          <label>Obiettivo:</label>
+          <select id="ana_obiettivo"><option>Ipertrofia / Massa</option><option>Dimagrimento</option><option>Forza / Weightlifting</option></select>
         </div>
-        <div class="form-group">
-          <label>Altezza (cm):</label>
-          <input type="number" id="ana_altezza" required>
-        </div>
-        <div class="form-group">
-          <label>Obiettivo Principale:</label>
-          <select id="ana_obiettivo">
-            <option>Aumento Massa (Ipertrofia)</option>
-            <option>Dimagrimento / Definizione</option>
-            <option>Forza / Weightlifting</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Livello di Preparazione:</label>
-          <select id="ana_livello">
-            <option>Principiante</option>
-            <option>Intermedio</option>
-            <option>Avanzato</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Infortuni o Limitazioni:</label>
-          <textarea id="ana_infortuni" rows="3" placeholder="Es. fastidio spalla destra..."></textarea>
-        </div>
+        <div class="form-group"><label>Infortuni / Note:</label><textarea id="ana_infortuni" rows="2"></textarea></div>
         <button type="submit" class="btn">Salva Profilo</button>
       </form>
     </div>
   </div>
 
-  <!-- MODAL PESATA -->
-  <div id="modalPesata" class="modal" style="display:none;">
+  <div id="modalPesata" class="modal">
     <div class="modal-content">
       <h3>⚖️ Nuova Pesata</h3>
-      <div class="form-group">
-        <label>Peso Corporeo Attuale (kg):</label>
-        <input type="number" id="inputNuovoPeso" step="0.1">
-      </div>
+      <div class="form-group"><label>Peso Attuale (kg):</label><input type="number" id="inputNuovoPeso" step="0.1"></div>
       <button onclick="salvaNuovaPesata()" class="btn">Salva</button>
       <button onclick="document.getElementById('modalPesata').style.display='none'" class="btn btn-secondary">Annulla</button>
     </div>
@@ -210,47 +268,83 @@
 
   <script>
     const schedeBase = {
-      g1: [{ nome: "Strappo (Snatch)", yt: "https://www.youtube.com/results?search_query=snatch+technique", sets: 3, "1rm": 80 },
-           { nome: "Back Squat", yt: "https://www.youtube.com/results?search_query=back+squat+technique", sets: 3, "1rm": 100 }],
-      g2: [{ nome: "Slancio (Clean & Jerk)", yt: "https://www.youtube.com/results?search_query=clean+and+jerk", sets: 3, "1rm": 90 }],
-      g3: [{ nome: "Stacco da Terra", yt: "https://www.youtube.com/results?search_query=deadlift+technique", sets: 3, "1rm": 140 }],
-      g4: [{ nome: "Lento Avanti", yt: "https://www.youtube.com/results?search_query=overhead+press", sets: 3, "1rm": 60 }]
+      g1: [{ nome: "Strappo (Snatch)", muscolo: "Weightlifting", yt: "https://www.youtube.com/results?search_query=snatch", sets: 3, "1rm": 80 },
+           { nome: "Back Squat", muscolo: "Quadricipiti", yt: "https://www.youtube.com/results?search_query=back+squat", sets: 3, "1rm": 100 }],
+      g2: [{ nome: "Slancio (Clean & Jerk)", muscolo: "Weightlifting", yt: "https://www.youtube.com/results?search_query=clean+jerk", sets: 3, "1rm": 90 }],
+      g3: [{ nome: "Stacco da Terra", muscolo: "Schiena", yt: "https://www.youtube.com/results?search_query=deadlift", sets: 3, "1rm": 140 }],
+      g4: [{ nome: "Lento Avanti", muscolo: "Spalle", yt: "https://www.youtube.com/results?search_query=overhead+press", sets: 3, "1rm": 60 }]
     };
 
-    let forgeData = JSON.parse(localStorage.getItem('forge_v3_data')) || {
-      anamnesi: null,
-      storicoPeso: [],
-      allenamenti: [],
-      records: {},
-      schede: schedeBase
-    };
+    let forgeData;
+    try { forgeData = JSON.parse(localStorage.getItem('forge_v3_data')) || {}; } catch(e) { forgeData = {}; }
 
-    if(!forgeData.schede) forgeData.schede = schedeBase;
+    if (!forgeData.schede) forgeData.schede = schedeBase;
+    if (!forgeData.allenamenti) forgeData.allenamenti = [];
+    if (!forgeData.records) forgeData.records = {};
+    if (!forgeData.storicoPeso) forgeData.storicoPeso = [];
 
+    let tempGKeyForAdd = 'g1';
     let pieChartObj = null;
     let lineChartObj = null;
 
-    function salvaStato() {
-      localStorage.setItem('forge_v3_data', JSON.stringify(forgeData));
-    }
+    function salvaStato() { localStorage.setItem('forge_v3_data', JSON.stringify(forgeData)); }
 
-    // AVVIO SICURO DELL'APP
     window.onload = function() {
       renderSchede();
       aggiornaProfilo();
-      if (!forgeData.anamnesi) {
-        apriModalAnamnesi();
-      }
+      aggiornaMascot();
     };
 
-    function switchTab(tabId) {
+    // LOGICA MASCOTTE ANIMATA
+    function aggiornaMascot() {
+      const avatarEl = document.getElementById('mascotAvatar');
+      const statusEl = document.getElementById('mascotStatus');
+      const msgEl = document.getElementById('mascotMsg');
+
+      const mascotteList = [
+        { nome: "Titan Titanio", heroEmoji: "🏋️‍♂️", sadEmoji: "🧟‍♂️", neutralEmoji: "🤖" },
+        { nome: "Gorilla Bicipite", heroEmoji: "🦍", sadEmoji: "🐵", neutralEmoji: "🦧" },
+        { nome: "Vichingo della Ghisa", heroEmoji: "⚡", sadEmoji: "🌧️", neutralEmoji: "🛡️" }
+      ];
+
+      // Scegli una mascotte casuale ad ogni apertura
+      const m = mascotteList[Math.floor(Math.random() * mascotteList.length)];
+
+      let giorniInattivita = 999;
+      if (forgeData.allenamenti.length > 0) {
+        const ultimoWorkout = new Date(forgeData.allenamenti[forgeData.allenamenti.length - 1].data);
+        const oggi = new Date();
+        giorniInattivita = Math.floor((oggi - ultimoWorkout) / (1000 * 60 * 60 * 24));
+      }
+
+      if (giorniInattivita <= 3) {
+        avatarEl.textContent = m.heroEmoji;
+        statusEl.textContent = `${m.nome}: ORGOGLIOSO! 🔥`;
+        statusEl.style.color = "var(--accent-green)";
+        msgEl.textContent = `Sei una macchina! Rispetto dell'ultimo allenamento: ${giorniInattivita === 0 ? 'Oggi' : giorniInattivita + ' gg fa'}. Continua così!`;
+      } else if (giorniInattivita <= 7) {
+        avatarEl.textContent = m.neutralEmoji;
+        statusEl.textContent = `${m.nome}: IN ATTESA... ⏳`;
+        statusEl.style.color = "gold";
+        msgEl.textContent = `Sono trascorsi ${giorniInattivita} giorni dall'ultimo workout. È ora di tornare in palestra prima di perdere tono!`;
+      } else {
+        avatarEl.textContent = m.sadEmoji;
+        statusEl.textContent = `${m.nome}: SVILITO E GIÙ DI TONO... 📉`;
+        statusEl.style.color = "var(--accent-red)";
+        msgEl.textContent = `Inattività da ${giorniInattivita === 999 ? 'molti' : giorniInattivita} giorni! La forza sta calando, torna subito ad allenarti!`;
+      }
+    }
+
+    function switchTab(tabId, btn) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
       
-      const targetContent = document.getElementById(tabId);
-      if(targetContent) targetContent.classList.add('active');
-      if(event && event.target) event.target.classList.add('active');
-      
+      const target = document.getElementById(tabId);
+      if(target) target.classList.add('active');
+
+      const btnTarget = btn || document.getElementById(`btn_${tabId}`);
+      if(btnTarget) btnTarget.classList.add('active');
+
       if(tabId === 'profilo') aggiornaProfilo();
       if(tabId === 'stats') aggiornaGrafici();
     }
@@ -264,31 +358,39 @@
         let html = `<div class="card"><h3>🏋️ Sessione ${gKey.toUpperCase()}</h3>`;
 
         (forgeData.schede[gKey] || []).forEach((ex, exIdx) => {
-          const rmVal = ex["1rm"] || (forgeData.records[ex.nome] ? forgeData.records[ex.nome].max1RM : 100);
+          const rmVal = ex["1rm"] || 100;
+          const muscolo = ex.muscolo || "Generale";
 
           html += `
             <div class="ex-card" data-ex="${ex.nome}">
               <div class="ex-header">
-                <strong>${exIdx + 1}. ${ex.nome} (1RM: ${rmVal}kg)</strong>
                 <div>
-                  ${ex.yt ? `<a href="${ex.yt}" target="_blank" class="btn-yt">▶ YouTube</a>` : ''}
-                  <button class="btn-del" onclick="eliminaEsercizio('${gKey}', ${exIdx})">❌ Elimina</button>
+                  <strong>${exIdx + 1}. ${ex.nome} (${rmVal}kg)</strong>
+                  <span class="tag-muscolo">${muscolo}</span>
+                </div>
+                <div>
+                  ${ex.yt ? `<a href="${ex.yt}" target="_blank" class="btn-yt">▶ Video</a>` : ''}
+                  <button class="btn-del" onclick="eliminaEsercizio('${gKey}', ${exIdx})">❌</button>
                 </div>
               </div>
 
+              <!-- BOX PROGRESSIONE -->
               <div class="prog-box">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                  <span style="font-size:10px; color:var(--text-muted); font-weight:bold;">MODELLO PROGRESSIONE</span>
+                  <button style="background:none; border:none; color:var(--accent-blue); font-size:11px; cursor:pointer;" onclick="apriModalInfoProg()">ℹ️ Spiegazione</button>
+                </div>
                 <select id="prog_${gKey}_${exIdx}">
-                  <option value="none">Progressione: Nessuna (Libero)</option>
-                  <option value="lineare">1. Lineare 8 Settimane (80% -> 115%)</option>
-                  <option value="onde">2. Onde Weightlifting (Accumulo/Intensità)</option>
+                  <option value="none">Progressione: Libera</option>
+                  <option value="lineare">1. Lineare 8s (80% -> 115%)</option>
+                  <option value="onde">2. Onde Weightlifting</option>
                   <option value="piramidale">3. Piramidale Invertito</option>
-                  <option value="fasi">4. In Fasi (4s Vol + 4s Peak)</option>
+                  <option value="fasi">4. In Fasi (Vol + Peak)</option>
                 </select>
-                <input type="number" id="sett_${gKey}_${exIdx}" placeholder="Sett. (1-8)" min="1" max="8" value="1">
+                <input type="number" id="sett_${gKey}_${exIdx}" placeholder="Sett" min="1" max="8" value="1">
                 <button class="btn-secondary" style="font-size: 10px; width: 100%; margin-top: 4px;" onclick="calcolaEApplicaProgressione('${gKey}', ${exIdx}, ${rmVal})">⚡ Calcola Carichi Target</button>
               </div>
 
-              <button class="btn-secondary" style="font-size: 11px; padding: 4px; margin-bottom: 5px;" onclick="autofillEsercizio(this)">🔄 Auto-fill Ultima Volta</button>
               <table id="tbl_${gKey}_${exIdx}">
                 <tr><th>SET</th><th>KG</th><th>REPS</th><th>RPE</th></tr>`;
           
@@ -302,7 +404,7 @@
         });
 
         html += `
-          <button class="btn btn-blue" onclick="aggiungiEsercizioPrompt('${gKey}')">+ Aggiungi Nuovo Esercizio</button>
+          <button class="btn btn-blue" onclick="apriModalAddEx('${gKey}')">+ Aggiungi Nuovo Esercizio</button>
           <button class="btn" onclick="salvaSessione('${gKey}')">💾 Salva Allenamento</button>
         </div>`;
 
@@ -310,7 +412,31 @@
       });
     }
 
-    // CALCOLO PROGRESSIONI
+    function apriModalInfoProg() { document.getElementById('modalInfoProg').style.display = 'flex'; }
+
+    function apriModalAddEx(gKey) {
+      tempGKeyForAdd = gKey;
+      document.getElementById('modalAddEx').style.display = 'flex';
+    }
+    function chiudiModalAddEx() { document.getElementById('modalAddEx').style.display = 'none'; }
+
+    function confermaAggiungiEsercizio() {
+      const nome = document.getElementById('newEx_nome').value;
+      const muscolo = document.getElementById('newEx_muscolo').value;
+      const rm = parseFloat(document.getElementById('newEx_1rm').value) || 100;
+      const yt = document.getElementById('newEx_yt').value || `https://www.youtube.com/results?search_query=${encodeURIComponent(nome)}`;
+
+      if(!nome) { alert("Inserisci il nome dell'esercizio"); return; }
+
+      if(!forgeData.schede[tempGKeyForAdd]) forgeData.schede[tempGKeyForAdd] = [];
+      forgeData.schede[tempGKeyForAdd].push({ nome: nome, muscolo: muscolo, yt: yt, sets: 3, "1rm": rm });
+      
+      salvaStato();
+      renderSchede();
+      chiudiModalAddEx();
+      document.getElementById('newEx_nome').value = '';
+    }
+
     function calcolaEApplicaProgressione(gKey, exIdx, rmVal) {
       const progTipo = document.getElementById(`prog_${gKey}_${exIdx}`).value;
       const sett = parseInt(document.getElementById(`sett_${gKey}_${exIdx}`).value) || 1;
@@ -321,7 +447,6 @@
       const rows = card.querySelectorAll('tr');
 
       let pct = 0.80;
-
       if(progTipo === "lineare") pct = 0.80 + ((sett - 1) * 0.05);
       else if(progTipo === "onde") pct = [0.75, 0.82, 0.78, 0.85, 0.82, 0.90, 0.88, 1.05][sett - 1] || 0.80;
       else if(progTipo === "piramidale") pct = 0.85 + ((sett - 1) * 0.03);
@@ -330,29 +455,14 @@
       const targetKg = Math.round((rmVal * pct) / 2.5) * 2.5;
 
       for(let i = 1; i < rows.length; i++) {
-        const factor = progTipo === "piramidale" ? (1 - (i - 1) * 0.05) : 1;
-        rows[i].querySelector('.kg').value = Math.round((targetKg * factor) / 2.5) * 2.5;
-        rows[i].querySelector('.reps').value = sett > 6 ? 2 : (sett > 4 ? 3 : 5);
-        rows[i].querySelector('.rpe').value = Math.min(10, 7 + Math.floor(sett / 2));
+        rows[i].querySelector('.kg').value = targetKg;
+        rows[i].querySelector('.reps').value = sett > 6 ? 2 : 5;
+        rows[i].querySelector('.rpe').value = 8;
       }
-
-      alert(`⚡ Applicata Progressione (Sett. ${sett}): Target ${targetKg}kg (${Math.round(pct*100)}% 1RM)`);
-    }
-
-    function aggiungiEsercizioPrompt(gKey) {
-      const nome = prompt("Nome del nuovo esercizio:");
-      if(!nome) return;
-      const rm = prompt("Massimale (1RM) attuale in kg:") || "100";
-      const yt = prompt("Link YouTube del video (opzionale):") || `https://www.youtube.com/results?search_query=${encodeURIComponent(nome)}`;
-      
-      if(!forgeData.schede[gKey]) forgeData.schede[gKey] = [];
-      forgeData.schede[gKey].push({ nome: nome, yt: yt, sets: 3, "1rm": parseFloat(rm) });
-      salvaStato();
-      renderSchede();
     }
 
     function eliminaEsercizio(gKey, exIdx) {
-      if(confirm("Rimuovere l'esercizio dalla scheda?")) {
+      if(confirm("Eliminare esercizio?")) {
         forgeData.schede[gKey].splice(exIdx, 1);
         salvaStato();
         renderSchede();
@@ -365,26 +475,6 @@
       renderSchede();
     }
 
-    function autofillEsercizio(btn) {
-      const card = btn.closest('.ex-card');
-      const nomeEx = card.getAttribute('data-ex');
-      
-      for (let i = forgeData.allenamenti.length - 1; i >= 0; i--) {
-        const es = forgeData.allenamenti[i].esercizi.find(e => e.nome === nomeEx);
-        if (es) {
-          const rows = card.querySelectorAll('tr');
-          es.serie.forEach((s, idx) => {
-            if (rows[idx + 1]) {
-              rows[idx + 1].querySelector('.kg').value = s.peso;
-              rows[idx + 1].querySelector('.reps').value = s.reps;
-              rows[idx + 1].querySelector('.rpe').value = s.rpe;
-            }
-          });
-          break;
-        }
-      }
-    }
-
     function salvaSessione(gKey) {
       const tab = document.getElementById(gKey);
       const eserciziCards = tab.querySelectorAll('.ex-card');
@@ -392,6 +482,14 @@
 
       eserciziCards.forEach(card => {
         const nomeEx = card.getAttribute('data-ex');
+        
+        // Cerca muscolo target
+        let muscoloTarget = "Generale";
+        Object.keys(forgeData.schede).forEach(gk => {
+          const exObj = forgeData.schede[gk].find(e => e.nome === nomeEx);
+          if(exObj) muscoloTarget = exObj.muscolo || "Generale";
+        });
+
         let serieList = [];
         const rows = card.querySelectorAll('tr');
 
@@ -402,63 +500,71 @@
 
           if (kg && reps) {
             serieList.push({ peso: kg, reps: reps, rpe: rpe });
-            checkPR(nomeEx, kg, reps);
           }
         }
 
         if(serieList.length > 0) {
-          sessione.esercizi.push({ nome: nomeEx, serie: serieList });
+          sessione.esercizi.push({ nome: nomeEx, muscolo: muscoloTarget, serie: serieList });
         }
       });
 
       if(sessione.esercizi.length > 0) {
         forgeData.allenamenti.push(sessione);
         salvaStato();
+        aggiornaMascot();
         alert(`✅ Allenamento ${gKey.toUpperCase()} Salvato!`);
       } else {
         alert("⚠️ Inserisci almeno una serie per salvare.");
       }
     }
 
-    function checkPR(nome, kg, reps) {
-      const rmTeorico = Math.round(reps === 1 ? kg : kg * (1 + reps / 30));
-      if (!forgeData.records[nome]) forgeData.records[nome] = { maxKg: 0, max1RM: 0 };
+    // STATISTICHE & DIAGRAMMA A TORTA SETTIMANALE PER MUSCOLO
+    function aggiornaGrafici() {
+      const oggi = new Date();
+      let muscoloVolumeMap = {};
 
-      const rec = forgeData.records[nome];
-      if (kg > rec.maxKg || rmTeorico > rec.max1RM) {
-        rec.maxKg = Math.max(rec.maxKg, kg);
-        rec.max1RM = Math.max(rec.max1RM, rmTeorico);
-        salvaStato();
-        alert(`🏆 NUOVO RECORD per ${nome}! 1RM Stimato: ${rmTeorico} kg`);
-      }
+      // Analizza le sessioni degli ultimi 7 giorni
+      (forgeData.allenamenti || []).forEach(s => {
+        const diffDays = (oggi - new Date(s.data)) / (1000 * 3600 * 24);
+        if (diffDays <= 7) {
+          s.esercizi.forEach(e => {
+            const m = e.muscolo || "Generale";
+            let vol = 0;
+            e.serie.forEach(set => vol += (set.peso * set.reps));
+            muscoloVolumeMap[m] = (muscoloVolumeMap[m] || 0) + vol;
+          });
+        }
+      });
+
+      const labels = Object.keys(muscoloVolumeMap);
+      const dataVal = Object.values(muscoloVolumeMap);
+
+      if(pieChartObj) pieChartObj.destroy();
+      const ctxPie = document.getElementById('pieChart').getContext('2d');
+      pieChartObj = new Chart(ctxPie, {
+        type: 'pie',
+        data: {
+          labels: labels.length > 0 ? labels : ['Quadricipiti', 'Schiena', 'Weightlifting', 'Spalle'],
+          datasets: [{
+            data: dataVal.length > 0 ? dataVal : [30, 25, 25, 20],
+            backgroundColor: ['#ff3b30', '#007aff', '#34c759', '#ff9500', '#af52de', '#5856d6', '#ff2d55']
+          }]
+        },
+        options: { plugins: { legend: { labels: { color: 'white' } } } }
+      });
     }
 
-    // PROFILO & BACKUP
     function apriModalAnamnesi() { document.getElementById('modalAnamnesi').style.display = 'flex'; }
-    
+    function apriModalPesata() { document.getElementById('modalPesata').style.display = 'flex'; }
+
     function salvaAnamnesi(e) {
       e.preventDefault();
-      const peso = parseFloat(document.getElementById('ana_peso').value);
-      const dataOggi = new Date().toISOString().slice(0, 10);
-
-      forgeData.anamnesi = {
-        altezza: document.getElementById('ana_altezza').value,
-        obiettivo: document.getElementById('ana_obiettivo').value,
-        livello: document.getElementById('ana_livello').value,
-        infortuni: document.getElementById('ana_infortuni').value || "Nessuno"
-      };
-
-      if(forgeData.storicoPeso.length === 0) {
-        forgeData.storicoPeso.push({ data: dataOggi, peso: peso });
-      }
-
+      forgeData.anamnesi = { obiettivo: document.getElementById('ana_obiettivo').value };
       salvaStato();
       document.getElementById('modalAnamnesi').style.display = 'none';
       aggiornaProfilo();
     }
 
-    function apriModalPesata() { document.getElementById('modalPesata').style.display = 'flex'; }
-    
     function salvaNuovaPesata() {
       const val = parseFloat(document.getElementById('inputNuovoPeso').value);
       if(val) {
@@ -470,65 +576,9 @@
     }
 
     function aggiornaProfilo() {
-      const ana = forgeData.anamnesi;
-      if(!ana) return;
-
-      document.getElementById('displayAnamnesi').innerHTML = `
-        <p><strong>Obiettivo:</strong> ${ana.obiettivo}</p>
-        <p><strong>Livello:</strong> ${ana.livello} | <strong>Altezza:</strong> ${ana.altezza} cm</p>
-        <p><strong>Note/Infortuni:</strong> ${ana.infortuni}</p>
-      `;
-
-      const st = forgeData.storicoPeso || [];
-      if(st.length > 0) {
-        st.sort((a,b) => new Date(a.data) - new Date(b.data));
-        const pesoAttuale = st[st.length - 1].peso;
-        const pesoIniziale = st[0].peso;
-
-        document.getElementById('valPesoAttuale').textContent = `${pesoAttuale} kg`;
-        
-        const dInizio = (pesoAttuale - pesoIniziale).toFixed(1);
-        document.getElementById('valDiffInizio').textContent = `${dInizio > 0 ? '+':''}${dInizio} kg`;
-
-        const d30 = (pesoAttuale - (st[Math.max(0, st.length - 4)].peso)).toFixed(1);
-        document.getElementById('valDiff30gg').textContent = `${d30 > 0 ? '+':''}${d30} kg`;
-
-        calcolaWilks(pesoAttuale);
+      if(forgeData.anamnesi) {
+        document.getElementById('displayAnamnesi').innerHTML = `<p><strong>Obiettivo:</strong> ${forgeData.anamnesi.obiettivo}</p>`;
       }
-      calcolaACWR();
-    }
-
-    function calcolaWilks(bw) {
-      let tot1RM = 0;
-      Object.keys(forgeData.records).forEach(k => tot1RM += forgeData.records[k].max1RM || 0);
-      if(tot1RM === 0) { document.getElementById('valWilks').textContent = "Inserisci carichi"; return; }
-      const a = -216.04, b = 16.26, c = -0.002, d = -0.001, e = 7.018e-6, f = -1.291e-8;
-      const coeff = 500 / (a + (b * bw) + (c * bw**2) + (d * bw**3) + (e * bw**4) + (f * bw**5));
-      document.getElementById('valWilks').textContent = `${Math.round(tot1RM * coeff)} pts`;
-    }
-
-    function calcolaACWR() {
-      const oggi = new Date();
-      let stress7 = 0, stress28 = 0;
-
-      (forgeData.allenamenti || []).forEach(s => {
-        const diffDays = (oggi - new Date(s.data)) / (1000 * 3600 * 24);
-        let stressSessione = 0;
-        s.esercizi.forEach(e => {
-          e.serie.forEach(set => stressSessione += (set.peso * set.reps * (set.rpe || 8) / 10));
-        });
-
-        if (diffDays <= 7) stress7 += stressSessione;
-        if (diffDays <= 28) stress28 += stressSessione;
-      });
-
-      const ratio = (stress7 / ((stress28 / 4) || 1)).toFixed(2);
-      const el = document.getElementById('valAcwr');
-      if(!el) return;
-      
-      if (ratio > 1.4) el.innerHTML = `<span style="color:var(--accent-red);">🔴 ${ratio} - Rischio Sovrallenamento</span>`;
-      else if (ratio >= 0.8) el.innerHTML = `<span style="color:var(--accent-green);">🟢 ${ratio} - Carico Ottimale</span>`;
-      else el.innerHTML = `<span style="color:gold;">🟡 ${ratio} - Carico Basso</span>`;
     }
 
     function esportaBackup() {
@@ -547,64 +597,18 @@
         try {
           forgeData = JSON.parse(e.target.result);
           salvaStato();
-          alert("✅ Backup Ripristinato con Successo!");
+          alert("✅ Backup Ripristinato!");
           location.reload();
-        } catch (err) {
-          alert("❌ File non valido.");
-        }
+        } catch (err) { alert("❌ File non valido."); }
       };
       reader.readAsText(file);
     }
 
-    function aggiornaGrafici() {
-      let volG1 = 0, volG2 = 0, volG3 = 0, volG4 = 0;
-      
-      (forgeData.allenamenti || []).forEach(s => {
-        let volSessione = 0;
-        s.esercizi.forEach(e => e.serie.forEach(st => volSessione += (st.peso * st.reps)));
-        if (s.giorno === 'G1' || s.giorno === 'GIORNO 1') volG1 += volSessione;
-        if (s.giorno === 'G2' || s.giorno === 'GIORNO 2') volG2 += volSessione;
-        if (s.giorno === 'G3' || s.giorno === 'GIORNO 3') volG3 += volSessione;
-        if (s.giorno === 'G4' || s.giorno === 'GIORNO 4') volG4 += volSessione;
-      });
-
-      if(pieChartObj) pieChartObj.destroy();
-      const ctxPie = document.getElementById('pieChart').getContext('2d');
-      pieChartObj = new Chart(ctxPie, {
-        type: 'pie',
-        data: {
-          labels: ['Giorno 1', 'Giorno 2', 'Giorno 3', 'Giorno 4'],
-          datasets: [{
-            data: [volG1 || 10, volG2 || 10, volG3 || 10, volG4 || 10],
-            backgroundColor: ['#ff3b30', '#007aff', '#34c759', '#ff9500']
-          }]
-        },
-        options: { plugins: { legend: { labels: { color: 'white' } } } }
-      });
-
-      const dateLabels = (forgeData.allenamenti || []).slice(-6).map(s => s.data);
-      const dataCarichi = (forgeData.allenamenti || []).slice(-6).map(s => {
-        let maxS = 0;
-        s.esercizi.forEach(e => e.serie.forEach(st => maxS = Math.max(maxS, st.peso)));
-        return maxS;
-      });
-
-      if(lineChartObj) lineChartObj.destroy();
-      const ctxLine = document.getElementById('lineChart').getContext('2d');
-      lineChartObj = new Chart(ctxLine, {
-        type: 'line',
-        data: {
-          labels: dateLabels.length > 0 ? dateLabels : ['S1', 'S2', 'S3', 'S4'],
-          datasets: [{
-            label: 'Carico Max Registrato (kg)',
-            data: dataCarichi.length > 0 ? dataCarichi : [50, 60, 65, 70],
-            borderColor: '#ff3b30',
-            backgroundColor: 'rgba(255,59,48,0.2)',
-            fill: true
-          }]
-        },
-        options: { scales: { x: { ticks: { color: 'white' } }, y: { ticks: { color: 'white' } } } }
-      });
+    function resetMemoriaLocale() {
+      if(confirm("Cancellare tutti i dati salvati?")) {
+        localStorage.removeItem('forge_v3_data');
+        location.reload();
+      }
     }
   </script>
 </body>
