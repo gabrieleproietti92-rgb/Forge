@@ -104,6 +104,9 @@
     .btn-yt { background: #ff0000; color: white; border: none; padding: 4px 8px; border-radius: 6px; font-size: 11px; text-decoration: none; font-weight: bold; display: inline-flex; align-items: center; gap: 3px; }
     .btn-del { background: #ff453a22; color: #ff453a; border: 1px solid #ff453a; padding: 4px 8px; border-radius: 6px; font-size: 11px; cursor: pointer; }
 
+    .prog-box { background: #1a1a1c; padding: 8px; border-radius: 8px; margin-bottom: 8px; border: 1px dashed var(--border-color); }
+    .prog-box select, .prog-box input { width: 48%; display: inline-block; font-size: 11px; padding: 4px; box-sizing: border-box; }
+
     table { width: 100%; border-collapse: collapse; margin-top: 8px; }
     th { color: var(--text-muted); font-size: 11px; text-align: center; padding-bottom: 5px; }
     td { padding: 4px 2px; text-align: center; }
@@ -164,7 +167,7 @@
         <div class="streak-lbl">Punti Esperienza</div>
       </div>
     </div>
-    <div class="rank-title" id="rankTitle">Rango: Recluta</div>
+    <div class="rank-title" id="rankTitle">Rango: Recluta 🥉</div>
     <div class="xp-container">
       <div class="xp-bar" id="xpBar"></div>
     </div>
@@ -213,7 +216,7 @@
     </div>
 
     <div class="card">
-      <h3>👤 Profilo & Anamnesi</h3>
+      <h3>👤 Profilo & Anamnesi Adattiva</h3>
       <div id="displayAnamnesi">Nessuna anamnesi salvata.</div>
       <button class="btn-secondary btn" onclick="apriModalAnamnesi()">✏️ Compila / Modifica Anamnesi</button>
     </div>
@@ -282,6 +285,13 @@
       <h2>📋 Anamnesi Iniziale</h2>
       <form onsubmit="salvaAnamnesi(event)">
         <div class="form-group">
+          <label>Genere / Profilo Ranghi:</label>
+          <select id="ana_genere">
+            <option value="Uomo">👨 Uomo (Battitore di Fiamma, Titano...)</option>
+            <option value="Donna">👩 Donna (Guerriera di Fiamma, Mirmidone, Dea...)</option>
+          </select>
+        </div>
+        <div class="form-group">
           <label>Peso Corporeo (kg):</label>
           <input type="number" id="ana_peso" step="0.1" required>
         </div>
@@ -299,11 +309,11 @@
           </select>
         </div>
         <div class="form-group">
-          <label>Livello di Preparazione:</label>
+          <label>Livello di Preparazione (Adattivo):</label>
           <select id="ana_livello">
-            <option value="Principiante">Principiante</option>
-            <option value="Intermedio">Intermedio</option>
-            <option value="Avanzato">Avanzato</option>
+            <option value="Principiante">Principiante (3gg tolleranza Streak)</option>
+            <option value="Intermedio">Intermedio (2gg tolleranza Streak)</option>
+            <option value="Avanzato">Avanzato (1gg tolleranza Streak)</option>
           </select>
         </div>
         <div class="form-group">
@@ -372,6 +382,7 @@
     if (!forgeData.allenamenti) forgeData.allenamenti = [];
     if (!forgeData.records) forgeData.records = {};
     if (!forgeData.storicoPeso) forgeData.storicoPeso = [];
+    if (!forgeData.anamnesi) forgeData.anamnesi = { livello: "Principiante", genere: "Uomo" };
 
     let tempGKeyForAdd = 'g1';
     let pieChartObj = null;
@@ -400,7 +411,7 @@
       toast.classList.add('show');
       setTimeout(() => {
         toast.classList.remove('show');
-      }, 4000);
+      }, 4500);
     }
 
     function mostraToastApertura() {
@@ -422,50 +433,120 @@
       }, 600);
     }
 
+    function getTolleranzaGiorni() {
+      const liv = (forgeData.anamnesi && forgeData.anamnesi.livello) ? forgeData.anamnesi.livello : "Principiante";
+      if (liv === "Principiante") return 3;
+      if (liv === "Intermedio") return 2;
+      return 1; // Avanzato
+    }
+
     function calcolaStreak() {
       if (forgeData.allenamenti.length === 0) return 0;
       const dateSet = new Set(forgeData.allenamenti.map(s => s.data));
       let streak = 0;
       let checkDate = new Date();
+      const maxGap = getTolleranzaGiorni();
+      let consecutiveGaps = 0;
 
       while (true) {
         const dateStr = checkDate.toISOString().slice(0, 10);
         if (dateSet.has(dateStr)) {
           streak++;
+          consecutiveGaps = 0;
           checkDate.setDate(checkDate.getDate() - 1);
-        } else if (streak === 0) {
-          checkDate.setDate(checkDate.getDate() - 1);
-          const yesterdayStr = checkDate.toISOString().slice(0, 10);
-          if (dateSet.has(yesterdayStr)) {
-            streak++;
-            checkDate.setDate(checkDate.getDate() - 1);
-          } else {
+        } else {
+          consecutiveGaps++;
+          if (consecutiveGaps > maxGap && streak > 0) {
             break;
           }
-        } else {
-          break;
+          checkDate.setDate(checkDate.getDate() - 1);
+          if (consecutiveGaps > maxGap && streak === 0) {
+            break;
+          }
         }
       }
       return streak;
     }
 
+    function verificaEValutaPromozioneLivello() {
+      const totalW = forgeData.allenamenti.length;
+      const numPR = Object.keys(forgeData.records || {}).length;
+      const streak = calcolaStreak();
+      let liv = forgeData.anamnesi.livello || "Principiante";
+
+      if (liv === "Principiante" && totalW >= 12 && numPR >= 3) {
+        forgeData.anamnesi.livello = "Intermedio";
+        salvaStato();
+        mostraToast("🎉", "PROMOZIONE DI LIVELLO!", "Complimenti! Sei stato promosso a LIVELLO INTERMEDIO!");
+      } else if (liv === "Intermedio" && totalW >= 30 && numPR >= 8 && streak >= 7) {
+        forgeData.anamnesi.livello = "Avanzato";
+        salvaStato();
+        mostraToast("👑", "LIVELLO AVANZATO RAGGIUNTO!", "Prestazioni straordinarie! Sei diventato un Atleta AVANZATO.");
+      }
+    }
+
+    function calcolaXPPerSessione() {
+      const liv = (forgeData.anamnesi && forgeData.anamnesi.livello) ? forgeData.anamnesi.livello : "Principiante";
+      if (liv === "Principiante") return 200;
+      if (liv === "Intermedio") return 150;
+      return 100;
+    }
+
     function aggiornaGamification() {
       const totalW = forgeData.allenamenti.length;
       const streak = calcolaStreak();
-      const totalXP = totalW * 150 + Object.keys(forgeData.records || {}).length * 50;
+      const xpBase = calcolaXPPerSessione();
+      const totalXP = totalW * xpBase + Object.keys(forgeData.records || {}).length * 50;
 
       document.getElementById('valStreak').textContent = `${streak} 🔥`;
       document.getElementById('valTotalWorkouts').textContent = totalW;
       document.getElementById('valXP').textContent = `${totalXP} XP`;
 
-      let rank = "Recluta 🥉";
-      if (totalXP >= 3000) rank = "Leggenda Vivente 💎";
-      else if (totalXP >= 1800) rank = "Titano di Ghisa 🥇";
-      else if (totalXP >= 1000) rank = "Guerriero Esperto 🥈";
-      else if (totalXP >= 400) rank = "Atleta Costante 🏋️";
+      const isDonna = (forgeData.anamnesi && forgeData.anamnesi.genere === "Donna");
+
+      // RANGHI ADATTIVI UOMO vs DONNA (GUERRIERE DELLA FUCINA)
+      const ranghiUomo = [
+        "1. Recluta 🥉",
+        "2. Apprendista Forgiatore 🔨",
+        "3. Plasmaghisa 🥈",
+        "4. Battitore di Fiamma 🔥",
+        "5. Maestro della Fucina ⚡",
+        "6. Titano di Ghisa 💎"
+      ];
+
+      const ranghiDonna = [
+        "1. Recluta 🥉",
+        "2. Guerriera di Fiamma 🔥",
+        "3. Mirmidone d'Acciaio 🗡️",
+        "4. Valkyria della Fucina ⚡",
+        "5. Dominatrice del Ferro 🛡️",
+        "6. Dea di Ghisa 💎"
+      ];
+
+      const ranghiActive = isDonna ? ranghiDonna : ranghiUomo;
+
+      let rank = ranghiActive[0];
+      let nextXP = 500;
+
+      if (totalXP >= 5000) {
+        rank = ranghiActive[5];
+        nextXP = 5000;
+      } else if (totalXP >= 3000) {
+        rank = ranghiActive[4];
+        nextXP = 5000;
+      } else if (totalXP >= 1800) {
+        rank = ranghiActive[3];
+        nextXP = 3000;
+      } else if (totalXP >= 1000) {
+        rank = ranghiActive[2];
+        nextXP = 1800;
+      } else if (totalXP >= 500) {
+        rank = ranghiActive[1];
+        nextXP = 1000;
+      }
 
       document.getElementById('rankTitle').textContent = `Rango: ${rank}`;
-      document.getElementById('xpBar').style.width = `${Math.min(100, Math.round((totalXP / 3000) * 100))}%`;
+      document.getElementById('xpBar').style.width = `${Math.min(100, Math.round((totalXP / nextXP) * 100))}%`;
 
       renderBadges(totalW, streak, totalXP);
     }
@@ -645,6 +726,7 @@
         const prObj = forgeData.records[ex.nome];
         const prTxt = prObj ? `${prObj.maxKg}kg | 1RM: ${prObj.max1RM}kg` : `-- (Auto-calcolo)`;
         const ytSearchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(ex.nome + ' esercizio execution')}`;
+        const rmVal = prObj ? prObj.max1RM : 100;
 
         html += `
           <div class="ex-card" data-ex="${ex.nome}">
@@ -671,6 +753,19 @@
               <canvas id="${canvasId}" class="trading-canvas"></canvas>
             </div>
 
+            <div class="prog-box">
+              <select id="prog_${gKey}_${exIdx}">
+                <option value="none">Progressione: Libera</option>
+                <option value="lineare">1. Lineare (80% -> 115%)</option>
+                <option value="ramping">2. Ramping (Top Set)</option>
+                <option value="densita">3. Per Densità (Volume fisso)</option>
+                <option value="piramidale">4. Piramidale Invertito</option>
+                <option value="fasi">5. In Fasi (Vol + Peak)</option>
+              </select>
+              <input type="number" id="sett_${gKey}_${exIdx}" placeholder="Sett" min="1" max="8" value="1">
+              <button class="btn-secondary" style="font-size: 10px; width: 100%; margin-top: 4px;" onclick="calcolaEApplicaProgressione('${gKey}', ${exIdx}, ${rmVal})">⚡ Calcola Carichi Target</button>
+            </div>
+
             <table id="tbl_${gKey}_${exIdx}">
               <tr><th>SET</th><th>KG</th><th>REPS</th><th>RPE</th></tr>`;
         
@@ -688,7 +783,7 @@
 
       html += `
         <button class="btn btn-blue" onclick="apriModalAddEx('${gKey}')">+ Aggiungi Nuovo Esercizio</button>
-        <button class="btn" onclick="salvaSessione('${gKey}')">💾 Salva Allenamento (+150 XP)</button>
+        <button class="btn" onclick="salvaSessione('${gKey}')">💾 Salva Allenamento</button>
       </div>`;
 
       container.innerHTML = html;
@@ -698,6 +793,44 @@
           renderTradingChart(ex.nome, `trading_${gKey}_${exIdx}`);
         });
       }, 100);
+    }
+
+    function calcolaEApplicaProgressione(gKey, exIdx, rmVal) {
+      const progTipo = document.getElementById(`prog_${gKey}_${exIdx}`).value;
+      const sett = parseInt(document.getElementById(`sett_${gKey}_${exIdx}`).value) || 1;
+
+      if(progTipo === "none") return;
+
+      const card = document.querySelectorAll(`#${gKey} .ex-card`)[exIdx];
+      const rows = card.querySelectorAll('tr');
+      const totalSets = rows.length - 1;
+
+      for(let i = 1; i < rows.length; i++) {
+        let pct = 0.80;
+        let repsVal = 5;
+
+        if(progTipo === "lineare") {
+          pct = 0.80 + ((sett - 1) * 0.05);
+          repsVal = sett > 6 ? 2 : 5;
+        } else if(progTipo === "ramping") {
+          pct = (0.65 + ((i / totalSets) * 0.25)) + ((sett - 1) * 0.025);
+          repsVal = 5;
+        } else if(progTipo === "densita") {
+          pct = 0.75;
+          repsVal = 6 + sett;
+        } else if(progTipo === "piramidale") {
+          pct = 0.85 - ((i - 1) * 0.05) + ((sett - 1) * 0.025);
+          repsVal = 4 + (i * 2);
+        } else if(progTipo === "fasi") {
+          pct = sett <= 4 ? (0.70 + (sett * 0.025)) : (0.85 + ((sett - 4) * 0.05));
+          repsVal = sett <= 4 ? 8 : 3;
+        }
+
+        const targetKg = Math.round((rmVal * pct) / 2.5) * 2.5;
+        rows[i].querySelector('.kg').value = targetKg;
+        rows[i].querySelector('.reps').value = repsVal;
+        rows[i].querySelector('.rpe').value = 8;
+      }
     }
 
     function aggiungiSerie(gKey, exIdx) {
@@ -848,8 +981,12 @@
       if (sessione.esercizi.length > 0) {
         forgeData.allenamenti.push(sessione);
         salvaStato();
+        
+        const xpGuadagnati = calcolaXPPerSessione();
+        mostraToast("🔥", "SESSIONE SALVATA", `Allenamento ${gKey.toUpperCase()} completato! +${xpGuadagnati} XP guadagnati.`);
+
+        verificaEValutaPromozioneLivello();
         aggiornaGamification();
-        mostraToast("🔥", "SESSIONE SALVATA", `Allenamento ${gKey.toUpperCase()} completato! +150 XP guadagnati.`);
         renderGiorno(gKey);
       } else {
         alert("⚠️ Inserisci almeno una serie per salvare.");
@@ -928,6 +1065,7 @@
 
     function apriModalAnamnesi() {
       const ana = forgeData.anamnesi || {};
+      if (ana.genere) document.getElementById('ana_genere').value = ana.genere;
       if (ana.altezza) document.getElementById('ana_altezza').value = ana.altezza;
       if (ana.obiettivo) document.getElementById('ana_obiettivo').value = ana.obiettivo;
       if (ana.livello) document.getElementById('ana_livello').value = ana.livello;
@@ -944,6 +1082,7 @@
       const peso = parseFloat(document.getElementById('ana_peso').value);
 
       forgeData.anamnesi = {
+        genere: document.getElementById('ana_genere').value,
         altezza: document.getElementById('ana_altezza').value,
         obiettivo: document.getElementById('ana_obiettivo').value,
         livello: document.getElementById('ana_livello').value,
@@ -956,7 +1095,9 @@
 
       salvaStato();
       document.getElementById('modalAnamnesi').style.display = 'none';
+      aggiornaGamification();
       aggiornaProfilo();
+      mostraToast("👤", "PROFILO AGGIORNATO", `Impostato: ${forgeData.anamnesi.genere} - Livello ${forgeData.anamnesi.livello}.`);
     }
 
     function apriModalPesata() {
@@ -982,8 +1123,10 @@
       if (ana && ana.obiettivo) {
         anaContainer.innerHTML = `
           <div style="font-size:13px; line-height:1.6;">
+            <p style="margin:4px 0;">👤 <strong>Genere:</strong> ${ana.genere || 'Uomo'}</p>
             <p style="margin:4px 0;">🎯 <strong>Obiettivo:</strong> ${ana.obiettivo}</p>
-            <p style="margin:4px 0;">📊 <strong>Livello:</strong> ${ana.livello || 'Non specificato'} | 📏 <strong>Altezza:</strong> ${ana.altezza || '--'} cm</p>
+            <p style="margin:4px 0;">⚡ <strong>Livello Attuale:</strong> <span style="color:var(--accent-gold); font-weight:bold;">${ana.livello || 'Principiante'}</span></p>
+            <p style="margin:4px 0;">📏 <strong>Altezza:</strong> ${ana.altezza || '--'} cm</p>
             <p style="margin:4px 0;">🩹 <strong>Infortuni / Note:</strong> ${ana.infortuni || 'Nessuno'}</p>
           </div>
         `;
