@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Forge v5.0 - Pro Tracker</title>
+  <title>Forge v5.2 - Toast Motivazionali</title>
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
@@ -32,6 +32,107 @@
     h1, h2, h3, h4 { margin: 0 0 10px 0; }
     .header { text-align: center; margin-bottom: 15px; }
     .header h1 { color: var(--accent-red); font-size: 26px; letter-spacing: 1px; margin: 0; }
+
+    /* BANNER MOTIVAZIONALE TOAST */
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      width: 90%;
+      max-width: 380px;
+      background: rgba(30, 30, 30, 0.95);
+      border: 1px solid var(--accent-gold);
+      border-radius: 12px;
+      padding: 12px 16px;
+      color: var(--text-main);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      backdrop-filter: blur(10px);
+      z-index: 10000;
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
+      opacity: 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .toast-container.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .toast-icon { font-size: 24px; }
+    .toast-title { font-weight: bold; font-size: 13px; color: var(--accent-gold); margin-bottom: 2px; }
+    .toast-msg { font-size: 12px; color: #e0e0e0; line-height: 1.3; }
+
+    /* DASHBOARD STREAK & XP */
+    .dashboard-streak {
+      background: radial-gradient(circle, #2a2a38 0%, #121212 100%);
+      border-radius: 16px;
+      padding: 15px;
+      margin-bottom: 15px;
+      border: 1px solid #3d3d52;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+      text-align: center;
+    }
+
+    .streak-banner {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .streak-item { text-align: center; }
+    .streak-val { font-size: 24px; font-weight: bold; color: var(--accent-gold); }
+    .streak-lbl { font-size: 11px; color: var(--text-muted); text-transform: uppercase; }
+
+    .xp-container {
+      background: #121212;
+      border-radius: 10px;
+      height: 12px;
+      width: 100%;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+      margin-top: 6px;
+    }
+
+    .xp-bar {
+      background: linear-gradient(90deg, #007aff, #34c759);
+      height: 100%;
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+
+    .rank-title { font-size: 14px; font-weight: bold; color: var(--accent-green); margin-bottom: 4px; }
+
+    .badges-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .badge-card {
+      background: #121212;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 10px 5px;
+      text-align: center;
+      opacity: 0.35;
+      filter: grayscale(100%);
+      transition: all 0.3s ease;
+    }
+
+    .badge-card.unlocked {
+      opacity: 1;
+      filter: grayscale(0%);
+      border-color: var(--accent-gold);
+      background: rgba(255, 215, 0, 0.08);
+    }
+
+    .badge-icon { font-size: 26px; display: block; margin-bottom: 4px; }
+    .badge-name { font-size: 11px; font-weight: bold; }
 
     /* MENU NAVBAR PRINCIPALE */
     .home-nav-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
@@ -67,9 +168,7 @@
       padding: 3px 8px; border-radius: 6px; margin-top: 4px;
     }
 
-    .trading-box {
-      background: #141416; border-radius: 8px; padding: 8px; margin: 8px 0; border: 1px solid #222;
-    }
+    .trading-box { background: #141416; border-radius: 8px; padding: 8px; margin: 8px 0; border: 1px solid #222; }
     .trading-title { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: bold; margin-bottom: 4px; display: flex; justify-content: space-between; }
     .trading-canvas { width: 100% !important; height: 60px !important; }
 
@@ -111,11 +210,42 @@
 </head>
 <body>
 
-  <div class="header">
-    <h1>FORGE v5.0 🏋️‍♂️</h1>
+  <!-- ELEMENTO BANNER TOAST -->
+  <div id="toast" class="toast-container">
+    <div id="toastIcon" class="toast-icon">⚡</div>
+    <div>
+      <div id="toastTitle" class="toast-title">MOTIVAZIONE</div>
+      <div id="toastMsg" class="toast-msg">Spingi al massimo oggi!</div>
+    </div>
   </div>
 
-  <!-- MENU NAVIGAZIONE SUPERIORE -->
+  <div class="header">
+    <h1>FORGE v5.2 ⚡</h1>
+  </div>
+
+  <!-- STREAK & XP DASHBOARD -->
+  <div class="dashboard-streak">
+    <div class="streak-banner">
+      <div class="streak-item">
+        <div class="streak-val" id="valStreak">0🔥</div>
+        <div class="streak-lbl">Streak Attuale</div>
+      </div>
+      <div class="streak-item">
+        <div class="streak-val" id="valTotalWorkouts">0</div>
+        <div class="streak-lbl">Allenamenti</div>
+      </div>
+      <div class="streak-item">
+        <div class="streak-val" id="valXP">0 XP</div>
+        <div class="streak-lbl">Punti Esperienza</div>
+      </div>
+    </div>
+    <div class="rank-title" id="rankTitle">Rango: Recluta</div>
+    <div class="xp-container">
+      <div class="xp-bar" id="xpBar"></div>
+    </div>
+  </div>
+
+  <!-- MENU NAVBAR PRINCIPALE -->
   <div class="home-nav-grid">
     <button class="home-nav-btn active" id="nav_allenamenti" onclick="apriAllenamenti()">🏋️ Allenamenti</button>
     <button class="home-nav-btn" id="nav_stats" onclick="apriSezione('stats')">📊 Statistiche</button>
@@ -128,8 +258,13 @@
   <!-- CONTENITORE GIORNI ALLENAMENTO -->
   <div id="workoutDaysContainer"></div>
 
-  <!-- STATISTICHE -->
+  <!-- STATISTICHE & ACHIVEMENTS -->
   <div id="stats" class="tab-content">
+    <div class="card">
+      <h3>🏆 Traguardi & Badge Sbloccati</h3>
+      <div class="badges-grid" id="badgesGrid"></div>
+    </div>
+
     <div class="card">
       <h3>📊 Distribuzione Muscolare Settimanale</h3>
       <canvas id="pieChart"></canvas>
@@ -140,7 +275,6 @@
   <div id="profilo" class="tab-content">
     <div class="card">
       <h3>📅 Giorni di Allenamento</h3>
-      <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Aggiungi, rimuovi o rinomina i tuoi giorni (es. G1, Legs, Push, Pull):</p>
       <div id="daysManagerList"></div>
       <button class="btn btn-blue" onclick="aggiungiNuovoGiorno()">+ Aggiungi Giorno di Allenamento</button>
     </div>
@@ -249,6 +383,24 @@
       g4: [{ nome: "Lento Avanti", muscolo: "Spalle", yt: "https://www.youtube.com/results?search_query=overhead+press", sets: 3, "1rm": 60 }]
     };
 
+    const frasiMotivazionali = {
+      streakAlta: [
+        "La costanza batte il talento ogni singolo giorno. Continua così!",
+        "Inarrestabile! Stai costruendo una versione indistruttibile di te stesso.",
+        "Il ferro non mente mai: quello che dai oggi ti torna domani con gli interessi."
+      ],
+      streakMedia: [
+        "Ottimo ritmo! Mantiieni accesa la fiamma e domina il bilanciere.",
+        "La disciplina è fare ciò che va fatto, anche quando non si ha voglia.",
+        "Un'altra sessione conquistata. Il tuo io del futuro ti ringrazia!"
+      ],
+      streakBassa: [
+        "La ruggine si accumula in fretta, ma basta una sessione per spazzarla via!",
+        "Il bilanciere ti aspetta. Spegni le scuse e riaccendi la tua Streak!",
+        "Nessun rimpianto: il momento migliore per ricominciare è ADESSO."
+      ]
+    };
+
     let forgeData;
     try { forgeData = JSON.parse(localStorage.getItem('forge_v3_data')) || {}; } catch(e) { forgeData = {}; }
 
@@ -266,15 +418,108 @@
     window.onload = function() {
       inizializzaStrutturaGiorni();
       apriAllenamenti();
+      aggiornaGamification();
       aggiornaProfilo();
+      mostraToastApertura();
     };
+
+    function mostraToast(icona, titolo, messaggio) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastIcon').textContent = icona;
+      document.getElementById('toastTitle').textContent = titolo;
+      document.getElementById('toastMsg').textContent = messaggio;
+
+      toast.classList.add('show');
+      setTimeout(() => { toast.classList.remove('show'); }, 4000);
+    }
+
+    function mostraToastApertura() {
+      const streak = calcolaStreak();
+      let lista = frasiMotivazionali.streakBassa;
+      let icona = "⚡";
+
+      if (streak >= 5) { lista = frasiMotivazionali.streakAlta; icona = "🔥"; }
+      else if (streak >= 2) { lista = frasiMotivazionali.streakMedia; icona = "🏋️‍♂️"; }
+
+      const fraseRandom = lista[Math.floor(Math.random() * lista.length)];
+      setTimeout(() => { mostraToast(icona, `STREAK ATTUALE: ${streak} GIORNI`, fraseRandom); }, 600);
+    }
+
+    function calcolaStreak() {
+      if (forgeData.allenamenti.length === 0) return 0;
+      const dateSet = new Set(forgeData.allenamenti.map(s => s.data));
+      let streak = 0;
+      let checkDate = new Date();
+
+      while (true) {
+        const dateStr = checkDate.toISOString().slice(0, 10);
+        if (dateSet.has(dateStr)) {
+          streak++;
+          checkDate.setDate(checkDate.getDate() - 1);
+        } else if (streak === 0) {
+          checkDate.setDate(checkDate.getDate() - 1);
+          const yesterdayStr = checkDate.toISOString().slice(0, 10);
+          if (dateSet.has(yesterdayStr)) {
+            streak++;
+            checkDate.setDate(checkDate.getDate() - 1);
+          } else { break; }
+        } else { break; }
+      }
+      return streak;
+    }
+
+    function aggiornaGamification() {
+      const totalW = forgeData.allenamenti.length;
+      const streak = calcolaStreak();
+      const totalXP = totalW * 150 + Object.keys(forgeData.records || {}).length * 50;
+
+      document.getElementById('valStreak').textContent = `${streak} 🔥`;
+      document.getElementById('valTotalWorkouts').textContent = totalW;
+      document.getElementById('valXP').textContent = `${totalXP} XP`;
+
+      let rank = "Recluta 🥉";
+      let nextXP = 500;
+      if (totalXP >= 3000) { rank = "Leggenda Vivente 💎"; nextXP = 3000; }
+      else if (totalXP >= 1800) { rank = "Titano di Ghisa 🥇"; nextXP = 3000; }
+      else if (totalXP >= 1000) { rank = "Guerriero Esperto 🥈"; nextXP = 1800; }
+      else if (totalXP >= 400) { rank = "Atleta Costante 🏋️"; nextXP = 1000; }
+
+      document.getElementById('rankTitle').textContent = `Rango: ${rank}`;
+      const pct = Math.min(100, Math.round((totalXP / nextXP) * 100));
+      document.getElementById('xpBar').style.width = `${pct}%`;
+
+      renderBadges(totalW, streak, totalXP);
+    }
+
+    function renderBadges(totalW, streak, totalXP) {
+      const grid = document.getElementById('badgesGrid');
+      if(!grid) return;
+
+      const badgeList = [
+        { name: "Primo Passo", icon: "🌱", unlocked: totalW >= 1 },
+        { name: "3 In Fila", icon: "🔥", unlocked: streak >= 3 },
+        { name: "Veterano 10", icon: "🏋️", unlocked: totalW >= 10 },
+        { name: "Costanza 7gg", icon: "⚡", unlocked: streak >= 7 },
+        { name: "Cacciatore PR", icon: "🏆", unlocked: Object.keys(forgeData.records || {}).length >= 3 },
+        { name: "Ghisa Pura", icon: "💎", unlocked: totalXP >= 1500 }
+      ];
+
+      let html = '';
+      badgeList.forEach(b => {
+        html += `
+          <div class="badge-card ${b.unlocked ? 'unlocked' : ''}">
+            <span class="badge-icon">${b.icon}</span>
+            <span class="badge-name">${b.name}</span>
+          </div>
+        `;
+      });
+      grid.innerHTML = html;
+    }
 
     function inizializzaStrutturaGiorni() {
       const subtabs = document.getElementById('workoutSubtabs');
       const container = document.getElementById('workoutDaysContainer');
-      
-      let subHtml = '';
-      let contHtml = '';
+      let subHtml = ''; let contHtml = '';
 
       const gKeys = Object.keys(forgeData.schede);
       if(gKeys.length === 0) forgeData.schede = schedeBase;
@@ -315,18 +560,13 @@
       if(!nomeInput) return;
       const keyClean = nomeInput.toLowerCase().replace(/\s+/g, '_');
 
-      if(forgeData.schede[keyClean]) {
-        alert("⚠️ Esiste già un giorno con questo nome.");
-        return;
-      }
+      if(forgeData.schede[keyClean]) { alert("⚠️ Esiste già un giorno con questo nome."); return; }
 
-      forgeData.schede[keyClean] = [
-        { nome: "Nuovo Esercizio", muscolo: "Generale", yt: "", sets: 3, "1rm": 80 }
-      ];
+      forgeData.schede[keyClean] = [{ nome: "Nuovo Esercizio", muscolo: "Generale", yt: "", sets: 3, "1rm": 80 }];
       salvaStato();
       inizializzaStrutturaGiorni();
       renderDaysManager();
-      alert(`✅ Giorno ${nomeInput.toUpperCase()} aggiunto!`);
+      mostraToast("📅", "GIORNO AGGIUNTO", `La sessione ${nomeInput.toUpperCase()} è ora disponibile!`);
     }
 
     function rinominaGiorno(oldKey) {
@@ -344,11 +584,7 @@
     }
 
     function rimuoviGiorno(gKey) {
-      if(Object.keys(forgeData.schede).length <= 1) {
-        alert("⚠️ Devi mantenere almeno un giorno di allenamento.");
-        return;
-      }
-
+      if(Object.keys(forgeData.schede).length <= 1) { alert("⚠️ Devi mantenere almeno un giorno di allenamento."); return; }
       if(confirm(`Sei sicuro di voler eliminare il giorno ${gKey.toUpperCase()} e i suoi esercizi?`)) {
         delete forgeData.schede[gKey];
         salvaStato();
@@ -367,7 +603,6 @@
       resetNavState();
       document.getElementById('nav_allenamenti').classList.add('active');
       document.getElementById('workoutSubtabs').style.display = 'flex';
-      
       const firstKey = Object.keys(forgeData.schede)[0] || 'g1';
       switchGiorno(firstKey, document.getElementById(`sub_${firstKey}`));
     }
@@ -378,7 +613,7 @@
       document.getElementById(tabId).classList.add('active');
 
       if(tabId === 'profilo') aggiornaProfilo();
-      if(tabId === 'stats') aggiornaGrafici();
+      if(tabId === 'stats') { aggiornaGamification(); aggiornaGrafici(); }
     }
 
     function switchGiorno(gKey, btn) {
@@ -458,7 +693,7 @@
 
       html += `
         <button class="btn btn-blue" onclick="apriModalAddEx('${gKey}')">+ Aggiungi Nuovo Esercizio</button>
-        <button class="btn" onclick="salvaSessione('${gKey}')">💾 Salva Allenamento</button>
+        <button class="btn" onclick="salvaSessione('${gKey}')">💾 Salva Allenamento (+150 XP)</button>
       </div>`;
 
       container.innerHTML = html;
@@ -482,9 +717,7 @@
         forgeData.schede[gKey][exIdx].sets = attuali - 1;
         salvaStato();
         renderGiorno(gKey);
-      } else {
-        alert("⚠️ L'esercizio deve avere almeno 1 serie.");
-      }
+      } else { alert("⚠️ L'esercizio deve avere almeno 1 serie."); }
     }
 
     function renderTradingChart(nomeEx, canvasId) {
@@ -537,7 +770,7 @@
 
       if (nuovoRecord) {
         salvaStato();
-        alert(`🏆 NUOVO RECORD PER ${nome.toUpperCase()}!\nCarico Max: ${rec.maxKg} kg | 1RM Stimato: ${rec.max1RM} kg`);
+        mostraToast("🏆", "NUOVO PR SUPERATO!", `${nome.toUpperCase()}: ${rec.maxKg} kg | 1RM Stimato: ${rec.max1RM} kg`);
       }
     }
 
@@ -625,11 +858,10 @@
       if(sessione.esercizi.length > 0) {
         forgeData.allenamenti.push(sessione);
         salvaStato();
-        alert(`✅ Allenamento ${gKey.toUpperCase()} Salvato!`);
+        aggiornaGamification();
+        mostraToast("🔥", "SESSIONE SALVATA", `Allenamento ${gKey.toUpperCase()} completato! +150 XP guadagnati.`);
         renderGiorno(gKey);
-      } else {
-        alert("⚠️ Inserisci almeno una serie per salvare.");
-      }
+      } else { alert("⚠️ Inserisci almeno una serie per salvare."); }
     }
 
     function aggiornaGrafici() {
@@ -690,13 +922,12 @@
         infortuni: document.getElementById('ana_infortuni').value || "Nessuno"
       };
 
-      if(peso) {
-        forgeData.storicoPeso.push({ data: new Date().toISOString().slice(0,10), peso: peso });
-      }
+      if(peso) { forgeData.storicoPeso.push({ data: new Date().toISOString().slice(0,10), peso: peso }); }
 
       salvaStato();
       document.getElementById('modalAnamnesi').style.display = 'none';
       aggiornaProfilo();
+      mostraToast("👤", "PROFILO AGGIORNATO", "Anamnesi e parametri fisici salvati con successo.");
     }
 
     function apriModalPesata() { document.getElementById('modalPesata').style.display = 'flex'; }
@@ -708,6 +939,7 @@
         salvaStato();
         document.getElementById('modalPesata').style.display = 'none';
         aggiornaProfilo();
+        mostraToast("⚖️", "PESATA REGISTRATA", `Nuovo peso salvato: ${val} kg`);
       }
     }
 
@@ -795,4 +1027,3 @@
   </script>
 </body>
 </html>
-u
