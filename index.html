@@ -101,6 +101,7 @@
     .trading-title { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: bold; margin-bottom: 4px; display: flex; justify-content: space-between; }
     .trading-canvas { width: 100% !important; height: 60px !important; }
 
+    .btn-yt { background: #ff0000; color: white; border: none; padding: 4px 8px; border-radius: 6px; font-size: 11px; text-decoration: none; font-weight: bold; display: inline-flex; align-items: center; gap: 3px; }
     .btn-del { background: #ff453a22; color: #ff453a; border: 1px solid #ff453a; padding: 4px 8px; border-radius: 6px; font-size: 11px; cursor: pointer; }
 
     table { width: 100%; border-collapse: collapse; margin-top: 8px; }
@@ -643,6 +644,7 @@
         const canvasId = `trading_${gKey}_${exIdx}`;
         const prObj = forgeData.records[ex.nome];
         const prTxt = prObj ? `${prObj.maxKg}kg | 1RM: ${prObj.max1RM}kg` : `-- (Auto-calcolo)`;
+        const ytSearchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(ex.nome + ' esercizio execution')}`;
 
         html += `
           <div class="ex-card" data-ex="${ex.nome}">
@@ -651,7 +653,10 @@
                 <strong>${exIdx + 1}. ${ex.nome}</strong>
                 <span class="tag-muscolo">${muscolo}</span>
               </div>
-              <button class="btn-del" onclick="eliminaEsercizio('${gKey}', ${exIdx})">❌</button>
+              <div style="display:flex; gap:6px; align-items:center;">
+                <a href="${ytSearchUrl}" target="_blank" class="btn-yt">▶ Video</a>
+                <button class="btn-del" onclick="eliminaEsercizio('${gKey}', ${exIdx})">❌</button>
+              </div>
             </div>
 
             <div class="pr-badge">
