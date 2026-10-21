@@ -100,7 +100,6 @@
     
     .pr-badge { display: inline-flex; align-items: center; gap: 4px; background: rgba(255, 215, 0, 0.15); border: 1px solid var(--accent-gold); color: var(--accent-gold); font-size: 11px; font-weight: bold; padding: 3px 8px; border-radius: 6px; margin-top: 4px; margin-right: 4px; }
     
-    /* BADGE SMART COACH AVVISO INFORTUNIO */
     .smart-warning-badge {
       background: rgba(255, 59, 48, 0.15); border: 1px solid var(--accent-red);
       color: #ff6b6b; font-size: 11px; padding: 8px; border-radius: 8px;
@@ -153,6 +152,9 @@
     
     .pr-section-title { font-size: 12px; font-weight: bold; color: var(--accent-gold); margin: 10px 0 6px 0; border-bottom: 1px solid #333; padding-bottom: 2px; }
     .coach-box { background: rgba(0, 122, 255, 0.08); border: 1px solid var(--accent-blue); border-radius: 10px; padding: 10px; margin-top: 10px; font-size: 12px; }
+    
+    .log-item { background: #121212; border-radius: 8px; padding: 8px 12px; margin-bottom: 8px; border: 1px solid var(--border-color); }
+    .log-item-header { display: flex; justify-content: space-between; font-size: 12px; font-weight: bold; color: var(--accent-gold); margin-bottom: 4px; }
   </style>
 </head>
 <body>
@@ -248,6 +250,11 @@
     </div>
 
     <div class="card">
+      <h3>📅 Storico Sessioni Svolte</h3>
+      <div id="displayWorkoutHistory">Nessun allenamento ancora registrato.</div>
+    </div>
+
+    <div class="card">
       <h3>📈 Correlazione Peso Corporeo vs Forza</h3>
       <canvas id="bodyVsStrengthChart"></canvas>
     </div>
@@ -283,7 +290,6 @@
       <div class="form-group">
         <label>Seleziona Esercizio da Libreria:</label>
         <select id="newEx_select" onchange="gestisciSelezioneLibreria(this.value)">
-          <!-- Popolato dinamicamente -->
         </select>
       </div>
       <div class="form-group" id="grp_nome_custom" style="display:none;">
@@ -372,7 +378,6 @@
   </div>
 
   <script>
-    // LIBRERIA PREIMPOSTATA DIVISA PER METODO
     const libreriaEsercizi = {
       pesistica: [
         { nome: "Back Squat", muscolo: "Quadricipiti" },
@@ -417,44 +422,13 @@
       ]
     };
 
-    // REGOLARIO SMART COACH PER WARNING E SUGGERIMENTI
     const regoleSmartCoach = [
-      {
-        parolaChiave: "spalla",
-        eserciziRischiosi: ["Lento Avanti", "Handstand Push-ups", "Panca Piana", "Dip", "Military Press"],
-        avviso: "Rischio stress alla cuffia dei ruotatori/articolazione scapolo-omerale.",
-        variante: "Floor Press, Alzate Laterali con manubri leggeri o Panca Inclinata con manubri neutri."
-      },
-      {
-        parolaChiave: "ginocchio",
-        eserciziRischiosi: ["Back Squat", "Leg Press", "Pistol Squat", "Sprint 100m", "Lunge"],
-        avviso: "Forte sollecitazione sul tendine rotuleo/articolazione del ginocchio.",
-        variante: "Box Squat controllato, Stacco Rumeno o Leg Curl."
-      },
-      {
-        parolaChiave: "schiena",
-        eserciziRischiosi: ["Stacco da Terra", "Back Squat", "Rematore Bilanciere", "Overhead Press"],
-        avviso: "Elevato carico assiale sulla colonna vertebrale e tratto lombare.",
-        variante: "Rematore con petto appoggiato su panca, Trap Bar Deadlift o Chest Press."
-      },
-      {
-        parolaChiave: "lombare",
-        eserciziRischiosi: ["Stacco da Terra", "Back Squat", "Good Morning", "Hyperextension"],
-        avviso: "Elevata compressione e shearing sulle vertebre lombari.",
-        variante: "Leg Press monopodale, Hip Thrust guidato o Macchine Iso-laterali."
-      },
-      {
-        parolaChiave: "caviglia",
-        eserciziRischiosi: ["Pistol Squat", "Corsa Aperto", "Sprint 100m", "Jump"],
-        avviso: "Tensione su legamenti caviglia e tendine d'Achille.",
-        variante: "Ciclismo / Cyclette o Esercizi a catena chiusa su superficie stabile."
-      },
-      {
-        parolaChiave: "gomito",
-        eserciziRischiosi: ["French Press", "Dip", "Push-up", "Trazioni Zavorrate"],
-        avviso: "Rischio sollecitazione epicondilo/epitroclea.",
-        variante: "Pushdown ai cavi con corda o Trazioni con presa neutra."
-      }
+      { parolaChiave: "spalla", eserciziRischiosi: ["Lento Avanti", "Handstand Push-ups", "Panca Piana", "Dip", "Military Press"], avviso: "Rischio stress alla cuffia dei ruotatori/articolazione scapolo-omerale.", variante: "Floor Press, Alzate Laterali con manubri leggeri o Panca Inclinata con manubri neutri." },
+      { parolaChiave: "ginocchio", eserciziRischiosi: ["Back Squat", "Leg Press", "Pistol Squat", "Sprint 100m", "Lunge"], avviso: "Forte sollecitazione sul tendine rotuleo/articolazione del ginocchio.", variante: "Box Squat controllato, Stacco Rumeno o Leg Curl." },
+      { parolaChiave: "schiena", eserciziRischiosi: ["Stacco da Terra", "Back Squat", "Rematore Bilanciere", "Overhead Press"], avviso: "Elevato carico assiale sulla colonna vertebrale e tratto lombare.", variante: "Rematore con petto appoggiato su panca, Trap Bar Deadlift o Chest Press." },
+      { parolaChiave: "lombare", eserciziRischiosi: ["Stacco da Terra", "Back Squat", "Good Morning", "Hyperextension"], avviso: "Elevata compressione e shearing sulle vertebre lombari.", variante: "Leg Press monopodale, Hip Thrust guidato o Macchine Iso-laterali." },
+      { parolaChiave: "caviglia", eserciziRischiosi: ["Pistol Squat", "Corsa Aperto", "Sprint 100m", "Jump"], avviso: "Tensione su legamenti caviglia e tendine d'Achille.", variante: "Ciclismo / Cyclette o Esercizi a catena chiusa su superficie stabile." },
+      { parolaChiave: "gomito", eserciziRischiosi: ["French Press", "Dip", "Push-up", "Trazioni Zavorrate"], avviso: "Rischio sollecitazione epicondilo/epitroclea.", variante: "Pushdown ai cavi con corda o Trazioni con presa neutra." }
     ];
 
     const schedeBase = {
@@ -465,21 +439,9 @@
     };
 
     const frasiMotivazionali = {
-      streakAlta: [
-        "La costanza batte il talento ogni singolo giorno. Continua così!",
-        "Inarrestabile! Stai costruendo una versione indistruttibile di te stesso.",
-        "Il ferro non mente mai: quello che dai oggi ti torna domani con gli interessi."
-      ],
-      streakMedia: [
-        "Ottimo ritmo! Mantieni accesa la fiamma e domina la sessione.",
-        "La disciplina è fare ciò che va fatto, anche quando non si ha voglia.",
-        "Un'altra sessione conquistata. Il tuo io del futuro ti ringrazia!"
-      ],
-      streakBassa: [
-        "La ruggine si accumula in fretta, ma basta una sessione per spazzarla via!",
-        "La fucina ti aspetta. Spegni le scuse e riaccendi la tua Streak!",
-        "Nessun rimpianto: il momento migliore per ricominciare è ADESSO."
-      ]
+      streakAlta: ["La costanza batte il talento ogni singolo giorno. Continua così!", "Inarrestabile! Stai costruendo una versione indistruttibile di te stesso.", "Il ferro non mente mai: quello che dai oggi ti torna domani con gli interessi."],
+      streakMedia: ["Ottimo ritmo! Mantieni accesa la fiamma e domina la sessione.", "La disciplina è fare ciò che va fatto, anche quando non si ha voglia.", "Un'altra sessione conquistata. Il tuo io del futuro ti ringrazia!"],
+      streakBassa: ["La ruggine si accumula in fretta, ma basta una sessione per spazzarla via!", "La fucina ti aspetta. Spegni le scuse e riaccendi la tua Streak!", "Nessun rimpianto: il momento migliore per ricominciare è ADESSO."]
     };
 
     let forgeData;
@@ -523,9 +485,7 @@
       document.getElementById('toastMsg').textContent = messaggio;
 
       toast.classList.add('show');
-      setTimeout(() => {
-        toast.classList.remove('show');
-      }, 4500);
+      setTimeout(() => { toast.classList.remove('show'); }, 4500);
     }
 
     function mostraToastApertura() {
@@ -533,18 +493,11 @@
       let lista = frasiMotivazionali.streakBassa;
       let icona = "⚡";
 
-      if (streak >= 5) {
-        lista = frasiMotivazionali.streakAlta;
-        icona = "🔥";
-      } else if (streak >= 2) {
-        lista = frasiMotivazionali.streakMedia;
-        icona = "🏋️‍♂️";
-      }
+      if (streak >= 5) { lista = frasiMotivazionali.streakAlta; icona = "🔥"; }
+      else if (streak >= 2) { lista = frasiMotivazionali.streakMedia; icona = "🏋️‍♂️"; }
 
       const fraseRandom = lista[Math.floor(Math.random() * lista.length)];
-      setTimeout(() => {
-        mostraToast(icona, `STREAK ATTUALE: ${streak} GIORNI`, fraseRandom);
-      }, 600);
+      setTimeout(() => { mostraToast(icona, `STREAK ATTUALE: ${streak} GIORNI`, fraseRandom); }, 600);
     }
 
     function getTolleranzaGiorni() {
@@ -570,13 +523,9 @@
           checkDate.setDate(checkDate.getDate() - 1);
         } else {
           consecutiveGaps++;
-          if (consecutiveGaps > maxGap && streak > 0) {
-            break;
-          }
+          if (consecutiveGaps > maxGap && streak > 0) break;
           checkDate.setDate(checkDate.getDate() - 1);
-          if (consecutiveGaps > maxGap && streak === 0) {
-            break;
-          }
+          if (consecutiveGaps > maxGap && streak === 0) break;
         }
       }
       return streak;
@@ -618,17 +567,8 @@
       document.getElementById('valXP').textContent = `${totalXP} XP`;
 
       const isDonna = (forgeData.anamnesi && forgeData.anamnesi.genere === "Donna");
-
-      const ranghiUomo = [
-        "1. Recluta 🥉", "2. Apprendista Forgiatore 🔨", "3. Plasmaghisa 🥈",
-        "4. Battitore di Fiamma 🔥", "5. Maestro della Fucina ⚡", "6. Titano di Ghisa 💎"
-      ];
-
-      const ranghiDonna = [
-        "1. Recluta 🥉", "2. Guerriera di Fiamma 🔥", "3. Mirmidone d'Acciaio 🗡️",
-        "4. Valkyria della Fucina ⚡", "5. Dominatrice del Ferro 🛡️", "6. Dea di Ghisa 💎"
-      ];
-
+      const ranghiUomo = ["1. Recluta 🥉", "2. Apprendista Forgiatore 🔨", "3. Plasmaghisa 🥈", "4. Battitore di Fiamma 🔥", "5. Maestro della Fucina ⚡", "6. Titano di Ghisa 💎"];
+      const ranghiDonna = ["1. Recluta 🥉", "2. Guerriera di Fiamma 🔥", "3. Mirmidone d'Acciaio 🗡️", "4. Valkyria della Fucina ⚡", "5. Dominatrice del Ferro 🛡️", "6. Dea di Ghisa 💎"];
       const ranghiActive = isDonna ? ranghiDonna : ranghiUomo;
 
       let rank = ranghiActive[0];
@@ -661,12 +601,7 @@
 
       let html = '';
       badgeList.forEach(b => {
-        html += `
-          <div class="badge-card ${b.unlocked ? 'unlocked' : ''}">
-            <span class="badge-icon">${b.icon}</span>
-            <span class="badge-name">${b.name}</span>
-          </div>
-        `;
+        html += `<div class="badge-card ${b.unlocked ? 'unlocked' : ''}"><span class="badge-icon">${b.icon}</span><span class="badge-name">${b.name}</span></div>`;
       });
       grid.innerHTML = html;
     }
@@ -716,10 +651,7 @@
         return;
       }
 
-      forgeData.schede[keyClean] = {
-        metodo: "pesistica",
-        esercizi: [{ nome: "Nuovo Esercizio", muscolo: "Generale", sets: 3 }]
-      };
+      forgeData.schede[keyClean] = { metodo: "pesistica", esercizi: [{ nome: "Nuovo Esercizio", muscolo: "Generale", sets: 3 }] };
       salvaStato();
       inizializzaStrutturaGiorni();
       apriAllenamenti();
@@ -802,7 +734,6 @@
       renderGiorno(gKey);
     }
 
-    // CHECK SMART COACH SU SINGOLO ESERCIZIO
     function checkSmartCoachWarning(nomeEsercizio) {
       const infortuniTxt = (forgeData.anamnesi && forgeData.anamnesi.infortuni) ? forgeData.anamnesi.infortuni.toLowerCase() : "";
       if (!infortuniTxt) return null;
@@ -811,11 +742,7 @@
         if (infortuniTxt.includes(regola.parolaChiave)) {
           const isStressante = regola.eserciziRischiosi.some(exR => nomeEsercizio.toLowerCase().includes(exR.toLowerCase()));
           if (isStressante) {
-            return {
-              zona: regola.parolaChiave,
-              avviso: regola.avviso,
-              variante: regola.variante
-            };
+            return { zona: regola.parolaChiave, avviso: regola.avviso, variante: regola.variante };
           }
         }
       }
@@ -869,7 +796,6 @@
           prTxt = `Max Round: ${prHiit}`;
         }
 
-        // CONTROL SMART COACH AVVISO
         const coachWarn = checkSmartCoachWarning(ex.nome);
 
         html += `
@@ -1066,7 +992,6 @@
       });
     }
 
-    // GESTIONE NUOVI RECORD MULTIDISCIPLINARI
     function checkPR(nome, kg, reps) {
       const rmTeorico = Math.round(reps === 1 ? kg : kg * (1 + reps / 30));
       if (!forgeData.records[nome]) {
@@ -1076,14 +1001,8 @@
       const rec = forgeData.records[nome];
       let nuovoRecord = false;
 
-      if (kg > rec.maxKg) {
-        rec.maxKg = kg;
-        nuovoRecord = true;
-      }
-      if (rmTeorico > rec.max1RM) {
-        rec.max1RM = rmTeorico;
-        nuovoRecord = true;
-      }
+      if (kg > rec.maxKg) { rec.maxKg = kg; nuovoRecord = true; }
+      if (rmTeorico > rec.max1RM) { rec.max1RM = rmTeorico; nuovoRecord = true; }
 
       if (nuovoRecord) {
         rec.data = new Date().toISOString().slice(0, 10);
@@ -1102,7 +1021,6 @@
         notifiche.push(`Nuova Max Distanza: ${km} km`);
       }
 
-      // Check Distanze standard (5km, 10km, 21km, 42km)
       const distanzeStd = [5, 10, 21, 42];
       distanzeStd.forEach(dTarget => {
         if (km >= dTarget) {
@@ -1200,9 +1118,12 @@
       const eserciziCards = tab.querySelectorAll('.ex-card');
       const gObj = forgeData.schede[gKey] || {};
       const metodo = gObj.metodo || 'pesistica';
+      const oraAttuale = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
       let sessione = { 
+        id: Date.now(),
         data: new Date().toISOString().slice(0,10), 
+        ora: oraAttuale,
         giorno: gKey.toUpperCase(), 
         metodo: metodo,
         esercizi: [] 
@@ -1227,7 +1148,6 @@
           if (kg || reps) {
             serieList.push({ peso: kg, reps: reps, rpe: rpe });
             
-            // VERIFICA RECORD IN BASE ALLA DISCIPLINA
             if (metodo === 'pesistica' || metodo === 'calisthenics') {
               if (kg && reps) checkPR(nomeEx, kg, reps);
             } else if (metodo === 'corsa') {
@@ -1248,7 +1168,7 @@
         salvaStato();
         
         const xpGuadagnati = calcolaXPPerSessione();
-        mostraToast("🔥", "SESSIONE SALVATA", `Allenamento ${gKey.toUpperCase()} (${metodo.toUpperCase()}) completato! +${xpGuadagnati} XP.`);
+        mostraToast("🔥", "SESSIONE SALVATA", `Sessione ${metodo.toUpperCase()} salvata alle ${oraAttuale}! +${xpGuadagnati} XP.`);
 
         verificaEValutaPromozioneLivello();
         aggiornaGamification();
@@ -1314,7 +1234,7 @@
         });
         volumeData = volSett;
 
-      } else { // ANNO / MACROCICLO
+      } else {
         document.getElementById('pieChartTitle').textContent = "🍕 Distribuzione Metodi Allenamento (Anno)";
         document.getElementById('volumeChartTitle').textContent = "🏋️ Volume Macrociclo Annuale (12 Mesi)";
 
@@ -1342,7 +1262,6 @@
         esercizioSerieMap = metodiCount;
       }
 
-      // RENDER PIE
       const labelsEx = Object.keys(esercizioSerieMap);
       const dataSetsEx = Object.values(esercizioSerieMap);
 
@@ -1359,7 +1278,6 @@
         options: { plugins: { legend: { labels: { color: 'white' } } } }
       });
 
-      // RENDER BAR
       if (volumeChartObj) volumeChartObj.destroy();
       volumeChartObj = new Chart(document.getElementById('volumeChart').getContext('2d'), {
         type: 'bar',
@@ -1432,6 +1350,15 @@
       }
     }
 
+    function eliminaSessioneStorico(idSessione) {
+      if (confirm("Eliminare questa sessione dal tuo storico?")) {
+        forgeData.allenamenti = forgeData.allenamenti.filter(s => s.id !== idSessione);
+        salvaStato();
+        aggiornaProfilo();
+        aggiornaGamification();
+      }
+    }
+
     function aggiornaProfilo() {
       const anaContainer = document.getElementById('displayAnamnesi');
       const ana = forgeData.anamnesi;
@@ -1450,7 +1377,6 @@
         anaContainer.innerHTML = 'Nessuna anamnesi salvata.';
       }
 
-      // RENDER SMART COACH SUMMARY IN PROFILO
       const coachSummary = document.getElementById('smartCoachSummary');
       const infortuniTxt = (ana && ana.infortuni) ? ana.infortuni.toLowerCase() : "";
 
@@ -1470,6 +1396,31 @@
         coachSummary.innerHTML = `<strong>🩺 Smart Coach Anamnesi:</strong> Nessuna limitazione rilevata. Stato di forma ottimale!`;
       }
 
+      // STORICO WORKOUT CON SUPPORTO A SESSIONI MULTIPLE
+      const historyContainer = document.getElementById('displayWorkoutHistory');
+      const logs = forgeData.allenamenti || [];
+
+      if (logs.length > 0) {
+        let historyHtml = '<div style="max-height: 250px; overflow-y: auto;">';
+        logs.slice().reverse().forEach(s => {
+          const oraTxt = s.ora ? ` - ${s.ora}` : '';
+          const exNomi = s.esercizi.map(e => e.nome).join(', ');
+          historyHtml += `
+            <div class="log-item">
+              <div class="log-item-header">
+                <span>📅 ${s.data}${oraTxt} (${s.metodo ? s.metodo.toUpperCase() : 'PESI'})</span>
+                <button class="btn-del" style="padding:1px 5px;" onclick="eliminaSessioneStorico(${s.id || 0})">❌</button>
+              </div>
+              <div style="font-size:11px; color:#ddd;"><strong>Giorno:</strong> ${s.giorno}</div>
+              <div style="font-size:11px; color:var(--text-muted);">${exNomi}</div>
+            </div>
+          `;
+        });
+        historyContainer.innerHTML = historyHtml + '</div>';
+      } else {
+        historyContainer.innerHTML = 'Nessun allenamento ancora registrato.';
+      }
+
       const st = forgeData.storicoPeso || [];
       let pesoAttuale = 0;
 
@@ -1482,7 +1433,6 @@
         document.getElementById('valDiff30gg').textContent = `${(pesoAttuale - st[idx30].peso).toFixed(1)} kg`;
       }
 
-      // GRAFICO PESO VS FORZA
       const pDates = st.map(s => s.data);
       const pVals = st.map(s => s.peso);
 
@@ -1502,7 +1452,6 @@
         }
       });
 
-      // BACHECA PR MULTIDISCIPLINARE ESTESA
       const recContainer = document.getElementById('displayRecordsList');
       const recKeys = Object.keys(forgeData.records || {});
       const recCardio = forgeData.recordsCardio || { maxDistanza: 0, distanze: {} };
@@ -1510,7 +1459,6 @@
 
       let recHtml = '';
 
-      // Section 1: Pesistica & Calisthenics
       recHtml += `<div class="pr-section-title">🏋️ PESISTICA & CALISTHENICS</div>`;
       if (recKeys.length > 0) {
         recHtml += '<div style="display:grid; grid-template-columns: 1fr 1fr; gap: 8px;">';
@@ -1529,7 +1477,6 @@
         recHtml += `<div style="font-size:11px; color:var(--text-muted);">Nessun PR registrato.</div>`;
       }
 
-      // Section 2: Corsa & Cardio
       recHtml += `<div class="pr-section-title">🏃 CORSA & CARDIO</div>`;
       recHtml += `<div style="background:#121212; padding:8px; border-radius:8px; border:1px solid #333;">
         <div>Distanza Massima: <strong>${recCardio.maxDistanza || 0} km</strong></div>
@@ -1541,7 +1488,6 @@
         </div>
       </div>`;
 
-      // Section 3: HIIT & Circuiti
       recHtml += `<div class="pr-section-title">⏱️ HIIT & CIRCUITI</div>`;
       const hiitKeys = Object.keys(recHIIT);
       if (hiitKeys.length > 0) {
