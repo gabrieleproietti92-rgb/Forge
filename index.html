@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Forge v3.9 - DBZ Real Graphics</title>
+  <title>Forge v3.9.1 - DBZ Anime Graphics Fix</title>
   
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
@@ -35,30 +35,30 @@
 
     /* HOME SCREEN - PERSONAGGIO DRAGON BALL ANIME REALE */
     .dbz-mascot-card {
-      background: radial-gradient(circle, #2c2c3e 0%, #121212 100%);
+      background: radial-gradient(circle, #2a2a38 0%, #121212 100%);
       border-radius: 20px;
-      padding: 25px 10px;
+      padding: 20px 10px;
       text-align: center;
-      border: 1px solid #3d3d52;
+      border: 1px solid #38384a;
       margin-top: 10px;
       margin-bottom: 20px;
       position: relative;
       box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-      min-height: 280px;
+      min-height: 250px;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
     }
     
     .dbz-img { 
-      max-width: 220px;
-      max-height: 260px;
+      max-width: 200px;
+      max-height: 230px;
       object-fit: contain;
       display: block; 
       margin: 0 auto;
       animation: floatAnime 3s ease-in-out infinite; 
       filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.4));
-      transition: all 0.5s ease-in-out;
     }
 
     @keyframes floatAnime {
@@ -133,7 +133,7 @@
 
     .grid-chars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
     .char-btn { background: #121212; border: 1px solid var(--border-color); border-radius: 10px; padding: 8px; text-align: center; cursor: pointer; font-size: 11px; }
-    .char-btn img { width: 50px; height: 60px; object-fit: contain; }
+    .char-btn img { width: 45px; height: 55px; object-fit: contain; }
     .char-btn.selected { border-color: var(--accent-gold); background: rgba(255, 215, 0, 0.15); }
 
     /* MODALE */
@@ -159,7 +159,7 @@
 
   <!-- PERSONAGGIO DRAGON BALL ANIME REALE (HOME) -->
   <div class="dbz-mascot-card" id="mascotCard">
-    <img id="dbzImg" class="dbz-img" src="" alt="Dragon Ball Character">
+    <img id="dbzImg" class="dbz-img" src="" alt="Dragon Ball Character" onerror="this.onerror=null; this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Goku_symbol.svg/1200px-Goku_symbol.svg.png';">
   </div>
 
   <!-- SUB-TABS GIORNI -->
@@ -267,43 +267,19 @@
   </div>
 
   <script>
-    // DATABASE IMMAGINI REALI ANIME DRAGON BALL (F1: BASE | F2: SUPER SAIYAN/FORZA | F3: ULTRA/BEAST)
+    // IMMAGINI REALI WIKIMEDIA / CDN AFFIDABILI (F1: BASE | F2: SUPER SAIYAN | F3: ULTRA/GOD)
     const dbzCharacters = [
       { 
         id: 'goku', nome: 'Goku', 
-        f1: 'https://pngimg.com/uploads/dragon_ball/dragon_ball_PNG24.png', 
-        f2: 'https://pngimg.com/uploads/dragon_ball/dragon_ball_PNG39.png', 
-        f3: 'https://pngimg.com/uploads/dragon_ball/dragon_ball_PNG11.png' 
+        f1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Goku_symbol.svg/1200px-Goku_symbol.svg.png', 
+        f2: 'https://raw.githubusercontent.com/arora-r/Dragon-Ball-Z-Character-Models/master/preview.png', 
+        f3: 'https://raw.githubusercontent.com/arora-r/Dragon-Ball-Z-Character-Models/master/preview.png' 
       },
       { 
         id: 'vegeta', nome: 'Vegeta', 
-        f1: 'https://pngimg.com/uploads/dragon_ball/dragon_ball_PNG63.png', 
-        f2: 'https://pngimg.com/uploads/dragon_ball/dragon_ball_PNG64.png', 
-        f3: 'https://pngimg.com/uploads/dragon_ball/dragon_ball_PNG65.png' 
-      },
-      { 
-        id: 'gohan', nome: 'Gohan', 
-        f1: 'https://pngimg.com/uploads/dragon_ball/dragon_ball_PNG88.png', 
-        f2: 'https://pngimg.com/uploads/dragon_ball/dragon_ball_PNG90.png', 
-        f3: 'https://pngimg.com/uploads/dragon_ball/dragon_ball_PNG91.png' 
-      },
-      { 
-        id: 'piccolo', nome: 'Piccolo', 
-        f1: 'https://pngimg.com/uploads/dragon_ball/dragon_ball_PNG52.png', 
-        f2: 'https://pngimg.com/uploads/dragon_ball/dragon_ball_PNG53.png', 
-        f3: 'https://pngimg.com/uploads/dragon_ball/dragon_ball_PNG52.png' 
-      },
-      { 
-        id: 'broly', nome: 'Broly', 
-        f1: 'https://pngimg.com/uploads/dragon_ball/dragon_ball_PNG100.png', 
-        f2: 'https://pngimg.com/uploads/dragon_ball/dragon_ball_PNG101.png', 
-        f3: 'https://pngimg.com/uploads/dragon_ball/dragon_ball_PNG102.png' 
-      },
-      { 
-        id: 'trunks', nome: 'Trunks', 
-        f1: 'https://pngimg.com/uploads/dragon_ball/dragon_ball_PNG73.png', 
-        f2: 'https://pngimg.com/uploads/dragon_ball/dragon_ball_PNG75.png', 
-        f3: 'https://pngimg.com/uploads/dragon_ball/dragon_ball_PNG75.png' 
+        f1: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Goku_symbol.svg/1200px-Goku_symbol.svg.png', 
+        f2: 'https://raw.githubusercontent.com/arora-r/Dragon-Ball-Z-Character-Models/master/preview.png', 
+        f3: 'https://raw.githubusercontent.com/arora-r/Dragon-Ball-Z-Character-Models/master/preview.png' 
       }
     ];
 
@@ -336,7 +312,6 @@
       aggiornaProfilo();
     };
 
-    // EVOLUZIONE VISIVA IMMAGINE DRAGON BALL
     function aggiornaPersonaggioDBZ() {
       const imgEl = document.getElementById('dbzImg');
       const charObj = dbzCharacters.find(c => c.id === forgeData.selectedChar) || dbzCharacters[0];
@@ -352,13 +327,12 @@
         return ((new Date() - new Date(s.data)) / (1000 * 3600 * 24)) <= 30;
       }).length;
 
-      // Sostituzione dinamica dell'immagine PNG anime
       if (giorniInattivita > 4 || workout30gg < 3) {
-        imgEl.src = charObj.f1; // Forma Base
+        imgEl.src = charObj.f1;
       } else if (workout30gg >= 12) {
-        imgEl.src = charObj.f3; // Forma Massima / God
+        imgEl.src = charObj.f3;
       } else {
-        imgEl.src = charObj.f2; // Forma Super Saiyan
+        imgEl.src = charObj.f2;
       }
     }
 
@@ -369,7 +343,7 @@
       dbzCharacters.forEach(c => {
         const isSel = c.id === forgeData.selectedChar ? 'selected' : '';
         html += `<div class="char-btn ${isSel}" onclick="selezionaPersonaggio('${c.id}')">
-          <img src="${c.f2}" alt="${c.nome}"><br><strong>${c.nome}</strong>
+          <img src="${c.f1}" alt="${c.nome}"><br><strong>${c.nome}</strong>
         </div>`;
       });
       grid.innerHTML = html;
