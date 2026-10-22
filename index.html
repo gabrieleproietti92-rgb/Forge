@@ -40,7 +40,7 @@
     }
 
     h1, h2, h3, h4 { margin: 0 0 8px 0; }
-    .header { text-align: center; margin-bottom: 10px; }
+    .header { text-align: center; margin-bottom: 8px; }
     .header h1 { color: var(--accent-red); font-size: 22px; letter-spacing: 1px; margin: 0; }
 
     /* TOAST NOTIFICHE */
@@ -62,15 +62,40 @@
     .toast-title { font-weight: bold; font-size: 12px; color: var(--accent-gold); margin-bottom: 2px; }
     .toast-msg { font-size: 11px; color: #e0e0e0; line-height: 1.2; }
 
-    /* DASHBOARD STREAK / HEADER COMPATTO (PUNTO 1) */
+    /* HEADER STREAK COMPATTO E BARRA SOTTILE XP */
     .dashboard-streak-compact {
-      background: #1c1c1e; border-radius: 12px; padding: 8px 12px;
-      margin-bottom: 12px; border: 1px solid var(--border-color);
+      background: #1c1c1e; border-radius: 12px 12px 0 0; padding: 8px 12px;
+      border: 1px solid var(--border-color); border-bottom: none;
       display: flex; justify-content: space-between; align-items: center;
-      font-size: 12px;
+      font-size: 11px;
     }
     .streak-pill-item { display: flex; align-items: center; gap: 4px; font-weight: bold; }
     .streak-pill-val { color: var(--accent-gold); }
+
+    .xp-mini-container { background: #121212; height: 4px; width: 100%; overflow: hidden; border: 1px solid var(--border-color); border-radius: 0 0 12px 12px; margin-bottom: 12px; }
+    .xp-mini-bar { background: linear-gradient(90deg, #007aff, var(--accent-gold)); height: 100%; width: 0%; transition: width 0.5s ease; }
+
+    /* BADGES GRID */
+    .badges-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
+    .badge-card {
+      background: #121212; border: 1px solid var(--border-color); border-radius: 10px;
+      padding: 8px 4px; text-align: center; opacity: 0.3; filter: grayscale(100%);
+      transition: all 0.3s ease;
+    }
+    .badge-card.unlocked {
+      opacity: 1; filter: grayscale(0%); border-color: var(--accent-gold);
+      background: rgba(255, 215, 0, 0.1); box-shadow: 0 0 8px rgba(255, 215, 0, 0.2);
+    }
+    .badge-icon { font-size: 22px; display: block; margin-bottom: 2px; }
+    .badge-name { font-size: 10px; font-weight: bold; }
+    .badge-sub { font-size: 8px; color: var(--text-muted); display: block; margin-top: 1px; }
+
+    /* RANGHI LISTA STATISTICHE */
+    .rank-list-item {
+      background: #121212; border-radius: 8px; padding: 8px 12px; margin-bottom: 6px;
+      border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; font-size: 12px;
+    }
+    .rank-list-item.active { border-color: var(--accent-gold); background: rgba(255, 215, 0, 0.08); }
 
     /* NAVBAR PRINCIPALE */
     .home-nav-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
@@ -98,7 +123,7 @@
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* MENU A PILLOLE ORIZZONTALI NEL PROFILO (PUNTO 3) */
+    /* MENU A PILLOLE PROFILO */
     .profile-pills-row { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 12px; padding-bottom: 4px; scrollbar-width: none; }
     .profile-pills-row::-webkit-scrollbar { display: none; }
     .profile-pill-btn { flex: 0 0 auto; background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-muted); padding: 8px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; white-space: nowrap; }
@@ -107,7 +132,7 @@
     .profile-view-panel { display: none; }
     .profile-view-panel.active { display: block; }
 
-    /* SCHEDA ESERCIZIO CON ESSENZIALI (PUNTO 1) */
+    /* SCHEDA ESERCIZIO */
     .ex-card { background: #262628; border-radius: 10px; padding: 12px; margin-bottom: 10px; border: 1px solid #333; }
     .ex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
     .tag-muscolo { font-size: 10px; background: #3a3a3c; padding: 2px 6px; border-radius: 4px; color: var(--accent-blue); font-weight: bold; }
@@ -153,11 +178,6 @@
     .stat-label { font-size: 10px; color: var(--text-muted); display: block; }
     .stat-val { font-size: 14px; font-weight: bold; margin-top: 2px; }
 
-    /* HEATMAP */
-    .heatmap-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 8px; }
-    .heatmap-day { aspect-ratio: 1; border-radius: 4px; background: #262628; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--text-muted); border: 1px solid #333; }
-    .heatmap-day.active { background: var(--accent-green); color: black; font-weight: bold; border-color: var(--accent-gold); }
-
     .timeframe-selector { display: flex; gap: 6px; margin-bottom: 10px; }
     .timeframe-btn { flex: 1; background: #121212; border: 1px solid var(--border-color); color: var(--text-muted); padding: 6px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; }
     .timeframe-btn.active { background: var(--accent-blue); color: white; border-color: var(--accent-blue); }
@@ -174,7 +194,6 @@
     .log-item { background: #121212; border-radius: 6px; padding: 8px; margin-bottom: 6px; border: 1px solid var(--border-color); }
     .log-item-header { display: flex; justify-content: space-between; font-size: 11px; font-weight: bold; color: var(--accent-gold); margin-bottom: 2px; }
 
-    /* SEARCH LIVE LIBRERIA (PUNTO 4) */
     .search-results-list { max-height: 120px; overflow-y: auto; background: #121212; border: 1px solid var(--border-color); border-radius: 6px; margin-top: 4px; display: none; }
     .search-result-item { padding: 6px 10px; font-size: 12px; border-bottom: 1px solid #222; cursor: pointer; display: flex; justify-content: space-between; }
     .search-result-item:hover { background: #222; }
@@ -182,7 +201,7 @@
 </head>
 <body>
 
-  <!-- TOAST MOTIVAZIONALE -->
+  <!-- TOAST NOTIFICA -->
   <div id="toast" class="toast-container">
     <div id="toastIcon" class="toast-icon">⚡</div>
     <div>
@@ -195,12 +214,15 @@
     <h1>FORGE 🔨</h1>
   </div>
 
-  <!-- DASHBOARD STREAK / COMPATTA (PUNTO 1) -->
+  <!-- HEADER STREAK & BARRA SOTTILE XP -->
   <div class="dashboard-streak-compact">
     <div class="streak-pill-item">🔥 Streak: <span class="streak-pill-val" id="valStreak">0 gg</span></div>
     <div class="streak-pill-item">🏋️ WOD: <span class="streak-pill-val" id="valTotalWorkouts">0</span></div>
     <div class="streak-pill-item">⭐ XP: <span class="streak-pill-val" id="valXP">0</span></div>
-    <div class="streak-pill-item" style="color:var(--accent-green);" id="rankTitle">Recluta 🥉</div>
+    <div class="streak-pill-item" id="rankTitle">Recluta 🥉</div>
+  </div>
+  <div class="xp-mini-container">
+    <div class="xp-mini-bar" id="xpBar"></div>
   </div>
 
   <!-- NAVBAR PRINCIPALE -->
@@ -257,16 +279,21 @@
       <div class="heatmap-grid" id="heatmapGrid"></div>
     </div>
 
+    <!-- RANGHI E SBLOCCHI -->
     <div class="card">
-      <h3>🏆 Badge Sbloccati</h3>
+      <h3>🎖️ Scalata Ranghi Fucina</h3>
+      <div id="displayRanghiLista"></div>
+    </div>
+
+    <!-- BADGES ESTESI -->
+    <div class="card">
+      <h3>🏆 Badge & Obiettivi Sbloccati</h3>
       <div class="badges-grid" id="badgesGrid"></div>
     </div>
   </div>
 
-  <!-- SEZIONE PROFILO CON SOTTO-MENU A PILLOLE (PUNTO 3) -->
+  <!-- SEZIONE PROFILO -->
   <div id="profilo" class="tab-content">
-    
-    <!-- BARRA PILLOLE ORIZZONTALE -->
     <div class="profile-pills-row">
       <button class="profile-pill-btn active" onclick="mostraPannelloProfilo('p_anamnesi', this)">📋 Anamnesi</button>
       <button class="profile-pill-btn" onclick="mostraPannelloProfilo('p_storico', this)">📅 Storico</button>
@@ -276,7 +303,6 @@
       <button class="profile-pill-btn" onclick="mostraPannelloProfilo('p_backup', this)">💾 Backup</button>
     </div>
 
-    <!-- VISTA 1: ANAMNESI -->
     <div class="profile-view-panel active" id="p_anamnesi">
       <div class="card">
         <h3>📋 Anamnesi Iniziale</h3>
@@ -288,7 +314,6 @@
       </div>
     </div>
 
-    <!-- VISTA 2: STORICO SESSIONI -->
     <div class="profile-view-panel" id="p_storico">
       <div class="card">
         <h3>📅 Storico Sessioni Svolte</h3>
@@ -296,7 +321,6 @@
       </div>
     </div>
 
-    <!-- VISTA 3: CORRELAZIONE FORZA PESO -->
     <div class="profile-view-panel" id="p_correlazione">
       <div class="card">
         <h3>📈 Correlazione Peso vs Forza</h3>
@@ -304,7 +328,6 @@
       </div>
     </div>
 
-    <!-- VISTA 4: BACHECA PR -->
     <div class="profile-view-panel" id="p_pr">
       <div class="card">
         <h3>🏆 Bacheca Record (PR)</h3>
@@ -312,7 +335,6 @@
       </div>
     </div>
 
-    <!-- VISTA 5: VARIAZIONI PESO -->
     <div class="profile-view-panel" id="p_peso">
       <div class="card">
         <h3>⚖️ Variazione Peso Corporeo</h3>
@@ -325,7 +347,6 @@
       </div>
     </div>
 
-    <!-- VISTA 6: BACKUP -->
     <div class="profile-view-panel" id="p_backup">
       <div class="card">
         <h3>💾 Backup & Gestione Dati</h3>
@@ -335,20 +356,17 @@
         <button class="btn btn-secondary" style="margin-top:15px; color:red;" onclick="resetMemoriaLocale()">⚠️ Reset Totale Dati</button>
       </div>
     </div>
-
   </div>
 
-  <!-- MODALE AGGIUNGI ESERCIZIO CON RICERCA LIVE (PUNTO 4) -->
+  <!-- MODALE AGGIUNGI ESERCIZIO -->
   <div id="modalAddEx" class="modal">
     <div class="modal-content">
       <h3>🏋️ Aggiungi Esercizio</h3>
-      
       <div class="form-group">
         <label>🔎 Cerca o digita esercizio:</label>
         <input type="text" id="newEx_search" placeholder="Es. Squat, Panca, Trazioni..." oninput="filtraLibreriaLive(this.value)">
         <div class="search-results-list" id="search_results_list"></div>
       </div>
-
       <div class="form-group">
         <label>Muscolo Target:</label>
         <select id="newEx_muscolo">
@@ -463,6 +481,16 @@
       { parolaChiave: "gomito", eserciziRischiosi: ["French Press", "Dip", "Push-up", "Trazioni Zavorrate"], avviso: "Rischio sollecitazione epicondilo/epitroclea.", variante: "Pushdown ai cavi con corda o Trazioni con presa neutra." }
     ];
 
+    // DEFINIZIONE SOGLIE E COLORI DEI RANGHI
+    const ranghiSoglie = [
+      { level: 1, xpReq: 0, nomeUomo: "Recluta 🥉", nomeDonna: "Recluta 🥉", color: "#cd7f32" },
+      { level: 2, xpReq: 500, nomeUomo: "Apprendista 🔨", nomeDonna: "Guerriera 🔥", color: "#a0a0a0" },
+      { level: 3, xpReq: 1000, nomeUomo: "Plasmaghisa 🥈", nomeDonna: "Mirmidone 🗡️", color: "#34c759" },
+      { level: 4, xpReq: 1800, nomeUomo: "Battitore 🔥", nomeDonna: "Valkyria ⚡", color: "#ff9500" },
+      { level: 5, xpReq: 3000, nomeUomo: "Maestro ⚡", nomeDonna: "Dominatrice 🛡️", color: "#ff3b30" },
+      { level: 6, xpReq: 5000, nomeUomo: "Titano 💎", nomeDonna: "Dea 💎", color: "#007aff" }
+    ];
+
     const schedeBase = {
       g1: { metodo: "pesistica", esercizi: [{ nome: "Strappo (Snatch)", muscolo: "Weightlifting", sets: 3 }, { nome: "Back Squat", muscolo: "Quadricipiti", sets: 3 }] },
       g2: { metodo: "pesistica", esercizi: [{ nome: "Slancio (Clean & Jerk)", muscolo: "Weightlifting", sets: 3 }] },
@@ -490,6 +518,7 @@
     if (!forgeData.recordsHIIT) forgeData.recordsHIIT = {};
     if (!forgeData.storicoPeso) forgeData.storicoPeso = [];
     if (!forgeData.anamnesi) forgeData.anamnesi = { livello: "Principiante", genere: "Uomo", infortuni: "" };
+    if (!forgeData.ultimoRangoLivello) forgeData.ultimoRangoLivello = 1;
 
     let tempGKeyForAdd = 'g1';
     let currentOrizzonte = 'settimana';
@@ -511,7 +540,6 @@
       mostraToastApertura();
     };
 
-    // FUNZIONE NAVIGAZIONE PROFILO A PILLOLE (PUNTO 3)
     function mostraPannelloProfilo(panelId, btn) {
       document.querySelectorAll('.profile-pill-btn').forEach(b => b.classList.remove('active'));
       document.querySelectorAll('.profile-view-panel').forEach(p => p.classList.remove('active'));
@@ -621,11 +649,33 @@
       return 100;
     }
 
+    // CALCOLO TONNELLAGGIO E KM TOTALI PER BADGES
+    function calcolaStatisticheTotali() {
+      let tonnellaggioKg = 0;
+      let kmTotali = 0;
+
+      (forgeData.allenamenti || []).forEach(s => {
+        s.esercizi.forEach(e => {
+          e.serie.forEach(set => {
+            if (s.metodo === 'corsa') {
+              kmTotali += (set.peso || 0); // nei cardio il campo kg salva i km
+            } else {
+              tonnellaggioKg += ((set.peso || 0) * (set.reps || 0));
+            }
+          });
+        });
+      });
+
+      return { tonnellaggioKg, kmTotali };
+    }
+
     function aggiornaGamification() {
       const totalW = forgeData.allenamenti.length;
       const streak = calcolaStreak();
       const xpBase = calcolaXPPerSessione();
       const numPR = Object.keys(forgeData.records || {}).length + Object.keys(forgeData.recordsHIIT || {}).length;
+      
+      // XP SEMPRE CUMULATIVI
       const totalXP = totalW * xpBase + numPR * 50;
 
       document.getElementById('valStreak').textContent = `${streak} gg`;
@@ -633,38 +683,97 @@
       document.getElementById('valXP').textContent = totalXP;
 
       const isDonna = (forgeData.anamnesi && forgeData.anamnesi.genere === "Donna");
-      const ranghiUomo = ["Recluta 🥉", "Apprendista 🔨", "Plasmaghisa 🥈", "Battitore 🔥", "Maestro ⚡", "Titano 💎"];
-      const ranghiDonna = ["Recluta 🥉", "Guerriera 🔥", "Mirmidone 🗡️", "Valkyria ⚡", "Dominatrice 🛡️", "Dea 💎"];
-      const ranghiActive = isDonna ? ranghiDonna : ranghiUomo;
 
-      let rank = ranghiActive[0];
+      // DETERMINAZIONE RANGO ATTUALE
+      let currentRangoObj = ranghiSoglie[0];
+      let nextRangoObj = ranghiSoglie[1];
 
-      if (totalXP >= 5000) rank = ranghiActive[5];
-      else if (totalXP >= 3000) rank = ranghiActive[4];
-      else if (totalXP >= 1800) rank = ranghiActive[3];
-      else if (totalXP >= 1000) rank = ranghiActive[2];
-      else if (totalXP >= 500) rank = ranghiActive[1];
+      for (let i = ranghiSoglie.length - 1; i >= 0; i--) {
+        if (totalXP >= ranghiSoglie[i].xpReq) {
+          currentRangoObj = ranghiSoglie[i];
+          nextRangoObj = ranghiSoglie[i + 1] || ranghiSoglie[i];
+          break;
+        }
+      }
 
-      document.getElementById('rankTitle').textContent = rank;
+      // CHECK NOTIFICA PROMOZIONE RANGO
+      if (currentRangoObj.level > (forgeData.ultimoRangoLivello || 1)) {
+        forgeData.ultimoRangoLivello = currentRangoObj.level;
+        salvaStato();
+        const nomeRangoNuovo = isDonna ? currentRangoObj.nomeDonna : currentRangoObj.nomeUomo;
+        mostraToast("🎉", "PROMOZIONE RANGO!", `Sbloccato il Rango: ${nomeRangoNuovo}!`);
+      }
+
+      const rankTitleEl = document.getElementById('rankTitle');
+      const nomeRango = isDonna ? currentRangoObj.nomeDonna : currentRangoObj.nomeUomo;
+      rankTitleEl.textContent = nomeRango;
+      rankTitleEl.style.color = currentRangoObj.color;
+
+      // CALCOLO BARRA XP PROGRESSIVA (Ripartenza relativa al livello)
+      let pctBarra = 100;
+      if (nextRangoObj.level !== currentRangoObj.level) {
+        const xpInQuestoLivello = totalXP - currentRangoObj.xpReq;
+        const xpTotaliLivello = nextRangoObj.xpReq - currentRangoObj.xpReq;
+        pctBarra = Math.min(100, Math.round((xpInQuestoLivello / xpTotaliLivello) * 100));
+      }
+      document.getElementById('xpBar').style.width = `${pctBarra}%`;
+
+      renderListaRanghiStatistiche(currentRangoObj.level, isDonna);
       renderBadges(totalW, streak, totalXP);
+    }
+
+    function renderListaRanghiStatistiche(currentLevel, isDonna) {
+      const container = document.getElementById('displayRanghiLista');
+      if (!container) return;
+
+      let html = '';
+      ranghiSoglie.forEach(r => {
+        const nome = isDonna ? r.nomeDonna : r.nomeUomo;
+        const isActive = r.level === currentLevel;
+        const isUnlocked = r.level <= currentLevel;
+
+        html += `
+          <div class="rank-list-item ${isActive ? 'active' : ''}">
+            <div>
+              <strong style="color:${r.color}">${r.level}. ${nome}</strong>
+              <div style="font-size:10px; color:var(--text-muted);">${r.xpReq} XP Richiesti</div>
+            </div>
+            <div style="font-weight:bold; font-size:11px; color:${isUnlocked ? 'var(--accent-green)' : 'var(--text-muted)'}">
+              ${isActive ? '📍 ATTUALE' : (isUnlocked ? '✓ SBLOCCATO' : '🔒 BLOCCATO')}
+            </div>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
     }
 
     function renderBadges(totalW, streak, totalXP) {
       const grid = document.getElementById('badgesGrid');
       if (!grid) return;
 
+      const { tonnellaggioKg, kmTotali } = calcolaStatisticheTotali();
+
       const badgeList = [
-        { name: "Primo Passo", icon: "🌱", unlocked: totalW >= 1 },
-        { name: "3 In Fila", icon: "🔥", unlocked: streak >= 3 },
-        { name: "Veterano 10", icon: "🏋️", unlocked: totalW >= 10 },
-        { name: "Costanza 7gg", icon: "⚡", unlocked: streak >= 7 },
-        { name: "Cacciatore PR", icon: "🏆", unlocked: Object.keys(forgeData.records || {}).length >= 3 },
-        { name: "Ghisa Pura", icon: "💎", unlocked: totalXP >= 1500 }
+        { name: "Primo Passo", icon: "🌱", sub: "1 WOD", unlocked: totalW >= 1 },
+        { name: "Costanza 3gg", icon: "🔥", sub: "3 Streak", unlocked: streak >= 3 },
+        { name: "Veterano 10", icon: "🏋️", sub: "10 WOD", unlocked: totalW >= 10 },
+        { name: "Ghisa 1 Ton", icon: "🏋️‍♂️", sub: "1.000 kg", unlocked: tonnellaggioKg >= 1000 },
+        { name: "Ghisa 10 Ton", icon: "💪", sub: "10.000 kg", unlocked: tonnellaggioKg >= 10000 },
+        { name: "Ghisa 50 Ton", icon: "💎", sub: "50.000 kg", unlocked: tonnellaggioKg >= 50000 },
+        { name: "Runner 5K", icon: "🏃", sub: "5 km tot", unlocked: kmTotali >= 5 },
+        { name: "Mezza Maratona", icon: "🏃‍♂️", sub: "21 km tot", unlocked: kmTotali >= 21 },
+        { name: "Maratona", icon: "👑", sub: "42 km tot", unlocked: kmTotali >= 42 }
       ];
 
       let html = '';
       badgeList.forEach(b => {
-        html += `<div class="badge-card ${b.unlocked ? 'unlocked' : ''}"><span class="badge-icon">${b.icon}</span><span class="badge-name">${b.name}</span></div>`;
+        html += `
+          <div class="badge-card ${b.unlocked ? 'unlocked' : ''}">
+            <span class="badge-icon">${b.icon}</span>
+            <span class="badge-name">${b.name}</span>
+            <span class="badge-sub">${b.sub}</span>
+          </div>
+        `;
       });
       grid.innerHTML = html;
     }
@@ -815,7 +924,6 @@
       return null;
     }
 
-    // RENDER GIORNO ESSENZIALE (PUNTO 1)
     function renderGiorno(gKey) {
       const container = document.getElementById(gKey);
       if (!container) return;
@@ -862,7 +970,6 @@
 
         const coachWarn = checkSmartCoachWarning(ex.nome);
 
-        // STRUTTURA PULITA: Dettagli complessi nascosti sotto il pulsante ⚙️
         html += `
           <div class="ex-card" data-ex="${ex.nome}">
             <div class="ex-header">
@@ -877,7 +984,6 @@
               </div>
             </div>
 
-            <!-- BOX AVANZATO CHE SI APRE SOLO CON ⚙️ OPZIONI -->
             <div class="ex-advanced-box">
               ${prTxt ? `<div style="font-size:11px; color:var(--accent-gold); font-weight:bold; margin-bottom:4px;">🏆 PR: ${prTxt}</div>` : ''}
 
@@ -1090,7 +1196,6 @@
       document.getElementById('modalAddEx').style.display = 'flex';
     }
 
-    // RICERCA LIVE IN LIBRERIA (PUNTO 4)
     function filtraLibreriaLive(testo) {
       const container = document.getElementById('search_results_list');
       if (!testo || testo.length < 1) {
