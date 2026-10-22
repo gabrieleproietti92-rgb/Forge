@@ -104,7 +104,7 @@
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* STYLE PER FISARMONICHE (ACCORDION) PROFILO */
+    /* ACCORDION PROFILO ESCLUSIVO */
     .accordion-card { background: var(--card-bg); border-radius: 14px; margin-bottom: 10px; border: 1px solid var(--border-color); overflow: hidden; }
     .accordion-header {
       padding: 15px; font-size: 15px; font-weight: bold; display: flex; justify-content: space-between;
@@ -230,7 +230,6 @@
 
   <!-- SEZIONE ALLENAMENTI -->
   <div id="workoutSectionHeader">
-    <!-- SELETTORE GLOBALE DI SETTIMANA MESOCICLO -->
     <div class="week-selector-container">
       <div class="week-selector-title">🗓️ Programmazione Mesociclo (Settimana Attiva)</div>
       <div class="week-buttons-row">
@@ -282,12 +281,12 @@
     </div>
   </div>
 
-  <!-- SEZIONE PROFILO CON STRUTTURA A FISARMONICA (ACCORDION) -->
+  <!-- SEZIONE PROFILO CON APERTURA ESCLUSIVA -->
   <div id="profilo" class="tab-content">
     
     <!-- 1. ANAMNESI -->
     <div class="accordion-card" id="acc_anamnesi">
-      <div class="accordion-header" onclick="toggleAccordion('acc_anamnesi')">
+      <div class="accordion-header" onclick="toggleAccordionEsclusivo('acc_anamnesi')">
         <span>📋 Anamnesi</span>
         <span class="accordion-icon">▼</span>
       </div>
@@ -302,7 +301,7 @@
 
     <!-- 2. STORICO SESSIONI -->
     <div class="accordion-card" id="acc_historico">
-      <div class="accordion-header" onclick="toggleAccordion('acc_historico')">
+      <div class="accordion-header" onclick="toggleAccordionEsclusivo('acc_historico')">
         <span>📅 Storico sessioni</span>
         <span class="accordion-icon">▼</span>
       </div>
@@ -313,7 +312,7 @@
 
     <!-- 3. CORRELAZIONE FORZA PESO -->
     <div class="accordion-card" id="acc_correlazione">
-      <div class="accordion-header" onclick="toggleAccordion('acc_correlazione')">
+      <div class="accordion-header" onclick="toggleAccordionEsclusivo('acc_correlazione')">
         <span>📈 Correlazione forza peso</span>
         <span class="accordion-icon">▼</span>
       </div>
@@ -324,7 +323,7 @@
 
     <!-- 4. BACHECA PR -->
     <div class="accordion-card" id="acc_pr">
-      <div class="accordion-header" onclick="toggleAccordion('acc_pr')">
+      <div class="accordion-header" onclick="toggleAccordionEsclusivo('acc_pr')">
         <span>🏆 Bacheca PR</span>
         <span class="accordion-icon">▼</span>
       </div>
@@ -335,7 +334,7 @@
 
     <!-- 5. VARIAZIONI PESO -->
     <div class="accordion-card" id="acc_peso">
-      <div class="accordion-header" onclick="toggleAccordion('acc_peso')">
+      <div class="accordion-header" onclick="toggleAccordionEsclusivo('acc_peso')">
         <span>⚖️ Variazioni peso</span>
         <span class="accordion-icon">▼</span>
       </div>
@@ -351,7 +350,7 @@
 
     <!-- 6. BACKUP & RESET DATI -->
     <div class="accordion-card" id="acc_backup">
-      <div class="accordion-header" onclick="toggleAccordion('acc_backup')">
+      <div class="accordion-header" onclick="toggleAccordionEsclusivo('acc_backup')">
         <span>💾 Backup & Gestione Dati</span>
         <span class="accordion-icon">▼</span>
       </div>
@@ -569,10 +568,22 @@
       mostraToastApertura();
     };
 
-    function toggleAccordion(idAcc) {
-      const el = document.getElementById(idAcc);
-      if (el) {
-        el.classList.toggle('open');
+    // LOGICA DI APERTURA ESCLUSIVA PER LE SEZIONI DEL PROFILO
+    function toggleAccordionEsclusivo(idAcc) {
+      const target = document.getElementById(idAcc);
+      const isCurrentlyOpen = target.classList.contains('open');
+
+      // Chiudi tutti gli altri elementi
+      document.querySelectorAll('#profilo .accordion-card').forEach(card => {
+        card.classList.remove('open');
+      });
+
+      // Se non era già aperto, apri solo quello selezionato
+      if (!isCurrentlyOpen) {
+        target.classList.add('open');
+        setTimeout(() => {
+          target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 150);
       }
     }
 
