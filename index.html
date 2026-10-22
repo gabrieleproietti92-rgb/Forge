@@ -67,7 +67,7 @@
       background: #1c1c1e; border-radius: 12px 12px 0 0; padding: 8px 12px;
       border: 1px solid var(--border-color); border-bottom: none;
       display: flex; justify-content: space-between; align-items: center;
-      font-size: 11px;
+      font-size: 11px; flex-wrap: wrap; gap: 4px;
     }
     .streak-pill-item { display: flex; align-items: center; gap: 4px; font-weight: bold; }
     .streak-pill-val { color: var(--accent-gold); }
@@ -279,7 +279,7 @@
       <div class="heatmap-grid" id="heatmapGrid"></div>
     </div>
 
-    <!-- RANGHI E SBLOCCHI -->
+    <!-- RANGHI E SBLOCCHI ESTESI ORIGINALI -->
     <div class="card">
       <h3>🎖️ Scalata Ranghi Fucina</h3>
       <div id="displayRanghiLista"></div>
@@ -481,14 +481,14 @@
       { parolaChiave: "gomito", eserciziRischiosi: ["French Press", "Dip", "Push-up", "Trazioni Zavorrate"], avviso: "Rischio sollecitazione epicondilo/epitroclea.", variante: "Pushdown ai cavi con corda o Trazioni con presa neutra." }
     ];
 
-    // DEFINIZIONE SOGLIE E COLORI DEI RANGHI
+    // DEFINIZIONE SOGLIE E NOMI ESTESI ORIGINALI DEI RANGHI
     const ranghiSoglie = [
-      { level: 1, xpReq: 0, nomeUomo: "Recluta 🥉", nomeDonna: "Recluta 🥉", color: "#cd7f32" },
-      { level: 2, xpReq: 500, nomeUomo: "Apprendista 🔨", nomeDonna: "Guerriera 🔥", color: "#a0a0a0" },
-      { level: 3, xpReq: 1000, nomeUomo: "Plasmaghisa 🥈", nomeDonna: "Mirmidone 🗡️", color: "#34c759" },
-      { level: 4, xpReq: 1800, nomeUomo: "Battitore 🔥", nomeDonna: "Valkyria ⚡", color: "#ff9500" },
-      { level: 5, xpReq: 3000, nomeUomo: "Maestro ⚡", nomeDonna: "Dominatrice 🛡️", color: "#ff3b30" },
-      { level: 6, xpReq: 5000, nomeUomo: "Titano 💎", nomeDonna: "Dea 💎", color: "#007aff" }
+      { level: 1, xpReq: 0, nomeUomo: "1. Recluta 🥉", nomeDonna: "1. Recluta 🥉", color: "#cd7f32" },
+      { level: 2, xpReq: 500, nomeUomo: "2. Apprendista Forgiatore 🔨", nomeDonna: "2. Guerriera di Fiamma 🔥", color: "#a0a0a0" },
+      { level: 3, xpReq: 1000, nomeUomo: "3. Plasmaghisa 🥈", nomeDonna: "3. Mirmidone d'Acciaio 🗡️", color: "#34c759" },
+      { level: 4, xpReq: 1800, nomeUomo: "4. Battitore di Fiamma 🔥", nomeDonna: "4. Valkyria della Fucina ⚡", color: "#ff9500" },
+      { level: 5, xpReq: 3000, nomeUomo: "5. Maestro della Fucina ⚡", nomeDonna: "5. Dominatrice del Ferro 🛡️", color: "#ff3b30" },
+      { level: 6, xpReq: 5000, nomeUomo: "6. Titano di Ghisa 💎", nomeDonna: "6. Dea di Ghisa 💎", color: "#007aff" }
     ];
 
     const schedeBase = {
@@ -649,7 +649,6 @@
       return 100;
     }
 
-    // CALCOLO TONNELLAGGIO E KM TOTALI PER BADGES
     function calcolaStatisticheTotali() {
       let tonnellaggioKg = 0;
       let kmTotali = 0;
@@ -658,7 +657,7 @@
         s.esercizi.forEach(e => {
           e.serie.forEach(set => {
             if (s.metodo === 'corsa') {
-              kmTotali += (set.peso || 0); // nei cardio il campo kg salva i km
+              kmTotali += (set.peso || 0);
             } else {
               tonnellaggioKg += ((set.peso || 0) * (set.reps || 0));
             }
@@ -675,7 +674,6 @@
       const xpBase = calcolaXPPerSessione();
       const numPR = Object.keys(forgeData.records || {}).length + Object.keys(forgeData.recordsHIIT || {}).length;
       
-      // XP SEMPRE CUMULATIVI
       const totalXP = totalW * xpBase + numPR * 50;
 
       document.getElementById('valStreak').textContent = `${streak} gg`;
@@ -684,7 +682,6 @@
 
       const isDonna = (forgeData.anamnesi && forgeData.anamnesi.genere === "Donna");
 
-      // DETERMINAZIONE RANGO ATTUALE
       let currentRangoObj = ranghiSoglie[0];
       let nextRangoObj = ranghiSoglie[1];
 
@@ -696,12 +693,11 @@
         }
       }
 
-      // CHECK NOTIFICA PROMOZIONE RANGO
       if (currentRangoObj.level > (forgeData.ultimoRangoLivello || 1)) {
         forgeData.ultimoRangoLivello = currentRangoObj.level;
         salvaStato();
         const nomeRangoNuovo = isDonna ? currentRangoObj.nomeDonna : currentRangoObj.nomeUomo;
-        mostraToast("🎉", "PROMOZIONE RANGO!", `Sbloccato il Rango: ${nomeRangoNuovo}!`);
+        mostraToast("🎉", "PROMOZIONE RANGO!", `Sbloccato: ${nomeRangoNuovo}!`);
       }
 
       const rankTitleEl = document.getElementById('rankTitle');
@@ -709,7 +705,6 @@
       rankTitleEl.textContent = nomeRango;
       rankTitleEl.style.color = currentRangoObj.color;
 
-      // CALCOLO BARRA XP PROGRESSIVA (Ripartenza relativa al livello)
       let pctBarra = 100;
       if (nextRangoObj.level !== currentRangoObj.level) {
         const xpInQuestoLivello = totalXP - currentRangoObj.xpReq;
@@ -735,7 +730,7 @@
         html += `
           <div class="rank-list-item ${isActive ? 'active' : ''}">
             <div>
-              <strong style="color:${r.color}">${r.level}. ${nome}</strong>
+              <strong style="color:${r.color}">${nome}</strong>
               <div style="font-size:10px; color:var(--text-muted);">${r.xpReq} XP Richiesti</div>
             </div>
             <div style="font-weight:bold; font-size:11px; color:${isUnlocked ? 'var(--accent-green)' : 'var(--text-muted)'}">
