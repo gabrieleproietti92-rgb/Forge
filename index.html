@@ -90,16 +90,16 @@
     .badge-name { font-size: 10px; font-weight: bold; }
     .badge-sub { font-size: 8px; color: var(--text-muted); display: block; margin-top: 1px; }
 
-    /* RANGHI LISTA STATISTICHE */
+    /* RANGHI LISTA CARRIERA */
     .rank-list-item {
-      background: #121212; border-radius: 8px; padding: 8px 12px; margin-bottom: 6px;
+      background: #121212; border-radius: 8px; padding: 10px 12px; margin-bottom: 6px;
       border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; font-size: 12px;
     }
-    .rank-list-item.active { border-color: var(--accent-gold); background: rgba(255, 215, 0, 0.08); }
+    .rank-list-item.active { border-color: var(--accent-gold); background: rgba(255, 215, 0, 0.08); box-shadow: 0 0 10px rgba(255, 215, 0, 0.15); }
 
-    /* NAVBAR PRINCIPALE */
-    .home-nav-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
-    .home-nav-btn { background: var(--card-bg); border: 1px solid var(--border-color); color: white; padding: 10px 4px; border-radius: 10px; font-weight: bold; font-size: 12px; cursor: pointer; text-align: center; }
+    /* NAVBAR PRINCIPALE A 4 COLONNE */
+    .home-nav-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 12px; }
+    .home-nav-btn { background: var(--card-bg); border: 1px solid var(--border-color); color: white; padding: 10px 2px; border-radius: 10px; font-weight: bold; font-size: 11px; cursor: pointer; text-align: center; }
     .home-nav-btn.active { background: var(--accent-red); border-color: var(--accent-red); }
 
     /* SELETTORE SETTIMANA */
@@ -225,10 +225,11 @@
     <div class="xp-mini-bar" id="xpBar"></div>
   </div>
 
-  <!-- NAVBAR PRINCIPALE -->
+  <!-- NAVBAR PRINCIPALE A 4 COLONNE -->
   <div class="home-nav-grid">
-    <button class="home-nav-btn active" id="nav_allenamenti" onclick="apriAllenamenti()">🏋️ Allenamenti</button>
-    <button class="home-nav-btn" id="nav_stats" onclick="apriSezione('stats')">📊 Statistiche</button>
+    <button class="home-nav-btn active" id="nav_allenamenti" onclick="apriAllenamenti()">🏋️ WOD</button>
+    <button class="home-nav-btn" id="nav_carriera" onclick="apriSezione('carriera')">🎖️ Carriera</button>
+    <button class="home-nav-btn" id="nav_stats" onclick="apriSezione('stats')">📊 Stats</button>
     <button class="home-nav-btn" id="nav_profilo" onclick="apriSezione('profilo')">👤 Profilo</button>
   </div>
 
@@ -252,6 +253,28 @@
   </div>
   
   <div id="workoutDaysContainer"></div>
+
+  <!-- SEZIONE CARRIERA (NUOVA SCHEDA DEDICATA) -->
+  <div id="carriera" class="tab-content">
+    <div class="card">
+      <h3>🎖️ Mappa dei Ranghi Fucina</h3>
+      <div id="displayRanghiLista"></div>
+    </div>
+
+    <div class="card">
+      <h3>🛡️ Indice di Aderenza e Disciplina</h3>
+      <div class="stat-grid">
+        <div class="stat-box"><span class="stat-label">Aderenza</span><span class="stat-val" style="color:var(--accent-green);" id="valAderenza">100%</span></div>
+        <div class="stat-box"><span class="stat-label">Stato</span><span class="stat-val" style="color:var(--accent-gold);">Regolare</span></div>
+        <div class="stat-box"><span class="stat-label">Moltiplicatore</span><span class="stat-val">1.2x</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>🏆 Medaglie & Badge Conquistati</h3>
+      <div class="badges-grid" id="badgesGrid"></div>
+    </div>
+  </div>
 
   <!-- SEZIONE STATISTICHE -->
   <div id="stats" class="tab-content">
@@ -277,18 +300,6 @@
     <div class="card">
       <h3>🗓️ Mappa di Calore Allenamenti (Ultimi 28 Giorni)</h3>
       <div class="heatmap-grid" id="heatmapGrid"></div>
-    </div>
-
-    <!-- RANGHI E SBLOCCHI ESTESI ORIGINALI -->
-    <div class="card">
-      <h3>🎖️ Scalata Ranghi Fucina</h3>
-      <div id="displayRanghiLista"></div>
-    </div>
-
-    <!-- BADGES ESTESI -->
-    <div class="card">
-      <h3>🏆 Badge & Obiettivi Sbloccati</h3>
-      <div class="badges-grid" id="badgesGrid"></div>
     </div>
   </div>
 
@@ -642,7 +653,17 @@
       return streak;
     }
 
-    function calcolaXPPerSessione() {
+    // CALCOLO XP CON CAP GIORNALIERO ANTIFRODE
+    function calcolaXPPerSessioneData(dataTarget) {
+      const baseXP = calcolaXPBase();
+      const sessioniOggi = (forgeData.allenamenti || []).filter(s => s.data === dataTarget);
+      
+      if (sessioniOggi.length === 0) return baseXP; // Prima sessione: 100%
+      if (sessioniOggi.length === 1) return Math.round(baseXP * 0.5); // Seconda sessione: 50%
+      return 0; // Dalla terza in poi: 0 XP
+    }
+
+    function calcolaXPBase() {
       const liv = (forgeData.anamnesi && forgeData.anamnesi.livello) ? forgeData.anamnesi.livello : "Principiante";
       if (liv === "Principiante") return 200;
       if (liv === "Intermedio") return 150;
@@ -668,13 +689,27 @@
       return { tonnellaggioKg, kmTotali };
     }
 
+    function calcolaXPTotaliCumuLativi() {
+      let totalXP = 0;
+      const numPR = Object.keys(forgeData.records || {}).length + Object.keys(forgeData.recordsHIIT || {}).length;
+      
+      // Conteggio XP sessioni con cap
+      const dateMap = {};
+      (forgeData.allenamenti || []).forEach(s => {
+        dateMap[s.data] = (dateMap[s.data] || 0) + 1;
+        const count = dateMap[s.data];
+        const baseXP = calcolaXPBase();
+        if (count === 1) totalXP += baseXP;
+        else if (count === 2) totalXP += Math.round(baseXP * 0.5);
+      });
+
+      return totalXP + (numPR * 50);
+    }
+
     function aggiornaGamification() {
       const totalW = forgeData.allenamenti.length;
       const streak = calcolaStreak();
-      const xpBase = calcolaXPPerSessione();
-      const numPR = Object.keys(forgeData.records || {}).length + Object.keys(forgeData.recordsHIIT || {}).length;
-      
-      const totalXP = totalW * xpBase + numPR * 50;
+      const totalXP = calcolaXPTotaliCumuLativi();
 
       document.getElementById('valStreak').textContent = `${streak} gg`;
       document.getElementById('valTotalWorkouts').textContent = totalW;
@@ -875,6 +910,7 @@
       document.getElementById(tabId).classList.add('active');
 
       if (tabId === 'profilo') aggiornaProfilo();
+      if (tabId === 'carriera') aggiornaGamification();
       if (tabId === 'stats') {
         aggiornaGamification();
         aggiornaGrafici();
@@ -1262,10 +1298,11 @@
       const gObj = forgeData.schede[gKey] || {};
       const metodo = gObj.metodo || 'pesistica';
       const oraAttuale = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const dataOggi = getLocalDateString();
 
       let sessione = { 
         id: Date.now(),
-        data: getLocalDateString(), 
+        data: dataOggi, 
         ora: oraAttuale,
         giorno: gKey.toUpperCase(), 
         metodo: metodo,
@@ -1302,10 +1339,12 @@
       });
 
       if (sessione.esercizi.length > 0) {
+        // XP GUADAGNATI CON CAP ANTIFRODE
+        const xpGuadagnati = calcolaXPPerSessioneData(dataOggi);
+
         forgeData.allenamenti.push(sessione);
         salvaStato();
         
-        const xpGuadagnati = calcolaXPPerSessione();
         mostraToast("🔥", "SESSIONE SALVATA", `Sessione ${metodo.toUpperCase()} salvata alle ${oraAttuale}! +${xpGuadagnati} XP.`);
 
         aggiornaGamification();
