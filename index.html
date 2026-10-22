@@ -104,22 +104,24 @@
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* ACCORDION PROFILO ESCLUSIVO */
+    /* ACCORDION AD APERTURA ESCLUSIVA PER TUTTE LE SEZIONI */
     .accordion-card { background: var(--card-bg); border-radius: 14px; margin-bottom: 10px; border: 1px solid var(--border-color); overflow: hidden; }
     .accordion-header {
-      padding: 15px; font-size: 15px; font-weight: bold; display: flex; justify-content: space-between;
+      padding: 14px; font-size: 14px; font-weight: bold; display: flex; justify-content: space-between;
       align-items: center; cursor: pointer; background: #1e1e1e; transition: background 0.2s ease;
     }
     .accordion-header:hover { background: #262628; }
-    .accordion-icon { font-size: 14px; color: var(--text-muted); transition: transform 0.3s ease; }
+    .accordion-icon { font-size: 12px; color: var(--text-muted); transition: transform 0.3s ease; }
     .accordion-content { display: none; padding: 15px; border-top: 1px solid var(--border-color); background: #18181a; }
     .accordion-card.open .accordion-content { display: block; }
     .accordion-card.open .accordion-icon { transform: rotate(180deg); color: var(--accent-gold); }
 
-    .ex-card { background: #262628; border-radius: 12px; padding: 12px; margin-bottom: 15px; border: 1px solid #333; }
-    .ex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 5px; }
+    .ex-card { background: #262628; border-radius: 12px; margin-bottom: 10px; border: 1px solid #333; overflow: hidden; }
+    .ex-header { padding: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+    .ex-body { display: none; padding: 12px; border-top: 1px solid #333; background: #1c1c1e; }
+    .ex-card.open .ex-body { display: block; }
+
     .tag-muscolo { font-size: 10px; background: #3a3a3c; padding: 2px 6px; border-radius: 4px; color: var(--accent-blue); font-weight: bold; }
-    
     .pr-badge { display: inline-flex; align-items: center; gap: 4px; background: rgba(255, 215, 0, 0.15); border: 1px solid var(--accent-gold); color: var(--accent-gold); font-size: 11px; font-weight: bold; padding: 3px 8px; border-radius: 6px; margin-top: 4px; margin-right: 4px; }
     
     .smart-warning-badge {
@@ -158,9 +160,10 @@
     .stat-label { font-size: 11px; color: var(--text-muted); display: block; }
     .stat-val { font-size: 15px; font-weight: bold; margin-top: 4px; }
 
-    .heatmap-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 10px; }
-    .heatmap-day { aspect-ratio: 1; border-radius: 4px; background: #262628; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--text-muted); }
-    .heatmap-day.active { background: var(--accent-green); color: black; font-weight: bold; }
+    /* HEATMAP STYLES */
+    .heatmap-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 10px; }
+    .heatmap-day { aspect-ratio: 1; border-radius: 6px; background: #262628; display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--text-muted); border: 1px solid #333; }
+    .heatmap-day.active { background: var(--accent-green); color: black; font-weight: bold; border-color: var(--accent-gold); box-shadow: 0 0 8px rgba(52, 199, 89, 0.4); }
 
     .timeframe-selector { display: flex; gap: 6px; margin-bottom: 12px; }
     .timeframe-btn { flex: 1; background: #121212; border: 1px solid var(--border-color); color: var(--text-muted); padding: 6px; border-radius: 8px; font-size: 11px; font-weight: bold; cursor: pointer; }
@@ -249,36 +252,63 @@
   
   <div id="workoutDaysContainer"></div>
 
-  <!-- SEZIONE STATISTICHE -->
+  <!-- SEZIONE STATISTICHE CON FISARMONICA -->
   <div id="stats" class="tab-content">
-    <div class="card">
-      <h3>📈 Orizzonte Temporale Analisi</h3>
-      <div class="timeframe-selector">
-        <button class="timeframe-btn active" onclick="cambiaOrizzonte('settimana', this)">Settimana</button>
-        <button class="timeframe-btn" onclick="cambiaOrizzonte('mese', this)">Mese</button>
-        <button class="timeframe-btn" onclick="cambiaOrizzonte('anno', this)">Anno (Macrociclo)</button>
+    
+    <div class="accordion-card" id="acc_st_timeframe">
+      <div class="accordion-header" onclick="toggleAccordion('stats', 'acc_st_timeframe')">
+        <span>📈 Orizzonte Temporale & Analisi</span>
+        <span class="accordion-icon">▼</span>
+      </div>
+      <div class="accordion-content">
+        <div class="timeframe-selector">
+          <button class="timeframe-btn active" onclick="cambiaOrizzonte('settimana', this)">Settimana</button>
+          <button class="timeframe-btn" onclick="cambiaOrizzonte('mese', this)">Mese</button>
+          <button class="timeframe-btn" onclick="cambiaOrizzonte('anno', this)">Anno (Macrociclo)</button>
+        </div>
       </div>
     </div>
 
-    <div class="card">
-      <h3 id="pieChartTitle">🍕 Distribuzione Metodi e Serie</h3>
-      <canvas id="pieChart"></canvas>
+    <div class="accordion-card" id="acc_st_pie">
+      <div class="accordion-header" onclick="toggleAccordion('stats', 'acc_st_pie')">
+        <span id="pieChartTitle">🍕 Distribuzione Metodi e Serie</span>
+        <span class="accordion-icon">▼</span>
+      </div>
+      <div class="accordion-content">
+        <canvas id="pieChart"></canvas>
+      </div>
     </div>
 
-    <div class="card">
-      <h3 id="volumeChartTitle">🏋️ Volume & Progressione Sollevata</h3>
-      <canvas id="volumeChart"></canvas>
+    <div class="accordion-card" id="acc_st_vol">
+      <div class="accordion-header" onclick="toggleAccordion('stats', 'acc_st_vol')">
+        <span id="volumeChartTitle">🏋️ Volume & Progressione Sollevata</span>
+        <span class="accordion-icon">▼</span>
+      </div>
+      <div class="accordion-content">
+        <canvas id="volumeChart"></canvas>
+      </div>
     </div>
 
-    <div class="card">
-      <h3>🗓️ Mappa di Calore Allenamenti (Ultimi 28 Giorni)</h3>
-      <div class="heatmap-grid" id="heatmapGrid"></div>
+    <div class="accordion-card open" id="acc_st_heatmap">
+      <div class="accordion-header" onclick="toggleAccordion('stats', 'acc_st_heatmap')">
+        <span>🗓️ Mappa di Calore Allenamenti (Ultimi 28 Giorni)</span>
+        <span class="accordion-icon">▼</span>
+      </div>
+      <div class="accordion-content">
+        <div class="heatmap-grid" id="heatmapGrid"></div>
+      </div>
     </div>
 
-    <div class="card">
-      <h3>🏆 Traguardi & Badge Sbloccati</h3>
-      <div class="badges-grid" id="badgesGrid"></div>
+    <div class="accordion-card" id="acc_st_badges">
+      <div class="accordion-header" onclick="toggleAccordion('stats', 'acc_st_badges')">
+        <span>🏆 Traguardi & Badge Sbloccati</span>
+        <span class="accordion-icon">▼</span>
+      </div>
+      <div class="accordion-content">
+        <div class="badges-grid" id="badgesGrid"></div>
+      </div>
     </div>
+
   </div>
 
   <!-- SEZIONE PROFILO CON APERTURA ESCLUSIVA -->
@@ -286,7 +316,7 @@
     
     <!-- 1. ANAMNESI -->
     <div class="accordion-card" id="acc_anamnesi">
-      <div class="accordion-header" onclick="toggleAccordionEsclusivo('acc_anamnesi')">
+      <div class="accordion-header" onclick="toggleAccordion('profilo', 'acc_anamnesi')">
         <span>📋 Anamnesi</span>
         <span class="accordion-icon">▼</span>
       </div>
@@ -301,7 +331,7 @@
 
     <!-- 2. STORICO SESSIONI -->
     <div class="accordion-card" id="acc_historico">
-      <div class="accordion-header" onclick="toggleAccordionEsclusivo('acc_historico')">
+      <div class="accordion-header" onclick="toggleAccordion('profilo', 'acc_historico')">
         <span>📅 Storico sessioni</span>
         <span class="accordion-icon">▼</span>
       </div>
@@ -312,7 +342,7 @@
 
     <!-- 3. CORRELAZIONE FORZA PESO -->
     <div class="accordion-card" id="acc_correlazione">
-      <div class="accordion-header" onclick="toggleAccordionEsclusivo('acc_correlazione')">
+      <div class="accordion-header" onclick="toggleAccordion('profilo', 'acc_correlazione')">
         <span>📈 Correlazione forza peso</span>
         <span class="accordion-icon">▼</span>
       </div>
@@ -323,7 +353,7 @@
 
     <!-- 4. BACHECA PR -->
     <div class="accordion-card" id="acc_pr">
-      <div class="accordion-header" onclick="toggleAccordionEsclusivo('acc_pr')">
+      <div class="accordion-header" onclick="toggleAccordion('profilo', 'acc_pr')">
         <span>🏆 Bacheca PR</span>
         <span class="accordion-icon">▼</span>
       </div>
@@ -334,7 +364,7 @@
 
     <!-- 5. VARIAZIONI PESO -->
     <div class="accordion-card" id="acc_peso">
-      <div class="accordion-header" onclick="toggleAccordionEsclusivo('acc_peso')">
+      <div class="accordion-header" onclick="toggleAccordion('profilo', 'acc_peso')">
         <span>⚖️ Variazioni peso</span>
         <span class="accordion-icon">▼</span>
       </div>
@@ -350,7 +380,7 @@
 
     <!-- 6. BACKUP & RESET DATI -->
     <div class="accordion-card" id="acc_backup">
-      <div class="accordion-header" onclick="toggleAccordionEsclusivo('acc_backup')">
+      <div class="accordion-header" onclick="toggleAccordion('profilo', 'acc_backup')">
         <span>💾 Backup & Gestione Dati</span>
         <span class="accordion-icon">▼</span>
       </div>
@@ -568,23 +598,22 @@
       mostraToastApertura();
     };
 
-    // LOGICA DI APERTURA ESCLUSIVA PER LE SEZIONI DEL PROFILO
-    function toggleAccordionEsclusivo(idAcc) {
+    // APERTURA ESCLUSIVA PER SEZIONI
+    function toggleAccordion(sezioneParentId, idAcc) {
       const target = document.getElementById(idAcc);
       const isCurrentlyOpen = target.classList.contains('open');
 
-      // Chiudi tutti gli altri elementi
-      document.querySelectorAll('#profilo .accordion-card').forEach(card => {
+      document.querySelectorAll(`#${sezioneParentId} .accordion-card`).forEach(card => {
         card.classList.remove('open');
       });
 
-      // Se non era già aperto, apri solo quello selezionato
       if (!isCurrentlyOpen) {
         target.classList.add('open');
-        setTimeout(() => {
-          target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }, 150);
       }
+    }
+
+    function toggleExAccordion(exCardEl) {
+      exCardEl.classList.toggle('open');
     }
 
     function selezionaSettimanaGlobale(numSettimana, btn) {
@@ -639,6 +668,15 @@
       return 1;
     }
 
+    // FORMATTAZIONE DATA LOCALE (YYYY-MM-DD) CORRETTA
+    function getLocalDateString(d) {
+      const dateObj = d ? new Date(d) : new Date();
+      const year = dateObj.getFullYear();
+      const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const day = String(dateObj.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
     function calcolaStreak() {
       if (forgeData.allenamenti.length === 0) return 0;
       const dateSet = new Set(forgeData.allenamenti.map(s => s.data));
@@ -648,7 +686,7 @@
       let consecutiveGaps = 0;
 
       while (true) {
-        const dateStr = checkDate.toISOString().slice(0, 10);
+        const dateStr = getLocalDateString(checkDate);
         if (dateSet.has(dateStr)) {
           streak++;
           consecutiveGaps = 0;
@@ -738,16 +776,18 @@
       grid.innerHTML = html;
     }
 
+    // MAPPA DI CALORE (HEATMAP) CORRETTA
     function renderHeatmap() {
       const grid = document.getElementById('heatmapGrid');
       if (!grid) return;
+
       const dateSet = new Set((forgeData.allenamenti || []).map(s => s.data));
       let html = '';
 
       for (let i = 27; i >= 0; i--) {
         let d = new Date();
         d.setDate(d.getDate() - i);
-        const dStr = d.toISOString().slice(0, 10);
+        const dStr = getLocalDateString(d);
         const isActive = dateSet.has(dStr);
         html += `<div class="heatmap-day ${isActive ? 'active' : ''}">${d.getDate()}</div>`;
       }
@@ -932,73 +972,79 @@
 
         const coachWarn = checkSmartCoachWarning(ex.nome);
 
+        // STRUTTURA FISARMONICA PER GLI ESERCIZI
         html += `
-          <div class="ex-card" data-ex="${ex.nome}">
-            <div class="ex-header">
+          <div class="ex-card ${exIdx === 0 ? 'open' : ''}" data-ex="${ex.nome}">
+            <div class="ex-header" onclick="toggleExAccordion(this.parentElement)">
               <div>
                 <strong>${exIdx + 1}. ${ex.nome}</strong>
                 <span class="tag-muscolo">${muscolo}</span>
               </div>
-              <div style="display:flex; gap:6px; align-items:center;">
-                <a href="${ytSearchUrl}" target="_blank" class="btn-yt">▶ Video</a>
-                <button class="btn-del" onclick="eliminaEsercizio('${gKey}', ${exIdx})">❌</button>
-              </div>
+              <span class="accordion-icon">▼</span>
             </div>
 
-            ${coachWarn ? `
-              <div class="smart-warning-badge">
-                <div class="smart-warning-title">⚠️ SMART COACH WARNING: ${coachWarn.zona.toUpperCase()}</div>
-                <div>${coachWarn.avviso}</div>
-                <div style="margin-top:2px;">💡 <strong>Variante Consigliata:</strong> ${coachWarn.variante}</div>
+            <div class="ex-body">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                ${prTxt ? `<div class="pr-badge">🏆 PR: ${prTxt}</div>` : '<div></div>'}
+                <div style="display:flex; gap:6px; align-items:center;">
+                  <a href="${ytSearchUrl}" target="_blank" class="btn-yt">▶ Video</a>
+                  <button class="btn-del" onclick="eliminaEsercizio('${gKey}', ${exIdx})">❌</button>
+                </div>
               </div>
-            ` : ''}
 
-            ${prTxt ? `<div class="pr-badge">🏆 PR: ${prTxt}</div>` : ''}
+              ${coachWarn ? `
+                <div class="smart-warning-badge">
+                  <div class="smart-warning-title">⚠️ SMART COACH WARNING: ${coachWarn.zona.toUpperCase()}</div>
+                  <div>${coachWarn.avviso}</div>
+                  <div style="margin-top:2px;">💡 <strong>Variante Consigliata:</strong> ${coachWarn.variante}</div>
+                </div>
+              ` : ''}
 
-            <div class="trading-box">
-              <div class="trading-title">
-                <span>📈 TREND PRESTAZIONI</span>
-                <span id="trend_text_${canvasId}">--</span>
+              <div class="trading-box">
+                <div class="trading-title">
+                  <span>📈 TREND PRESTAZIONI</span>
+                  <span id="trend_text_${canvasId}">--</span>
+                </div>
+                <canvas id="${canvasId}" class="trading-canvas"></canvas>
               </div>
-              <canvas id="${canvasId}" class="trading-canvas"></canvas>
-            </div>
 
-            ${metodoObj === 'pesistica' ? `
-            <div class="prog-box">
-              <select id="prog_${gKey}_${exIdx}" onchange="calcolaEApplicaProgressione('${gKey}', ${exIdx},${rmVal})">
-                <option value="none">Progressione: Libera</option>
-                <option value="lineare">1. Lineare (80% -> 115%)</option>
-                <option value="ramping">2. Ramping (Top Set)</option>
-                <option value="densita">3. Per Densità (Volume fisso)</option>
-                <option value="piramidale">4. Piramidale Invertito</option>
-                <option value="fasi">5. In Fasi (Vol + Peak)</option>
-              </select>
-              <input type="number" id="sett_${gKey}_${exIdx}" placeholder="Sett" min="1" max="8" value="${settimanaAttivaGlobale}">
-              <div style="display:flex; gap:4px; margin-top:4px;">
-                <button class="btn-secondary" style="font-size: 10px; flex:1;" onclick="calcolaEApplicaProgressione('${gKey}', ${exIdx},${rmVal})">⚡ Calcola Carichi Target</button>
-                <button class="btn-secondary" style="font-size: 10px; flex:1; color:var(--accent-gold);" onclick="mostraProiezioneMesociclo('${gKey}', ${exIdx}, '${ex.nome}', ${rmVal})">🗓️ Proiezione Progra</button>
+              ${metodoObj === 'pesistica' ? `
+              <div class="prog-box">
+                <select id="prog_${gKey}_${exIdx}" onchange="calcolaEApplicaProgressione('${gKey}', ${exIdx},${rmVal})">
+                  <option value="none">Progressione: Libera</option>
+                  <option value="lineare">1. Lineare (80% -> 115%)</option>
+                  <option value="ramping">2. Ramping (Top Set)</option>
+                  <option value="densita">3. Per Densità (Volume fisso)</option>
+                  <option value="piramidale">4. Piramidale Invertito</option>
+                  <option value="fasi">5. In Fasi (Vol + Peak)</option>
+                </select>
+                <input type="number" id="sett_${gKey}_${exIdx}" placeholder="Sett" min="1" max="8" value="${settimanaAttivaGlobale}">
+                <div style="display:flex; gap:4px; margin-top:4px;">
+                  <button class="btn-secondary" style="font-size: 10px; flex:1;" onclick="calcolaEApplicaProgressione('${gKey}', ${exIdx},${rmVal})">⚡ Calcola Target</button>
+                  <button class="btn-secondary" style="font-size: 10px; flex:1; color:var(--accent-gold);" onclick="mostraProiezioneMesociclo('${gKey}', ${exIdx}, '${ex.nome}', ${rmVal})">🗓️ Proiezione Progra</button>
+                </div>
+              </div>` : ''}
+
+              <table id="tbl_${gKey}_${exIdx}">
+                ${renderTableHeader(metodoObj)}
+          `;
+          
+          for (let i = 0; i < (ex.sets || 3); i++) {
+            html += renderTableRow(metodoObj, i + 1);
+          }
+
+          html += `</table>
+              <div class="btn-sets-row">
+                <button class="btn-secondary" style="font-size: 11px; padding: 6px; flex: 1;" onclick="aggiungiSerie('${gKey}', ${exIdx})">+ Aggiungi Serie</button>
+                <button class="btn-secondary" style="font-size: 11px; padding: 6px; flex: 1; color: var(--accent-red);" onclick="rimuoviSerie('${gKey}', ${exIdx})">- Rimuovi Serie</button>
               </div>
-            </div>` : ''}
-
-            <table id="tbl_${gKey}_${exIdx}">
-              ${renderTableHeader(metodoObj)}
-        `;
-        
-        for (let i = 0; i < (ex.sets || 3); i++) {
-          html += renderTableRow(metodoObj, i + 1);
-        }
-
-        html += `</table>
-            <div class="btn-sets-row">
-              <button class="btn-secondary" style="font-size: 11px; padding: 6px; flex: 1;" onclick="aggiungiSerie('${gKey}', ${exIdx})">+ Aggiungi Serie</button>
-              <button class="btn-secondary" style="font-size: 11px; padding: 6px; flex: 1; color: var(--accent-red);" onclick="rimuoviSerie('${gKey}', ${exIdx})">- Rimuovi Serie</button>
             </div>
           </div>`;
       });
 
       html += `
-        <button class="btn btn-blue" onclick="apriModalAddEx('${gKey}')">+ Aggiungi Esercizio (da Libreria o Personalizzato)</button>
-        <button class="btn btn-green" onclick="aggiungiNuovoGiorno()">+ Aggiungi Nuovo Giorno di Allenamento</button>
+        <button class="btn btn-blue" onclick="apriModalAddEx('${gKey}')">+ Aggiungi Esercizio</button>
+        <button class="btn btn-green" onclick="aggiungiNuovoGiorno()">+ Aggiungi Nuovo Giorno</button>
         <button class="btn" onclick="salvaSessione('${gKey}')">💾 Salva Allenamento</button>
       </div>`;
 
@@ -1046,7 +1092,6 @@
       const card = document.querySelectorAll(`#${gKey} .ex-card`)[exIdx];
       if(!card) return;
       const rows = card.querySelectorAll('tr');
-      const totalSets = rows.length - 1;
 
       for(let i = 1; i < rows.length; i++) {
         let pct = 0.80;
@@ -1056,7 +1101,7 @@
           pct = 0.80 + ((sett - 1) * 0.05);
           repsVal = sett > 6 ? 2 : 5;
         } else if(progTipo === "ramping") {
-          pct = (0.65 + ((i / totalSets) * 0.25)) + ((sett - 1) * 0.025);
+          pct = (0.65 + ((i / (rows.length - 1)) * 0.25)) + ((sett - 1) * 0.025);
           repsVal = 5;
         } else if(progTipo === "densita") {
           pct = 0.75;
@@ -1202,7 +1247,7 @@
     function checkPR(nome, kg, reps) {
       const rmTeorico = Math.round(reps === 1 ? kg : kg * (1 + reps / 30));
       if (!forgeData.records[nome]) {
-        forgeData.records[nome] = { maxKg: 0, max1RM: 0, data: new Date().toISOString().slice(0, 10) };
+        forgeData.records[nome] = { maxKg: 0, max1RM: 0, data: getLocalDateString() };
       }
 
       const rec = forgeData.records[nome];
@@ -1212,7 +1257,7 @@
       if (rmTeorico > rec.max1RM) { rec.max1RM = rmTeorico; nuovoRecord = true; }
 
       if (nuovoRecord) {
-        rec.data = new Date().toISOString().slice(0, 10);
+        rec.data = getLocalDateString();
         salvaStato();
         mostraToast("🏆", "NUOVO PR PESISTICA!", `${nome.toUpperCase()}: ${rec.maxKg} kg | 1RM: ${rec.max1RM} kg`);
       }
@@ -1301,7 +1346,7 @@
       let exObj = { nome: nome, muscolo: muscolo, sets: 3 };
 
       if (rm) {
-        forgeData.records[nome] = { maxKg: rm, max1RM: rm, data: new Date().toISOString().slice(0, 10) };
+        forgeData.records[nome] = { maxKg: rm, max1RM: rm, data: getLocalDateString() };
       }
 
       exList.push(exObj);
@@ -1329,7 +1374,7 @@
 
       let sessione = { 
         id: Date.now(),
-        data: new Date().toISOString().slice(0,10), 
+        data: getLocalDateString(), 
         ora: oraAttuale,
         giorno: gKey.toUpperCase(), 
         metodo: metodo,
@@ -1380,6 +1425,7 @@
         verificaEValutaPromozioneLivello();
         aggiornaGamification();
         renderGiorno(gKey);
+        renderHeatmap(); // AGGIORNA LA HEATMAP ALL'ISTANTE
       } else {
         alert("⚠️ Inserisci almeno un dato per salvare.");
       }
@@ -1409,7 +1455,7 @@
 
         for (let i = 6; i >= 0; i--) {
           let d = new Date(); d.setDate(d.getDate() - i);
-          const dStr = d.toISOString().slice(0, 10);
+          const dStr = getLocalDateString(d);
           labelsVol.push(`${d.getDate()}/${d.getMonth()+1}`);
 
           let volGiorno = 0;
@@ -1533,7 +1579,7 @@
       };
 
       if (peso) {
-        forgeData.storicoPeso.push({ data: new Date().toISOString().slice(0,10), peso: peso });
+        forgeData.storicoPeso.push({ data: getLocalDateString(), peso: peso });
       }
 
       salvaStato();
@@ -1550,7 +1596,7 @@
     function salvaNuovaPesata() {
       const val = parseFloat(document.getElementById('inputNuovoPeso').value);
       if (val) {
-        forgeData.storicoPeso.push({ data: new Date().toISOString().slice(0,10), peso: val });
+        forgeData.storicoPeso.push({ data: getLocalDateString(), peso: val });
         salvaStato();
         document.getElementById('modalPesata').style.display = 'none';
         aggiornaProfilo();
@@ -1563,6 +1609,7 @@
         salvaStato();
         aggiornaProfilo();
         aggiornaGamification();
+        renderHeatmap();
       }
     }
 
@@ -1716,7 +1763,7 @@
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(forgeData));
       const dl = document.createElement('a');
       dl.setAttribute("href", dataStr);
-      dl.setAttribute("download", `forge_backup_${new Date().toISOString().slice(0,10)}.json`);
+      dl.setAttribute("download", `forge_backup_${getLocalDateString()}.json`);
       dl.click();
     }
 
