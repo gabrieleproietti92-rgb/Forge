@@ -10,11 +10,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-  <!-- ICONE MARTELLO + INCUDINE -->
-  <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20100%22%3E%3Crect%20width%3D%22100%22%20height%3D%22100%22%20rx%3D%2222%22%20fill%3D%22%23121212%22%2F%3E%3Cpath%20d%3D%22M20%2075%20L80%2075%20L75%2060%20L60%2060%20L60%2052%20L35%2052%20L35%2060%20L20%2060%20Z%22%20fill%3D%22%23ffd700%22%2F%3E%3Cpath%20d%3D%22M40%2030%20L60%2015%20L70%2028%20L50%2043%20Z%22%20fill%3D%22%23ffffff%22%2F%3E%3Crect%20x%3D%2230%22%20y%3D%2232%22%20width%3D%226%22%20height%3D%2230%22%20rx%3D%222%22%20transform%3D%22rotate(-35%2030%2032)%22%20fill%3D%22%23a0a0a0%22%2F%3E%3Cpath%20d%3D%22M52%2048%20L48%2042%20M58%2050%20L64%2048%20M54%2055%20L58%2060%22%20stroke%3D%22%23ff3b30%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E">
-  <link rel="icon" href="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20100%22%3E%3Crect%20width%3D%22100%22%20height%3D%22100%22%20rx%3D%2222%22%20fill%3D%22%23121212%22%2F%3E%3Cpath%20d%3D%22M20%2075%20L80%2075%20L75%2060%20L60%2060%20L60%2052%20L35%2052%20L35%2060%20L20%2060%20Z%22%20fill%3D%22%23ffd700%22%2F%3E%3Cpath%20d%3D%22M40%2030%20L60%2015%20L70%2028%20L50%2043%20Z%22%20fill%3D%22%23ffffff%22%2F%3E%3Crect%20x%3D%2230%22%20y%3D%2232%22%20width%3D%226%22%20height%3D%2230%22%20rx%3D%222%22%20transform%3D%22rotate(-35%2030%2032)%22%20fill%3D%22%23a0a0a0%22%2F%3E%3Cpath%20d%3D%22M52%2048%20L48%2042%20M58%2050%20L64%2048%20M54%2055%20L58%2060%22%20stroke%3D%22%23ff3b30%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E">
-
+  <!-- LIBRERIE ESTERNE: Chart.js e Canvas Confetti per effetti visivi -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   
   <style>
     :root {
@@ -62,7 +60,7 @@
     .toast-title { font-weight: bold; font-size: 12px; color: var(--accent-gold); margin-bottom: 2px; }
     .toast-msg { font-size: 11px; color: #e0e0e0; line-height: 1.2; }
 
-    /* HEADER STREAK COMPATTO E BARRA SOTTILE XP */
+    /* HEADER COMPATTO CON LINGOTTI 🪙 */
     .dashboard-streak-compact {
       background: #1c1c1e; border-radius: 12px 12px 0 0; padding: 8px 12px;
       border: 1px solid var(--border-color); border-bottom: none;
@@ -74,6 +72,23 @@
 
     .xp-mini-container { background: #121212; height: 4px; width: 100%; overflow: hidden; border: 1px solid var(--border-color); border-radius: 0 0 12px 12px; margin-bottom: 12px; }
     .xp-mini-bar { background: linear-gradient(90deg, #007aff, var(--accent-gold)); height: 100%; width: 0%; transition: width 0.5s ease; }
+
+    /* CARD AVATAR EVOLUTIVO */
+    .avatar-card {
+      background: radial-gradient(circle at top, #2c2c3e 0%, #141418 100%);
+      border: 1px solid var(--accent-gold); border-radius: 14px;
+      padding: 14px; text-align: center; margin-bottom: 12px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.5); position: relative; overflow: hidden;
+    }
+    .avatar-icon-frame {
+      width: 80px; height: 80px; margin: 0 auto 8px auto; border-radius: 50%;
+      background: #121212; border: 2px solid var(--accent-gold);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 40px; box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+    }
+    .avatar-title { font-size: 16px; font-weight: bold; margin-bottom: 2px; }
+    .avatar-sub { font-size: 11px; color: var(--text-muted); margin-bottom: 8px; }
+    .avatar-next-goal { background: rgba(0,0,0,0.4); padding: 6px 10px; border-radius: 8px; font-size: 10px; border: 1px solid #333; }
 
     /* BADGES GRID */
     .badges-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
@@ -97,7 +112,7 @@
     }
     .rank-list-item.active { border-color: var(--accent-gold); background: rgba(255, 215, 0, 0.08); box-shadow: 0 0 10px rgba(255, 215, 0, 0.15); }
 
-    /* NAVBAR PRINCIPALE A 4 COLONNE */
+    /* NAVBAR PRINCIPALE */
     .home-nav-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 12px; }
     .home-nav-btn { background: var(--card-bg); border: 1px solid var(--border-color); color: white; padding: 10px 2px; border-radius: 10px; font-weight: bold; font-size: 11px; cursor: pointer; text-align: center; }
     .home-nav-btn.active { background: var(--accent-red); border-color: var(--accent-red); }
@@ -113,7 +128,6 @@
     .week-btn { flex: 0 0 auto; min-width: 50px; background: #121212; border: 1px solid var(--border-color); color: var(--text-muted); padding: 6px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; text-align: center; }
     .week-btn.active { background: var(--accent-gold); color: black; border-color: var(--accent-gold); }
 
-    /* SCHEDE GIORNI ALLENAMENTO */
     .workout-subtabs { display: none; gap: 6px; margin-bottom: 12px; overflow-x: auto; scrollbar-width: none; }
     .workout-subtabs::-webkit-scrollbar { display: none; }
     .tab-btn { flex: 0 0 auto; min-width: 65px; background: var(--card-bg); color: var(--text-muted); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; text-align: center; font-size: 12px; }
@@ -197,6 +211,18 @@
     .search-results-list { max-height: 120px; overflow-y: auto; background: #121212; border: 1px solid var(--border-color); border-radius: 6px; margin-top: 4px; display: none; }
     .search-result-item { padding: 6px 10px; font-size: 12px; border-bottom: 1px solid #222; cursor: pointer; display: flex; justify-content: space-between; }
     .search-result-item:hover { background: #222; }
+
+    /* POPUP RIEPILOGO WOD CELEBRAZIONE */
+    .wod-summary-modal {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 10001;
+    }
+    .wod-summary-card {
+      background: radial-gradient(circle, #2a2a3e 0%, #121212 100%);
+      border: 2px solid var(--accent-gold); border-radius: 16px;
+      padding: 20px; width: 85%; max-width: 320px; text-align: center;
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
+    }
   </style>
 </head>
 <body>
@@ -214,10 +240,10 @@
     <h1>FORGE 🔨</h1>
   </div>
 
-  <!-- HEADER STREAK & BARRA SOTTILE XP -->
+  <!-- HEADER STREAK, XP & LINGOTTI DI GHISA 🪙 -->
   <div class="dashboard-streak-compact">
-    <div class="streak-pill-item">🔥 Streak: <span class="streak-pill-val" id="valStreak">0 gg</span></div>
-    <div class="streak-pill-item">🏋️ WOD: <span class="streak-pill-val" id="valTotalWorkouts">0</span></div>
+    <div class="streak-pill-item">🔥 <span class="streak-pill-val" id="valStreak">0 gg</span></div>
+    <div class="streak-pill-item">🪙 <span class="streak-pill-val" id="valCoins">0</span></div>
     <div class="streak-pill-item">⭐ XP: <span class="streak-pill-val" id="valXP">0</span></div>
     <div class="streak-pill-item" id="rankTitle">Recluta 🥉</div>
   </div>
@@ -225,7 +251,7 @@
     <div class="xp-mini-bar" id="xpBar"></div>
   </div>
 
-  <!-- NAVBAR PRINCIPALE A 4 COLONNE -->
+  <!-- NAVBAR PRINCIPALE -->
   <div class="home-nav-grid">
     <button class="home-nav-btn active" id="nav_allenamenti" onclick="apriAllenamenti()">🏋️ WOD</button>
     <button class="home-nav-btn" id="nav_carriera" onclick="apriSezione('carriera')">🎖️ Carriera</button>
@@ -254,7 +280,7 @@
   
   <div id="workoutDaysContainer"></div>
 
-  <!-- SEZIONE CARRIERA (NUOVA SCHEDA DEDICATA) -->
+  <!-- SEZIONE CARRIERA -->
   <div id="carriera" class="tab-content">
     <div class="card">
       <h3>🎖️ Mappa dei Ranghi Fucina</h3>
@@ -303,8 +329,17 @@
     </div>
   </div>
 
-  <!-- SEZIONE PROFILO -->
+  <!-- SEZIONE PROFILO CON AVATAR EVOLUTIVO -->
   <div id="profilo" class="tab-content">
+    
+    <!-- CARTA AVATAR DINAMICA (PUNTO A/B) -->
+    <div class="avatar-card">
+      <div class="avatar-icon-frame" id="avatarIcon">🔨</div>
+      <div class="avatar-title" id="avatarTitle">Recluta Fucina</div>
+      <div class="avatar-sub" id="avatarDesc">Veste da combattimento grezza e spirito combattivo.</div>
+      <div class="avatar-next-goal" id="avatarNextGoal">🎯 Prossimo Sblocco: +500 XP per Evoluzione Rango 2</div>
+    </div>
+
     <div class="profile-pills-row">
       <button class="profile-pill-btn active" onclick="mostraPannelloProfilo('p_anamnesi', this)">📋 Anamnesi</button>
       <button class="profile-pill-btn" onclick="mostraPannelloProfilo('p_storico', this)">📅 Storico</button>
@@ -366,6 +401,22 @@
         <button class="btn btn-green" onclick="document.getElementById('fileImport').click()">📤 Ripristina Backup JSON</button>
         <button class="btn btn-secondary" style="margin-top:15px; color:red;" onclick="resetMemoriaLocale()">⚠️ Reset Totale Dati</button>
       </div>
+    </div>
+  </div>
+
+  <!-- POPUP RIEPILOGO VITTORIA WOD -->
+  <div id="modalSummaryWod" class="wod-summary-modal">
+    <div class="wod-summary-card">
+      <h2 style="color:var(--accent-gold); margin-bottom:4px;">🔥 SESSIONE CONQUISTATA!</h2>
+      <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Il metallo è stato forgiato con successo.</p>
+      
+      <div style="background:#121212; padding:12px; border-radius:10px; margin-bottom:15px; text-align:left; font-size:13px; border:1px solid #333;">
+        <div style="margin-bottom:6px;">⭐ <strong>XP Guadagnati:</strong> <span style="color:var(--accent-green);" id="sumXp">+200 XP</span></div>
+        <div style="margin-bottom:6px;">🪙 <strong>Lingotti Ghisa:</strong> <span style="color:var(--accent-gold);" id="sumCoins">+10 🪙</span></div>
+        <div>🔥 <strong>Streak Attiva:</strong> <span style="color:var(--accent-orange);" id="sumStreak">3 Giorni</span></div>
+      </div>
+
+      <button onclick="chiudiWodSummary()" class="btn btn-green">Avanti 🚀</button>
     </div>
   </div>
 
@@ -492,14 +543,14 @@
       { parolaChiave: "gomito", eserciziRischiosi: ["French Press", "Dip", "Push-up", "Trazioni Zavorrate"], avviso: "Rischio sollecitazione epicondilo/epitroclea.", variante: "Pushdown ai cavi con corda o Trazioni con presa neutra." }
     ];
 
-    // DEFINIZIONE SOGLIE E NOMI ESTESI ORIGINALI DEI RANGHI
+    // TABELLA RANGHI ED EVOLUZIONE AVATAR (PUNTO A/B)
     const ranghiSoglie = [
-      { level: 1, xpReq: 0, nomeUomo: "1. Recluta 🥉", nomeDonna: "1. Recluta 🥉", color: "#cd7f32" },
-      { level: 2, xpReq: 500, nomeUomo: "2. Apprendista Forgiatore 🔨", nomeDonna: "2. Guerriera di Fiamma 🔥", color: "#a0a0a0" },
-      { level: 3, xpReq: 1000, nomeUomo: "3. Plasmaghisa 🥈", nomeDonna: "3. Mirmidone d'Acciaio 🗡️", color: "#34c759" },
-      { level: 4, xpReq: 1800, nomeUomo: "4. Battitore di Fiamma 🔥", nomeDonna: "4. Valkyria della Fucina ⚡", color: "#ff9500" },
-      { level: 5, xpReq: 3000, nomeUomo: "5. Maestro della Fucina ⚡", nomeDonna: "5. Dominatrice del Ferro 🛡️", color: "#ff3b30" },
-      { level: 6, xpReq: 5000, nomeUomo: "6. Titano di Ghisa 💎", nomeDonna: "6. Dea di Ghisa 💎", color: "#007aff" }
+      { level: 1, xpReq: 0, nomeUomo: "1. Recluta 🥉", nomeDonna: "1. Recluta 🥉", iconUomo: "🔨", iconDonna: "🥋", desc: "Abito di tela grezza e primo martello in legno.", color: "#cd7f32" },
+      { level: 2, xpReq: 500, nomeUomo: "2. Apprendista Forgiatore 🔨", nomeDonna: "2. Guerriera di Fiamma 🔥", iconUomo: "⚒️", iconDonna: "🗡️", desc: "Guanti in cuoio e prime scintille di fiamma.", color: "#a0a0a0" },
+      { level: 3, xpReq: 1000, nomeUomo: "3. Plasmaghisa 🥈", nomeDonna: "3. Mirmidone d'Acciaio 🗡️", iconUomo: "🛡️", iconDonna: "⚔️", desc: "Corazza di ghisa temprata e muscolatura definita.", color: "#34c759" },
+      { level: 4, xpReq: 1800, nomeUomo: "4. Battitore di Fiamma 🔥", nomeDonna: "4. Valkyria della Fucina ⚡", iconUomo: "🔥", iconDonna: "⚡", desc: "Martello di ferro battuto e aura di fuoco concentrata.", color: "#ff9500" },
+      { level: 5, xpReq: 3000, nomeUomo: "5. Maestro della Fucina ⚡", nomeDonna: "5. Dominatrice del Ferro 🛡️", iconUomo: "👑", iconDonna: "👸", desc: "Armatura d'acciaio dorato e aureola energetica.", color: "#ff3b30" },
+      { level: 6, xpReq: 5000, nomeUomo: "6. Titano di Ghisa 💎", nomeDonna: "6. Dea di Ghisa 💎", iconUomo: "💎", iconDonna: "✨", desc: "Forma mitologica suprema con aurea di cristallo azzurro.", color: "#007aff" }
     ];
 
     const schedeBase = {
@@ -529,6 +580,7 @@
     if (!forgeData.recordsHIIT) forgeData.recordsHIIT = {};
     if (!forgeData.storicoPeso) forgeData.storicoPeso = [];
     if (!forgeData.anamnesi) forgeData.anamnesi = { livello: "Principiante", genere: "Uomo", infortuni: "" };
+    if (!forgeData.coins) forgeData.coins = 0;
     if (!forgeData.ultimoRangoLivello) forgeData.ultimoRangoLivello = 1;
 
     let tempGKeyForAdd = 'g1';
@@ -653,14 +705,13 @@
       return streak;
     }
 
-    // CALCOLO XP CON CAP GIORNALIERO ANTIFRODE
     function calcolaXPPerSessioneData(dataTarget) {
       const baseXP = calcolaXPBase();
       const sessioniOggi = (forgeData.allenamenti || []).filter(s => s.data === dataTarget);
       
-      if (sessioniOggi.length === 0) return baseXP; // Prima sessione: 100%
-      if (sessioniOggi.length === 1) return Math.round(baseXP * 0.5); // Seconda sessione: 50%
-      return 0; // Dalla terza in poi: 0 XP
+      if (sessioniOggi.length === 0) return baseXP;
+      if (sessioniOggi.length === 1) return Math.round(baseXP * 0.5);
+      return 0;
     }
 
     function calcolaXPBase() {
@@ -693,7 +744,6 @@
       let totalXP = 0;
       const numPR = Object.keys(forgeData.records || {}).length + Object.keys(forgeData.recordsHIIT || {}).length;
       
-      // Conteggio XP sessioni con cap
       const dateMap = {};
       (forgeData.allenamenti || []).forEach(s => {
         dateMap[s.data] = (dateMap[s.data] || 0) + 1;
@@ -714,6 +764,7 @@
       document.getElementById('valStreak').textContent = `${streak} gg`;
       document.getElementById('valTotalWorkouts').textContent = totalW;
       document.getElementById('valXP').textContent = totalXP;
+      document.getElementById('valCoins').textContent = forgeData.coins || 0;
 
       const isDonna = (forgeData.anamnesi && forgeData.anamnesi.genere === "Donna");
 
@@ -748,8 +799,35 @@
       }
       document.getElementById('xpBar').style.width = `${pctBarra}%`;
 
+      // AGGIORNA CARTA AVATAR PROFILO
+      aggiornaAvatarUI(currentRangoObj, nextRangoObj, totalXP, isDonna);
+
       renderListaRanghiStatistiche(currentRangoObj.level, isDonna);
       renderBadges(totalW, streak, totalXP);
+    }
+
+    function aggiornaAvatarUI(currentRango, nextRango, totalXP, isDonna) {
+      const titleEl = document.getElementById('avatarTitle');
+      const descEl = document.getElementById('avatarDesc');
+      const iconEl = document.getElementById('avatarIcon');
+      const goalEl = document.getElementById('avatarNextGoal');
+
+      if (!titleEl) return;
+
+      const nomeRango = isDonna ? currentRango.nomeDonna : currentRango.nomeUomo;
+      const iconaRango = isDonna ? currentRango.iconDonna : currentRango.iconUomo;
+
+      titleEl.textContent = nomeRango;
+      titleEl.style.color = currentRango.color;
+      descEl.textContent = currentRango.desc;
+      iconEl.textContent = iconaRango;
+
+      if (nextRango.level !== currentRango.level) {
+        const xpMancanti = nextRango.xpReq - totalXP;
+        goalEl.textContent = `🎯 Prossimo Sblocco: Meno di ${xpMancanti} XP per Rango ${nextRango.level}`;
+      } else {
+        goalEl.textContent = `👑 Rango Massimo della Fucina Raggiunto!`;
+      }
     }
 
     function renderListaRanghiStatistiche(currentLevel, isDonna) {
@@ -1292,6 +1370,7 @@
       }
     }
 
+    // SALVATAGGIO WOD CON CELEBRAZIONE E CONFETTI (PUNTO A)
     function salvaSessione(gKey) {
       const tab = document.getElementById(gKey);
       const eserciziCards = tab.querySelectorAll('.ex-card');
@@ -1339,13 +1418,26 @@
       });
 
       if (sessione.esercizi.length > 0) {
-        // XP GUADAGNATI CON CAP ANTIFRODE
         const xpGuadagnati = calcolaXPPerSessioneData(dataOggi);
+        const coinsGuadagnati = 10; // +10 Lingotti a WOD
 
         forgeData.allenamenti.push(sessione);
+        forgeData.coins = (forgeData.coins || 0) + coinsGuadagnati;
         salvaStato();
-        
-        mostraToast("🔥", "SESSIONE SALVATA", `Sessione ${metodo.toUpperCase()} salvata alle ${oraAttuale}! +${xpGuadagnati} XP.`);
+
+        // LANCIO CORIANDOLI / SCINTILLE (PUNTO A)
+        confetti({
+          particleCount: 80,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#ffd700', '#ff3b30', '#ff9500']
+        });
+
+        // MOSTRA POPUP CELEBRAZIONE COMPATTO
+        document.getElementById('sumXp').textContent = `+${xpGuadagnati} XP`;
+        document.getElementById('sumCoins').textContent = `+${coinsGuadagnati} 🪙`;
+        document.getElementById('sumStreak').textContent = `${calcolaStreak()} Giorni`;
+        document.getElementById('modalSummaryWod').style.display = 'flex';
 
         aggiornaGamification();
         renderGiorno(gKey);
@@ -1353,6 +1445,10 @@
       } else {
         alert("⚠️ Inserisci almeno un dato.");
       }
+    }
+
+    function chiudiWodSummary() {
+      document.getElementById('modalSummaryWod').style.display = 'none';
     }
 
     function cambiaOrizzonte(orizzonte, btn) {
