@@ -10,7 +10,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-  <!-- LIBRERIE ESTERNE: Chart.js e Canvas Confetti per effetti visivi -->
+  <!-- LIBRERIE ESTERNE: Chart.js e Canvas Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   
@@ -60,7 +60,7 @@
     .toast-title { font-weight: bold; font-size: 12px; color: var(--accent-gold); margin-bottom: 2px; }
     .toast-msg { font-size: 11px; color: #e0e0e0; line-height: 1.2; }
 
-    /* HEADER COMPATTO CON LINGOTTI 🪙 */
+    /* HEADER STREAK & LINGOTTI DE GHISA */
     .dashboard-streak-compact {
       background: #1c1c1e; border-radius: 12px 12px 0 0; padding: 8px 12px;
       border: 1px solid var(--border-color); border-bottom: none;
@@ -111,6 +111,11 @@
       border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; font-size: 12px;
     }
     .rank-list-item.active { border-color: var(--accent-gold); background: rgba(255, 215, 0, 0.08); box-shadow: 0 0 10px rgba(255, 215, 0, 0.15); }
+
+    /* HEATMAP STYLES */
+    .heatmap-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 10px; }
+    .heatmap-day { aspect-ratio: 1; border-radius: 6px; background: #262628; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--text-muted); border: 1px solid #333; }
+    .heatmap-day.active { background: var(--accent-green); color: black; font-weight: bold; border-color: var(--accent-gold); box-shadow: 0 0 8px rgba(52, 199, 89, 0.4); }
 
     /* NAVBAR PRINCIPALE */
     .home-nav-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 12px; }
@@ -332,7 +337,6 @@
   <!-- SEZIONE PROFILO CON AVATAR EVOLUTIVO -->
   <div id="profilo" class="tab-content">
     
-    <!-- CARTA AVATAR DINAMICA (PUNTO A/B) -->
     <div class="avatar-card">
       <div class="avatar-icon-frame" id="avatarIcon">🔨</div>
       <div class="avatar-title" id="avatarTitle">Recluta Fucina</div>
@@ -543,7 +547,6 @@
       { parolaChiave: "gomito", eserciziRischiosi: ["French Press", "Dip", "Push-up", "Trazioni Zavorrate"], avviso: "Rischio sollecitazione epicondilo/epitroclea.", variante: "Pushdown ai cavi con corda o Trazioni con presa neutra." }
     ];
 
-    // TABELLA RANGHI ED EVOLUZIONE AVATAR (PUNTO A/B)
     const ranghiSoglie = [
       { level: 1, xpReq: 0, nomeUomo: "1. Recluta 🥉", nomeDonna: "1. Recluta 🥉", iconUomo: "🔨", iconDonna: "🥋", desc: "Abito di tela grezza e primo martello in legno.", color: "#cd7f32" },
       { level: 2, xpReq: 500, nomeUomo: "2. Apprendista Forgiatore 🔨", nomeDonna: "2. Guerriera di Fiamma 🔥", iconUomo: "⚒️", iconDonna: "🗡️", desc: "Guanti in cuoio e prime scintille di fiamma.", color: "#a0a0a0" },
@@ -593,6 +596,15 @@
 
     function salvaStato() {
       localStorage.setItem('forge_v3_data', JSON.stringify(forgeData));
+    }
+
+    // GESTIONE UNIFORME DATA LOCALE (SOLUZIONE BUG FUSO ORARIO)
+    function getLocalDateString(d) {
+      const dateObj = d ? new Date(d) : new Date();
+      const year = dateObj.getFullYear();
+      const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const day = String(dateObj.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
     }
 
     window.onload = function() {
@@ -671,14 +683,6 @@
       if (liv === "Principiante") return 3;
       if (liv === "Intermedio") return 2;
       return 1;
-    }
-
-    function getLocalDateString(d) {
-      const dateObj = d ? new Date(d) : new Date();
-      const year = dateObj.getFullYear();
-      const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-      const day = String(dateObj.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
     }
 
     function calcolaStreak() {
@@ -799,9 +803,7 @@
       }
       document.getElementById('xpBar').style.width = `${pctBarra}%`;
 
-      // AGGIORNA CARTA AVATAR PROFILO
       aggiornaAvatarUI(currentRangoObj, nextRangoObj, totalXP, isDonna);
-
       renderListaRanghiStatistiche(currentRangoObj.level, isDonna);
       renderBadges(totalW, streak, totalXP);
     }
@@ -886,6 +888,7 @@
       grid.innerHTML = html;
     }
 
+    // RENDIRIZZAMENTO E LOGICA CORRETTA DELLA MAPPA TEMPORALE (HEATMAP)
     function renderHeatmap() {
       const grid = document.getElementById('heatmapGrid');
       if (!grid) return;
@@ -896,9 +899,9 @@
       for (let i = 27; i >= 0; i--) {
         let d = new Date();
         d.setDate(d.getDate() - i);
-        const dStr = getLocalDateString(d);
+        const dStr = getLocalDateString(d); // Usa la data locale uniforme YYYY-MM-DD
         const isActive = dateSet.has(dStr);
-        html += `<div class="heatmap-day ${isActive ? 'active' : ''}">${d.getDate()}</div>`;
+        html += `<div class="heatmap-day ${isActive ? 'active' : ''}" title="${dStr}">${d.getDate()}</div>`;
       }
       grid.innerHTML = html;
     }
@@ -1370,14 +1373,14 @@
       }
     }
 
-    // SALVATAGGIO WOD CON CELEBRAZIONE E CONFETTI (PUNTO A)
+    // SALVATAGGIO CON CORRETTA DATA LOCALE E RIATTIVAZIONE MAPPA
     function salvaSessione(gKey) {
       const tab = document.getElementById(gKey);
       const eserciziCards = tab.querySelectorAll('.ex-card');
       const gObj = forgeData.schede[gKey] || {};
       const metodo = gObj.metodo || 'pesistica';
       const oraAttuale = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      const dataOggi = getLocalDateString();
+      const dataOggi = getLocalDateString(new Date());
 
       let sessione = { 
         id: Date.now(),
@@ -1419,21 +1422,21 @@
 
       if (sessione.esercizi.length > 0) {
         const xpGuadagnati = calcolaXPPerSessioneData(dataOggi);
-        const coinsGuadagnati = 10; // +10 Lingotti a WOD
+        const coinsGuadagnati = 10;
 
         forgeData.allenamenti.push(sessione);
         forgeData.coins = (forgeData.coins || 0) + coinsGuadagnati;
         salvaStato();
 
-        // LANCIO CORIANDOLI / SCINTILLE (PUNTO A)
-        confetti({
-          particleCount: 80,
-          spread: 70,
-          origin: { y: 0.6 },
-          colors: ['#ffd700', '#ff3b30', '#ff9500']
-        });
+        if (window.confetti) {
+          confetti({
+            particleCount: 80,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#ffd700', '#ff3b30', '#ff9500']
+          });
+        }
 
-        // MOSTRA POPUP CELEBRAZIONE COMPATTO
         document.getElementById('sumXp').textContent = `+${xpGuadagnati} XP`;
         document.getElementById('sumCoins').textContent = `+${coinsGuadagnati} 🪙`;
         document.getElementById('sumStreak').textContent = `${calcolaStreak()} Giorni`;
@@ -1441,7 +1444,7 @@
 
         aggiornaGamification();
         renderGiorno(gKey);
-        renderHeatmap();
+        renderHeatmap(); // Rinfresca istantaneamente la Mappa
       } else {
         alert("⚠️ Inserisci almeno un dato.");
       }
